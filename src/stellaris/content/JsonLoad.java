@@ -12,11 +12,12 @@ import mindustry.world.Block;
 import static mindustry.Vars.*;
 
 public class JsonLoad {
-	private boolean empty;
+	private boolean empty = true;
 	private ObjectMap<String, MappableContent>[] map;
 	
 	public void init() {
-		empty = true;
+		empty = false;
+		
 		map = new ObjectMap[ContentType.all.length];
 		
 		for(ContentType type : ContentType.all){
