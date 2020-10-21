@@ -63,7 +63,7 @@ public class AsPoint {
         }
         
         public Item getItem() {
-        	return Vars.content.getByName(ContentType.item, realname == null ? realname : toString());
+        	return Vars.content.getByName(ContentType.item, realname == null ? toString() : realname);
         }
         
         public int getPoint() {
