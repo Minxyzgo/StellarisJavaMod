@@ -32,10 +32,12 @@ public class JsonLoad {
 	
 	private void load() {
 		content.each(c -> {
-			MappableContent cc = (MappableContent)content.getByID(c.getContentType(), c.id);
-			String[] name = cc.name.split("-");
-			if(name[0].equals(stname())) {
-				map[cc.getContentType().ordinal()].put(name[1], cc);
+			if(c instanceof MappableContent){
+		    	MappableContent cc = (MappableContent)content.getByID(c.getContentType(), c.id);
+		    	String[] name = cc.name.split("-");
+		    	if(name[0].equals(stname())) {
+			    	map[cc.getContentType().ordinal()].put(name[1], cc);
+		    	}
 			}
 		});
 	}
