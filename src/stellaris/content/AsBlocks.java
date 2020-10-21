@@ -17,7 +17,7 @@ public class AsBlocks implements ContentList {
     @Override
     public void load() {
         MatterEnergyTransformator = new EnergySmelter("matter-energy transformator") {{
-            outputItem = new ItemStack(load.getItem("Energy-unit"),5);
+            outputItem = new ItemStack(load.getItem("EnergyUnit"),5);
             requirements(Category.crafting, ItemStack.with());
             itemCapacity = 1000;
         }};
