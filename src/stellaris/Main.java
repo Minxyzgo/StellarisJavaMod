@@ -13,6 +13,7 @@ public class Main extends Mod{
 
     @Override
     public void loadContent(){
+	    load = new JsonLoad();
 		load.init();
 		new AsBlocks().load();
     }
