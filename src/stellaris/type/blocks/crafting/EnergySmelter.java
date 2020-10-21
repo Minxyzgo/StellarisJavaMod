@@ -28,7 +28,7 @@ public class EnergySmelter extends GenericSmelter {
                 ilist.add(new ItemStack(item.get(), 150 / item.getPoint()));
             }
             
-            ConsumeItems cu = new ConsumeItems(ilist.toArray()) {
+            ConsumeItems cu = new ConsumeItems(ilist.toArray(ItemStack.class)) {
             	public final Boolf<Item> filter = item -> ilist.contains(i -> item.equals(i.item));
                 public void build(Building tile, Table table) {
                     MultiReqImage image = new MultiReqImage();
