@@ -1,6 +1,6 @@
 package stellaris.content;
 
-
+import mindustry.Vars:
 import mindustry.content.Items;
 import mindustry.ctype.ContentList;
 import mindustry.ctype.ContentType;
