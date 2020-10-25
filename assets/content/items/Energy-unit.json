@@ -1,8 +1,0 @@
-{
-    "type":"Item",
-    "name":"Energy-unit",
-    "description":"A 'tin' of pure energy which equals a ton of matter.It has replaced any form of money to buy everything.And it wiil play a basic role on the future we are fighting.We can get it by selling any thing we have.",
-    "cost":"1",
-	"flammability":200,
-    "color":"9CD2FF"
-}
