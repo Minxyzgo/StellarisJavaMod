@@ -18,6 +18,7 @@ import mindustry.ui.ReqImage;
 import mindustry.world.blocks.production.GenericSmelter;
 import mindustry.world.consumers.ConsumeItems;
 import stellaris.type.AsPoint;
+import static stellaris.Main.*;
 
 public class EnergySmelter extends GenericSmelter {
 	public EnergySmelter(String name){
@@ -25,7 +26,7 @@ public class EnergySmelter extends GenericSmelter {
 		
 		Seq<ItemStack> ilist = new Seq<>();
 		for (AsPoint.PointStack item : AsPoint.PointStack.values()) {
-                ilist.add(new ItemStack(item.get(), 150 / item.getPoint()));
+                ilist.add(new ItemStack(item.get(), POINT / item.getPoint()));
             }
             
             ConsumeItems cu = new ConsumeItems(ilist.toArray(ItemStack.class)) {
@@ -48,12 +49,13 @@ public class EnergySmelter extends GenericSmelter {
 	
 	
 	public class EnergyBuild extends GenericSmelter.SmelterBuild {
-            private int itemId;
+            private int itemId = -1;
             
             @Override
              public boolean consValid() {
                  for (AsPoint.PointStack item : AsPoint.PointStack.values()) {
-                     if(!items.has(item.get())) return true;
+                 	
+                     if(items.has(item.get(), POINT / item.getPoint())) return true;
                  }
                  
                  return super.consValid();
@@ -79,7 +81,7 @@ public class EnergySmelter extends GenericSmelter {
              
              @Override
              public boolean acceptItem(Building source, Item item) {
-                 if(super.acceptItem(source, item) && ((itemId == item.id) || items.empty())) {
+                 if(super.acceptItem(source, item) && ((itemId == item.id) || items.empty()) || ((itemId != -1) && !items.has(getItem()))) {
                      itemId = item.id;
                      return true;
                  } else {

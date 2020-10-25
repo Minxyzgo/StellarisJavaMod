@@ -12,6 +12,7 @@ import mindustry.world.Block;
 import static mindustry.Vars.*;
 
 public class JsonLoad {
+    //以后再使用.
 	private boolean empty = true;
 	private ObjectMap<String, MappableContent>[] map;
 	
@@ -33,6 +34,7 @@ public class JsonLoad {
 	private void load() {
 		content.each(c -> {
 			if(c instanceof MappableContent){
+			    //modname-name
 		    	MappableContent cc = (MappableContent)content.getByID(c.getContentType(), c.id);
 		    	String[] name = cc.name.split("-");
 		    	if(name[0].equals(stname())) {
@@ -67,7 +69,7 @@ public class JsonLoad {
 		return map[type.ordinal()];
 	}
 	
-	public String stname() {
+	public static String stname() {
 		return content.transformName("").split("-")[0];
 	}
 }
