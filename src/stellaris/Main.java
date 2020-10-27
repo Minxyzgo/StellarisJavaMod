@@ -1,7 +1,7 @@
 package stellaris;
 
 import mindustry.mod.*;
-import stellaris.content.AsBlocks;
+import stellaris.content.*;
 //import stellaris.content.JsonLoad;
 
 public class Main extends Mod{
@@ -13,7 +13,7 @@ public class Main extends Mod{
 
     @Override
     public void loadContent(){
-		
+		new AsItems().load();
 		new AsBlocks().load();
     }
 

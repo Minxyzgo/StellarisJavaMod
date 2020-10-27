@@ -1,16 +1,19 @@
 package stellaris.content;
 
-import mindustry.content.Liquids;
-import mindustry.content.Items;
+import arc.graphics.Color;
+import mindustry.content.*;
 import mindustry.ctype.ContentList;
 import mindustry.ctype.ContentType;
+import mindustry.gen.Building;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
-import mindustry.world.blocks.production.GenericCrafter;
 import mindustry.world.draw.DrawAnimation;
+import mindustry.world.blocks.production.*;
 import mindustry.world.draw.DrawWeave;
 import stellaris.type.blocks.crafting.EnergySmelter;
+import stellaris.type.draw.DrawHeatAnimation;
+
 
 
 public class AsBlocks implements ContentList {
@@ -27,25 +30,34 @@ public class AsBlocks implements ContentList {
             craftTime = 60f;
             requirements(Category.crafting, ItemStack.with(Items.silicon,150,Items.titanium,200,Items.plastanium,120,Items.phaseFabric,50));
             itemCapacity = 500;
+            craftEffect = Fx.smeltsmoke;
         }};
         
-        energyPackager = new GenericCrafter("energy-packager"){{
-        	size = 4;
-        	health = 800;
-        	drawer = new DrawAnimation();
-        	craftTime = 60f;
-        	requirements(Category.crafting, ItemStack.with(Items.silicon,250,Items.lead,300,Items.metaglass,200,Items.surgeAlloy,50));
-        	consumes.power(800f);
-        	consumes.item(Items.metaglass,1);
-        	outputItem = new ItemStack(AsItems.mineral, 1);
-        	hasPower = true;
-        	itemCapacity = 20;
-        }};
+        energyPackager = new GenericCrafter("energy-packager"){
+        	    {
+                	size = 4;
+                	health = 800;
+                	drawer = new DrawHeatAnimation(false, true).heatc(Color.valueOf("#74DFC7")).frame(4, 3);
+                	hasLiquids = true;
+                	liquidCapacity = 2;
+                	craftTime = 60f;
+                	requirements(Category.crafting,  ItemStack.with(Items.silicon,250,Items.lead,300,Items.metaglass,200,Items.surgeAlloy,50));
+                	consumes.power(85f);
+                	consumes.item(Items.metaglass,1);
+                	outputItem = new ItemStack(AsItems.energyUnit, 1);
+                	hasPower = true;
+                	itemCapacity = 20;
+                	consumes.liquid(Liquids.water, 0.1f).boost();
+                	craftEffect = Fx.smokeCloud;
+            }
+            
+        };
         
-        neutronMetalForge = new GenericCrafter("neutron-metal-Forge"){{
+        neutronMetalForge = new GenericSmelter("neutron-metal-Forge"){{
         	size = 4;
         	health = 800;
         	consumes.items(ItemStack.with(Items.surgeAlloy, 1, AsItems.mineral, 10));
+        	craftEffect = Fx.blastsmoke;
         	craftTime = 90f;
         	consumes.power(7.5f);
         	outputItem = new ItemStack(AsItems.neutronMaterial, 1);
@@ -67,7 +79,7 @@ public class AsBlocks implements ContentList {
             itemCapacity = 70;
         }};
         
-        autoFarm = new GenericCrafter("autoFarm"){{
+        autoFarm = new Cultivator("autoFarm"){{
             size = 3;
             health = 750;
             consumes.item(Items.sporePod, 2);
@@ -77,7 +89,6 @@ public class AsBlocks implements ContentList {
             craftTime = 90f;
             requirements(Category.crafting, ItemStack.with(Items.titanium,150,Items.lead,150,Items.copper,200,Items.plastanium,50));
             hasPower = true;
-            drawer = new DrawWeave();
             itemCapacity = 50;
         }};
     }

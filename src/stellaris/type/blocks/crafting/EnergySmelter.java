@@ -1,8 +1,11 @@
 package stellaris.type.blocks.crafting;
 
-import arc.func.Boolf;
+import arc.graphics.g2d.Draw;
+import arc.graphics.g2d.Fill;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
+import arc.math.Mathf;
+import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 
@@ -21,28 +24,26 @@ import stellaris.type.AsPoint;
 import static stellaris.Main.*;
 
 public class EnergySmelter extends GenericSmelter {
+    private Seq<ItemStack> ilist = new Seq<>();
 	public EnergySmelter(String name){
 		super(name);
 		
-		Seq<ItemStack> ilist = new Seq<>();
+		
 		for (AsPoint.PointStack item : AsPoint.PointStack.values()) {
                 ilist.add(new ItemStack(item.get(), POINT / item.getPoint()));
             }
             
             ConsumeItems cu = new ConsumeItems(ilist.toArray(ItemStack.class)) {
-            	public final Boolf<Item> filter = item -> ilist.contains(i -> item.equals(i.item));
                 public void build(Building tile, Table table) {
                     MultiReqImage image = new MultiReqImage();
-                     Vars.content.items().each(i -> filter.get(i) && i.unlockedNow(),
-                      item -> image.add(new ReqImage(new ItemImage(item.icon(Cicon.medium)), 
-                      () -> tile != null && !(tile.items.empty()) && ((EnergyBuild)tile).getItem() == item)));
+                    ilist.each(i -> i.item.unlockedNow(), stack -> {
+                        image.add(new ReqImage(new ItemImage(stack.item.icon(Cicon.medium), stack.amount), 
+                        () -> tile != null && !(tile.items.empty()) && ((EnergyBuild)tile).getItem() == stack.item));
                     
-                    table.add(image).size(8f * 4f);
+                        table.add(image).size(8f * 4f);
+                    });
                 }
-                
-                
             };
-            
             consumes.add(cu);
             buildType = () -> new EnergyBuild();
 	}
@@ -76,6 +77,26 @@ public class EnergySmelter extends GenericSmelter {
             }
              
              
+             @Override
+             public void draw(){
+                 Draw.rect(block.region, x, y, block.rotate ? rotdeg() : 0.0f);
+                 drawTeamTop();
+                 if(warmup > 0f && flameColor.a > 0.001f){
+                    float g = 0.3f;
+                    float r = 0.06f;
+                    float cr = Mathf.random(0.1f);
+  
+                    Draw.alpha(((1f - g) + Mathf.absin(Time.time(), 8f, g) + Mathf.random(r) - r) * warmup);
+
+                    Draw.tint(getItem().color);
+                    Fill.circle(x, y, 3f + Mathf.absin(Time.time(), 5f, 2f) + cr);
+                    Draw.color(1f, 1f, 1f, warmup);
+                    Draw.rect(topRegion, x, y);
+                    Fill.circle(x, y, 1.9f + Mathf.absin(Time.time(), 5f, 1f) + cr);
+
+                    Draw.color();
+                }
+             }
              
              
              
