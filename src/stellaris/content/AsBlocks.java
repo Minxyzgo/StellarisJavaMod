@@ -23,7 +23,7 @@ public class AsBlocks implements ContentList {
             
     @Override
     public void load() {
-        MatterEnergyTransformator = new EnergySmelter("matter-energy transformator") {{
+        MatterEnergyTransformator = new EnergySmelter("matter-energy-transformator") {{
         	health = 800;
         	size = 3;
             outputItem = new ItemStack(AsItems.energyUnit, 5);
