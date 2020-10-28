@@ -15,7 +15,7 @@ public class DrawHeatAnimation extends DrawBlock{
     public boolean sine = true;
     public TextureRegion[] frames;
     public TextureRegion liquid, top;
-    public boolean drawLiquid, drawTop, drawHeat;
+    public boolean drawLiquid,drawTop, drawHeat, drawBaseAnimation;
     public Color heatColor;
     
     public DrawHeatAnimation(boolean  drawLiquid, boolean drawTop) {
@@ -40,10 +40,16 @@ public class DrawHeatAnimation extends DrawBlock{
         return this;
     }
     
+    public DrawHeatAnimation base(boolean b) {
+        drawBaseAnimation = b;
+        return this;
+    }
+    
     @Override
     public void draw(GenericCrafterBuild entity){
         float s = 0.3f;
         float ts = 0.6f;
+        float delta = entity.getDisplayEfficiency();
         Draw.rect(entity.block.region, entity.x, entity.y);
         if (drawHeat) {
             Draw.color(heatColor);
@@ -51,10 +57,12 @@ public class DrawHeatAnimation extends DrawBlock{
             Draw.blend(Blending.additive);
         }
         
+        if(entity.totalProgress == 0 && drawBaseAnimation) Draw.rect(frames[0], entity.x, entity.y);
+        
         Draw.rect(
             sine ?
-                frames[(int)Mathf.absin(entity.totalProgress, frameSpeed, frameCount - 0.001f)] :
-                frames[(int)((entity.totalProgress / frameSpeed) % frameCount)],
+                frames[(int)Mathf.absin(entity.totalProgress, frameSpeed * delta, frameCount - 0.001f)] :
+                frames[(int)(((entity.totalProgress / frameSpeed) * delta) % frameCount)],
             entity.x, entity.y);
         if (drawHeat) {
             Draw.blend();

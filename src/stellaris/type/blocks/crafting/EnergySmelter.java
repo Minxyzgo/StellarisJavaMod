@@ -37,7 +37,7 @@ public class EnergySmelter extends GenericSmelter {
                 public void build(Building tile, Table table) {
                     MultiReqImage image = new MultiReqImage();
                     ilist.each(i -> i.item.unlockedNow(), stack -> {
-                        image.add(new ReqImage(new ItemImage(stack.item.icon(Cicon.medium), stack.amount), 
+                        image.add(new ReqImage(new ItemImage(stack), 
                         () -> tile != null && !(tile.items.empty()) && ((EnergyBuild)tile).getItem() == stack.item));
                     
                         table.add(image).size(8f * 4f);
@@ -89,9 +89,11 @@ public class EnergySmelter extends GenericSmelter {
                     Draw.alpha(((1f - g) + Mathf.absin(Time.time(), 8f, g) + Mathf.random(r) - r) * warmup);
 
                     Draw.tint(getItem().color);
-                    Fill.circle(x, y, 3f + Mathf.absin(Time.time(), 5f, 2f) + cr);
-                    Draw.color(1f, 1f, 1f, warmup);
                     Draw.rect(topRegion, x, y);
+                    Fill.circle(x, y, 3f + Mathf.absin(Time.time(), 5f, 2f) + cr);
+                    
+                    Draw.color(1f, 1f, 1f, warmup);
+                    
                     Fill.circle(x, y, 1.9f + Mathf.absin(Time.time(), 5f, 1f) + cr);
 
                     Draw.color();
