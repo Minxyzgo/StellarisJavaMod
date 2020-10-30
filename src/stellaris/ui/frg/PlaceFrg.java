@@ -89,6 +89,7 @@ public class PlaceFrg extends PlacementFragment{
     }
 
     void rebuild(){
+        if(togglerra == null) return;
         currentCategory = AsCat.turret;
         Group group = togglerra.parent;
         int index = togglerra.getZIndex();
