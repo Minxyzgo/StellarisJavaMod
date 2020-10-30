@@ -14,7 +14,7 @@ import stellaris.ui.frg.PlaceFrg;
 import static mindustry.Vars.*;
 public class Ui {
     public Ui() {
-        Events.on(EventType.WorldLoadEvent.class, a -> {
+        Events.on(EventType.ClientLoadEvent.class, a -> {
             menu();
             place();
         });
