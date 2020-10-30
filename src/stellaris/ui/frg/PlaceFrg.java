@@ -43,7 +43,7 @@ public class PlaceFrg extends PlacementFragment{
     Displayable hover;
     Object lastDisplayState;
     boolean wasHovered;
-    Table blockTable, toggler, topTable;
+    public Table blockTable, togglerra, topTable;
     ScrollPane blockPane;
     boolean blockSelectEnd;
     int blockSelectSeq;
@@ -90,11 +90,11 @@ public class PlaceFrg extends PlacementFragment{
 
     void rebuild(){
         currentCategory = AsCat.turret;
-        Group group = toggler.parent;
-        int index = toggler.getZIndex();
-        toggler.remove();
+        Group group = togglerra.parent;
+        int index = togglerra.getZIndex();
+        togglerra.remove();
         build(group);
-        toggler.setZIndex(index);
+        togglerra.setZIndex(index);
     }
 
     boolean gridUpdate(InputHandler input){
@@ -147,10 +147,11 @@ public class PlaceFrg extends PlacementFragment{
                                 //down
                                 case 13 :
                                     j = (j < blocks.size - 4 ? j + 4 : j % 4);
-                            }
+                            
                             input.block = blocks.get(j);
                             selectedBlocks.put(currentCategory, input.block);
                             break;
+                            }
                         }
                     }
                 }else if(blockSelectEnd || Time.timeSinceMillis(blockSelectSeqMillis) > Core.settings.getInt("blockselecttimeout")){ //1st number of combo, select category
@@ -204,7 +205,7 @@ public class PlaceFrg extends PlacementFragment{
     @Override
     public void build(Group parent){
         parent.fill(full -> {
-            toggler = full;
+            togglerra = full;
             full.bottom().right().visible(() -> ui.hudfrag.shown);
 
             full.table(frame -> {
