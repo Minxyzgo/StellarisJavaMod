@@ -24,7 +24,7 @@ public class Main extends Mod{
     
     @Override
     public void init(){
-        asUi = new Ui(){
+        asUi = new Ui();
     }
 
 }
