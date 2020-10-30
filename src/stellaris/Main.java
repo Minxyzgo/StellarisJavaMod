@@ -7,10 +7,12 @@ import stellaris.core.Ui;
 
 public class Main extends Mod{
 //	public static JsonLoad load;
+
 	public static int POINT = 150;
+	private static String ccxxxzzs = "I Saw Your Ship";
 	public static Ui asUi;
     public Main(){
-        
+
     }
     
 
@@ -22,7 +24,7 @@ public class Main extends Mod{
     
     @Override
     public void init(){
-        asUi = new Ui();
+        asUi = new Ui(){
     }
 
 }
