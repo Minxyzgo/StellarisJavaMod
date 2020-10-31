@@ -29,7 +29,11 @@ public class Ui{
 	        A.setAccessible(true);
 	        Table t = (Table)A.get(ui.menufrag);
 	        nmsl = new MobileButton(Icon.menu, "nmsl", () -> Core.app.exit());
-	        t.add(nmsl);
+	        t.table(table -> {
+                table.defaults().set(t.defaults());
+
+                table.add(nmsl);
+            }).colspan(4);
 	    }catch(NoSuchFieldException | IllegalAccessException ex) {
             throw new Error(ex);
         }
