@@ -41,7 +41,7 @@ public class Ui{
 	    }catch(NoSuchFieldException | IllegalAccessException ex) {
             throw new Error(ex);
         }*/
-        Table t = ui.menuGroup.<Table>find("menu container");
+        Table t = ui.menuGroup.<Table>find("buttons");
         if(t == null) {
             Seq<String> s = new Seq<>();
             ui.menuGroup.forEach(e -> s.add(e.name));
