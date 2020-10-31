@@ -60,9 +60,21 @@ public class Ui{
                 
             ui.showInfo("over.");
         }).colspan(2);
+        t.row();
         t.add(nmsl);
         t.invalidate();
         t.draw();
+        ui.menuGroup.fill(c -> {
+            c.clear();
+            c.setSize(Core.graphics.getWidth(), Core.graphics.getHeight());
+            float size = 120f;
+            c.defaults().size(size).pad(5).padTop(4f);
+            c.row();
+            c.marginTop(60f);
+            c.add(nmsl);
+        });
+        ui.menufrag.build(ui.menuGroup);
+        
         ui.menuGroup.invalidate();
         ui.menuGroup.draw();
         ui.menuGroup.pack();
