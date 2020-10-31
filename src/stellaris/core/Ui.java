@@ -60,6 +60,7 @@ public class Ui{
                 ui.showInfo("over.");
         }).colspan(2);
         t.add(nmsl);
+        t.draw();
 	}
 	
 	
