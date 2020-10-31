@@ -24,6 +24,7 @@ public class Ui {
     
 	private void menu(){
 	    ui.menufrag = new MenuFrg();
+	    ui.menufrag.build(ui.menuGroup);
 	}
 	
 	/*private void place(){
