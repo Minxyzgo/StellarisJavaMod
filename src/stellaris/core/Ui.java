@@ -2,20 +2,21 @@ package stellaris.core;
 
 import java.lang.reflect.Field;
 
-import arc.Events;
 
-import mindustry.content.UnitTypes;
-import mindustry.game.EventType;
-import mindustry.graphics.MenuRenderer;
-import mindustry.ui.fragments.HudFragment;
+import arc.*;
+import arc.scene.ui.layout.Table;
+import mindustry.game.EventType.*;
+import mindustry.gen.Icon;
+import mindustry.ui.MobileButton;
 import mindustry.ui.fragments.MenuFragment;
-//import stellaris.ui.frg.PlaceFrg;
-import stellaris.ui.frg.*;
 
 import static mindustry.Vars.*;
-public class Ui {
+
+public class Ui{
+    public MobileButton nmsl;
+    
     public Ui() {
-        Events.on(EventType.ClientLoadEvent.class, a -> {
+        Events.on(ClientLoadEvent.class, a -> {
             menu();
             //place();
         });
@@ -23,9 +24,17 @@ public class Ui {
     
     
 	private void menu(){
-	    ui.menufrag = new MenuFrg();
-	    ui.menufrag.build(ui.menuGroup);
+	    try{
+	        Field A = MenuFragment.class.getDeclaredField("container");
+	        A.setAccessible(true);
+	        Table t = (Table)A.get(ui.menufrag);
+	        nmsl = new MobileButton(Icon.menu, "nmsl", () -> Core.app.exit());
+	        t.add(nmsl);
+	    }catch(NoSuchFieldException | IllegalAccessException ex) {
+            throw new Error(ex);
+        }
 	}
+	
 	
 	/*private void place(){
 	    try{
