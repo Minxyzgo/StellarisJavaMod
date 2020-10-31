@@ -44,9 +44,7 @@ public class Ui{
         Table t = ui.menuGroup.<Table>find("menu container");
         if(t == null) {
             Seq<String> s = new Seq<>();
-            for(Element e : ui.menuGroup.getChildren()){
-                s.add(e.name);
-            }
+            ui.menuGroup.forEach(e -> s.add(e.name));
             
             
             ui.showInfo(Strings.join(",", s.toArray(String.class)));
