@@ -9,32 +9,24 @@ import mindustry.game.EventType;
 import mindustry.graphics.MenuRenderer;
 import mindustry.ui.fragments.HudFragment;
 import mindustry.ui.fragments.MenuFragment;
-import stellaris.ui.frg.PlaceFrg;
+//import stellaris.ui.frg.PlaceFrg;
+import stellaris.ui.frg.*;
 
 import static mindustry.Vars.*;
 public class Ui {
     public Ui() {
         Events.on(EventType.ClientLoadEvent.class, a -> {
             menu();
-            place();
+            //place();
         });
     }
     
     
 	private void menu(){
-	    try {
-            Field A = MenuFragment.class.getDeclaredField("renderer");
-            A.setAccessible(true);
-            Field B = MenuRenderer.class .getDeclaredField("flyerType");
-            B.setAccessible(true);
-            B.set(A.get(ui.menufrag), UnitTypes.scepter);
-            
-        } catch (NoSuchFieldException | IllegalAccessException ex) {
-            throw new Error(ex);
-        }
+	    ui.menufrag = new MenuFrg();
 	}
 	
-	private void place(){
+	/*private void place(){
 	    try{
 	        Field nameField = HudFragment.class.getDeclaredField("blockfrag");
 	        
@@ -44,5 +36,5 @@ public class Ui {
 	    }catch(NoSuchFieldException | IllegalAccessException ex) {
             throw new Error(ex);
         }
-	}
+	}*/
 }
