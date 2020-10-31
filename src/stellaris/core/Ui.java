@@ -4,7 +4,10 @@ import java.lang.reflect.Field;
 
 
 import arc.*;
+import arc.scene.Element;
 import arc.scene.ui.layout.Table;
+import arc.struct.Seq;
+import arc.util.Strings;
 import mindustry.game.EventType.*;
 import mindustry.gen.Icon;
 import mindustry.ui.MobileButton;
@@ -39,7 +42,19 @@ public class Ui{
             throw new Error(ex);
         }*/
         Table t = ui.menuGroup.<Table>find("menu container");
-        if(t == null) ui.showException(new NullPointerException("t is null"));
+        if(t == null) {
+            Seq<String> s = new Seq<>();
+            for(Element e : ui.menuGroup.getChildren()){
+                s.add(e.name);
+            }
+            
+            
+            ui.showInfo(Strings.join(",", s.toArray(String.class)));
+            
+            
+            //ui.showException(new NullPointerException("t is null"));
+            return;
+        }
         t.table(table -> {
                 table.defaults().set(t.defaults());
                 table.add(nmsl);
