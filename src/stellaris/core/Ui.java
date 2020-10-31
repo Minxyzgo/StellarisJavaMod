@@ -54,13 +54,18 @@ public class Ui{
             return;
         }
         t.table(table -> {
-                table.defaults().set(t.defaults());
-                table.row();
-                table.add(nmsl);
-                ui.showInfo("over.");
+            table.defaults().set(t.defaults());
+            table.row();
+            table.add(nmsl);
+                
+            ui.showInfo("over.");
         }).colspan(2);
         t.add(nmsl);
+        t.invalidate();
         t.draw();
+        ui.menuGroup.invalidate();
+        ui.menuGroup.draw();
+        ui.menuGroup.pack();
 	}
 	
 	
