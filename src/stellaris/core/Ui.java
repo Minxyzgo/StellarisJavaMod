@@ -16,6 +16,7 @@ public class Ui{
     public MobileButton nmsl;
     
     public Ui() {
+        nmsl = new MobileButton(Icon.menu, "nmsl", () -> Core.app.exit());
         Events.on(ClientLoadEvent.class, a -> {
             menu();
             //place();
@@ -24,11 +25,11 @@ public class Ui{
     
     
 	private void menu(){
-	    try{
+	  /*  try{
 	        Field A = MenuFragment.class.getDeclaredField("container");
 	        A.setAccessible(true);
 	        Table t = (Table)A.get(ui.menufrag);
-	        nmsl = new MobileButton(Icon.menu, "nmsl", () -> Core.app.exit());
+	        
 	        t.table(table -> {
                 table.defaults().set(t.defaults());
 
@@ -36,8 +37,18 @@ public class Ui{
             }).colspan(4);
 	    }catch(NoSuchFieldException | IllegalAccessException ex) {
             throw new Error(ex);
-        }
+        }*/
+        Table t = ui.menuGroup.<Table>find("menu container");
+        if(t == null) ui.showException(new NullPointerException("t is null"));
+        t.table(table -> {
+                table.defaults().set(t.defaults());
+                table.add(nmsl);
+                ui.showInfo("over.");
+        }).colspan(4);
+        
 	}
+	
+	
 	
 	
 	/*private void place(){
