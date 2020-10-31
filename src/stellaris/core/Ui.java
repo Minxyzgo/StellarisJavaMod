@@ -55,10 +55,11 @@ public class Ui{
         }
         t.table(table -> {
                 table.defaults().set(t.defaults());
+                table.row();
                 table.add(nmsl);
                 ui.showInfo("over.");
-        }).colspan(4);
-        
+        }).colspan(2);
+        t.add(nmsl);
 	}
 	
 	
