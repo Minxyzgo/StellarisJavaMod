@@ -12,6 +12,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.Icon;
 import mindustry.ui.MobileButton;
 import mindustry.ui.fragments.MenuFragment;
+import stellaris.ui.frg.MenuFrg;
 
 import static mindustry.Vars.*;
 
@@ -41,8 +42,8 @@ public class Ui{
 	    }catch(NoSuchFieldException | IllegalAccessException ex) {
             throw new Error(ex);
         }*/
-        Table t = ui.menuGroup.<Table>find("buttons");
-        if(t == null) {
+       Table t = ui.menuGroup.<Table>find("buttons");
+        /*if(t == null) {
             Seq<String> s = new Seq<>();
             ui.menuGroup.forEach(e -> s.add(e.name));
             
@@ -60,10 +61,6 @@ public class Ui{
                 
             ui.showInfo("over.");
         }).colspan(2);
-        t.row();
-        t.add(nmsl);
-        t.invalidate();
-        t.draw();
         ui.menuGroup.fill(c -> {
             c.clear();
             c.setSize(Core.graphics.getWidth(), Core.graphics.getHeight());
@@ -73,11 +70,11 @@ public class Ui{
             c.marginTop(60f);
             c.add(nmsl);
         });
-        ui.menufrag.build(ui.menuGroup);
-        
-        ui.menuGroup.invalidate();
-        ui.menuGroup.draw();
+        ui.menuGroup.draw();*/
+        t.reset();
+        ui.menuGroup.clear();
         ui.menuGroup.pack();
+        new MenuFrg().build(ui.menuGroup);
 	}
 	
 	
