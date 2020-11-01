@@ -12,15 +12,16 @@ import mindustry.game.EventType.*;
 import mindustry.gen.Icon;
 import mindustry.ui.MobileButton;
 import mindustry.ui.fragments.MenuFragment;
+import stellaris.ui.draw.MenuRed;
 import stellaris.ui.frg.MenuFrg;
 
 import static mindustry.Vars.*;
 
 public class Ui{
-    public MobileButton nmsl;
+    public MobileButton ste;
     
     public Ui() {
-        nmsl = new MobileButton(Icon.menu, "nmsl", () -> Core.app.exit());
+        ste = new MobileButton(Icon.menu, "stellaris", () -> ui.showInfo("by Minxyzgo"));
         Events.on(ClientLoadEvent.class, a -> {
             menu();
             //place();
@@ -29,19 +30,15 @@ public class Ui{
     
     
 	private void menu(){
-	  /*  try{
-	        Field A = MenuFragment.class.getDeclaredField("container");
+	    try{
+	        Field A = MenuFragment.class.getDeclaredField("renderer");
 	        A.setAccessible(true);
-	        Table t = (Table)A.get(ui.menufrag);
+	        A.set(ui.menufrag, new MenuRed());
 	        
-	        t.table(table -> {
-                table.defaults().set(t.defaults());
-
-                table.add(nmsl);
-            }).colspan(4);
+	        
 	    }catch(NoSuchFieldException | IllegalAccessException ex) {
-            throw new Error(ex);
-        }*/
+	        ui.showException(ex);
+        }
        //Table t = ui.menuGroup.<Table>find("buttons");
         /*if(t == null) {
             Seq<String> s = new Seq<>();
@@ -82,10 +79,10 @@ public class Ui{
             t.row();
             t.row();
             t.row();
-            t.add(nmsl);
-            t.table(table -> {
-                table.buttonRow("Stellaris", Icon.commandRetreat, () -> {});
-            }).colspan(4).visible(() -> !ui.editor.isShown());
+            t.row();
+            t.row();
+            t.row();
+            t.add(ste);
             t.visible = true;
         });
 	}
