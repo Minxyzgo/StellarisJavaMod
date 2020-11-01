@@ -42,7 +42,7 @@ public class Ui{
 	    }catch(NoSuchFieldException | IllegalAccessException ex) {
             throw new Error(ex);
         }*/
-       Table t = ui.menuGroup.<Table>find("buttons");
+       //Table t = ui.menuGroup.<Table>find("buttons");
         /*if(t == null) {
             Seq<String> s = new Seq<>();
             ui.menuGroup.forEach(e -> s.add(e.name));
@@ -71,10 +71,23 @@ public class Ui{
             c.add(nmsl);
         });
         ui.menuGroup.draw();*/
-        t.reset();
-        ui.menuGroup.clear();
-        ui.menuGroup.pack();
-        new MenuFrg().build(ui.menuGroup);
+       // t.reset();
+        
+        ui.menuGroup.fill(t -> {
+            t.clear();
+            t.setSize(Core.graphics.getWidth(), Core.graphics.getHeight());
+            float size = 120f;
+            t.defaults().size(size).pad(5).padTop(4f);
+            t.marginTop(60f);
+            t.row();
+            t.row();
+            t.row();
+            t.add(nmsl);
+            t.table(table -> {
+                table.buttonRow("Stellaris", Icon.commandRetreat, () -> {});
+            }).colspan(4).visible(() -> !ui.editor.isShown());
+            t.visible = true;
+        });
 	}
 	
 	
