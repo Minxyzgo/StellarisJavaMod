@@ -44,7 +44,7 @@ public class MenuRed extends MenuRenderer{
     private void generate(){
         world.beginMapLoad();
         Tiles tiles = world.resize(width, height);
-
+        shadows = new FrameBuffer(width, height);
         for(int x = 0; x < width; x++){
             for(int y = 0; y < height; y++){
                 Block floor = Blocks.space;
