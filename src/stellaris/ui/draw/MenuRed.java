@@ -75,18 +75,23 @@ public class MenuRed extends MenuRenderer{
         }
 
         world.endMapLoad();
-        if(!assets.isFinished()){
-            assets.update(1000 / 20);
-        }
+        
     }
 
     private void cache(){
 
         //draw shadows
         Draw.proj().setOrtho(0, 0, shadows.getWidth(), shadows.getHeight());
-        shadows.begin(Color.clear);
-        rend.draw();
-        Draw.color(Color.black);
+        
+        if(assets.update(1000 / 20)){
+            shadows.begin(Color.clear);
+            rend.draw();
+            Draw.color(Color.black);
+            Draw.color();
+            shadows.end();
+        }
+        
+        
 
         /*for(Tile tile : world.tiles){
             if(tile.block() != Blocks.air){
@@ -94,8 +99,7 @@ public class MenuRed extends MenuRenderer{
             }
         }*/
         
-        Draw.color();
-        shadows.end();
+        
 
         Batch prev = Core.batch;
 
