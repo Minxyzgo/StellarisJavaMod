@@ -20,7 +20,7 @@ import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
 
 import static mindustry.Vars.*;
-import static arc.Core.*;
+//import static arc.Core.*;
 
 public class MenuRed extends MenuRenderer{
     public static final float darkness = 0.3f;
@@ -35,15 +35,15 @@ public class MenuRed extends MenuRenderer{
     public float flyerRot = 45f;
     public int flyers = Mathf.chance(0.2) ? Mathf.random(35) : Mathf.random(15);
     public UnitType flyerType = Structs.select(UnitTypes.flare, UnitTypes.flare, UnitTypes.horizon, UnitTypes.mono, UnitTypes.poly, UnitTypes.mega, UnitTypes.zenith);
-    public Rend rend;
+   // public Rend rend;
     
-    public class Rend extends Renderer{
+ /*   public class Rend extends Renderer{
         public Rend(){
             super();
             Core.camera = MenuRed.this.camera;
             renderer = this;
         }
-    }
+    }*/
 
     public MenuRed(){
         Time.mark();
@@ -57,7 +57,7 @@ public class MenuRed extends MenuRenderer{
         world.beginMapLoad();
         Tiles tiles = world.resize(width, height);
         shadows = new FrameBuffer(width, height);
-        rend = new Rend();
+        //rend = new Rend();
         for(int x = 0; x < width; x++){
             for(int y = 0; y < height; y++){
                 Block floor = Blocks.space;
@@ -81,15 +81,16 @@ public class MenuRed extends MenuRenderer{
     private void cache(){
 
         //draw shadows
+        Core.camera = this.camera;
         Draw.proj().setOrtho(0, 0, shadows.getWidth(), shadows.getHeight());
         
-        if(assets.update(1000 / 20)){
-            shadows.begin(Color.clear);
-            rend.draw();
-            Draw.color(Color.black);
-            Draw.color();
-            shadows.end();
-        }
+        
+        shadows.begin(Color.clear);
+        renderer.draw();
+        Draw.color(Color.black);
+        Draw.color();
+        shadows.end();
+        
         
         
 
@@ -207,7 +208,7 @@ public class MenuRed extends MenuRenderer{
     public void dispose(){
         batch.dispose();
         shadows.dispose();
-        rend.dispose();
+        //rend.dispose();
     }
     
     
