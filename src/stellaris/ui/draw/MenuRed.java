@@ -20,6 +20,7 @@ import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
 
 import static mindustry.Vars.*;
+import static arc.Core.*;
 
 public class MenuRed extends MenuRenderer{
     public static final float darkness = 0.3f;
@@ -74,6 +75,9 @@ public class MenuRed extends MenuRenderer{
         }
 
         world.endMapLoad();
+        if(!assets.isFinished()){
+            assets.update(1000 / 20);
+        }
     }
 
     private void cache(){
