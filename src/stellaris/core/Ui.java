@@ -76,19 +76,18 @@ public class Ui{
             float size = 120f;
             t.defaults().size(size).pad(5).padTop(4f);
             t.marginTop(60f);
-            t.row();
-            t.row();
-            t.row();
-            t.row();
-            t.row();
-            t.row();
+            rows(t, 15);
             t.add(ste);
             t.visible = true;
         });
 	}
 	
 	
-	
+	public static void rows(Table t, int times){
+	    for(int x = 0;x < times;x++){
+	        t.row();
+	    }
+	}
 	
 	/*private void place(){
 	    try{

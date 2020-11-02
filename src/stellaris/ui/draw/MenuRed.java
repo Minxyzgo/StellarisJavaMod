@@ -11,6 +11,7 @@ import arc.struct.*;
 import arc.util.*;
 import arc.util.noise.*;
 import mindustry.content.*;
+import mindustry.core.Renderer;
 import mindustry.graphics.MenuRenderer;
 import mindustry.graphics.Pal;
 import mindustry.type.*;
@@ -21,18 +22,27 @@ import mindustry.world.blocks.environment.*;
 import static mindustry.Vars.*;
 
 public class MenuRed extends MenuRenderer{
-    private static final float darkness = 0.3f;
-    private final int width = !mobile ? 100 : 60, height = !mobile ? 50 : 40;
+    public static final float darkness = 0.3f;
+    public final int width = !mobile ? 100 : 60, height = !mobile ? 50 : 40;
 
-    private int cacheFloor, cacheWall;
-    private Camera camera = new Camera();
-    private Mat mat = new Mat();
-    private FrameBuffer shadows;
-    private CacheBatch batch;
-    private float time = 0f;
-    private float flyerRot = 45f;
-    private int flyers = Mathf.chance(0.2) ? Mathf.random(35) : Mathf.random(15);
-    private UnitType flyerType = Structs.select(UnitTypes.flare, UnitTypes.flare, UnitTypes.horizon, UnitTypes.mono, UnitTypes.poly, UnitTypes.mega, UnitTypes.zenith);
+    public int cacheFloor, cacheWall;
+    public Camera camera = new Camera();
+    public Mat mat = new Mat();
+    public FrameBuffer shadows;
+    public CacheBatch batch;
+    public float time = 0f;
+    public float flyerRot = 45f;
+    public int flyers = Mathf.chance(0.2) ? Mathf.random(35) : Mathf.random(15);
+    public UnitType flyerType = Structs.select(UnitTypes.flare, UnitTypes.flare, UnitTypes.horizon, UnitTypes.mono, UnitTypes.poly, UnitTypes.mega, UnitTypes.zenith);
+    public Rend rend;
+    
+    public class Rend extends Renderer{
+        public Rend(){
+            super();
+            Core.camera = MenuRed.this.camera;
+            renderer = this;
+        }
+    }
 
     public MenuRed(){
         Time.mark();
@@ -42,9 +52,11 @@ public class MenuRed extends MenuRenderer{
     }
 
     private void generate(){
+        
         world.beginMapLoad();
         Tiles tiles = world.resize(width, height);
         shadows = new FrameBuffer(width, height);
+        rend = new Rend();
         for(int x = 0; x < width; x++){
             for(int y = 0; y < height; y++){
                 Block floor = Blocks.space;
@@ -69,14 +81,15 @@ public class MenuRed extends MenuRenderer{
         //draw shadows
         Draw.proj().setOrtho(0, 0, shadows.getWidth(), shadows.getHeight());
         shadows.begin(Color.clear);
+        rend.draw();
         Draw.color(Color.black);
 
-        for(Tile tile : world.tiles){
+        /*for(Tile tile : world.tiles){
             if(tile.block() != Blocks.air){
                 Fill.rect(tile.x + 0.5f, tile.y + 0.5f, 1, 1);
             }
-        }
-
+        }*/
+        
         Draw.color();
         shadows.end();
 
@@ -85,13 +98,13 @@ public class MenuRed extends MenuRenderer{
         Core.batch = batch = new CacheBatch(new SpriteCache(width * height * 6, false));
         batch.beginCache();
 
-        for(Tile tile : world.tiles){
+        /*for(Tile tile : world.tiles){
             tile.floor().drawBase(tile);
         }
 
         for(Tile tile : world.tiles){
             tile.overlay().drawBase(tile);
-        }
+        }*/
 
         cacheFloor = batch.endCache();
         batch.beginCache();
@@ -186,5 +199,8 @@ public class MenuRed extends MenuRenderer{
     public void dispose(){
         batch.dispose();
         shadows.dispose();
+        rend.dispose();
     }
+    
+    
 }
