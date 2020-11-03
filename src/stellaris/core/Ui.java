@@ -39,8 +39,8 @@ public class Ui{
 	    }catch(NoSuchFieldException | IllegalAccessException ex) {
 	        ui.showException(ex);
         }
-       //Table t = ui.menuGroup.<Table>find("buttons");
-        /*if(t == null) {
+        Table t = ui.menuGroup.<Table>find("buttons");
+        if(t == null) {
             Seq<String> s = new Seq<>();
             ui.menuGroup.forEach(e -> s.add(e.name));
             
@@ -54,20 +54,10 @@ public class Ui{
         t.table(table -> {
             table.defaults().set(t.defaults());
             table.row();
-            table.add(nmsl);
-                
-            ui.showInfo("over.");
+            table.add(ste);
+            //ui.showInfo("over.");
+            table.visible = true;
         }).colspan(2);
-        ui.menuGroup.fill(c -> {
-            c.clear();
-            c.setSize(Core.graphics.getWidth(), Core.graphics.getHeight());
-            float size = 120f;
-            c.defaults().size(size).pad(5).padTop(4f);
-            c.row();
-            c.marginTop(60f);
-            c.add(nmsl);
-        });
-        ui.menuGroup.draw();*/
        // t.reset();
         
         ui.menuGroup.fill(t -> {

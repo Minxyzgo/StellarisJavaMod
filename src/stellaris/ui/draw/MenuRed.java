@@ -79,16 +79,16 @@ public class MenuRed extends MenuRenderer{
     }
 
     private void cache(){
-
         //draw shadows
         Core.camera = this.camera;
+        renderer.effectBuffer = shadows;
         Draw.proj().setOrtho(0, 0, shadows.getWidth(), shadows.getHeight());
         
         
         shadows.begin(Color.clear);
         renderer.draw();
-        Draw.color(Color.black);
-        Draw.color();
+        //Draw.color(Color.black);
+        //Draw.color();
         shadows.end();
         
         
@@ -118,9 +118,9 @@ public class MenuRed extends MenuRenderer{
         cacheFloor = batch.endCache();
         batch.beginCache();
 
-        for(Tile tile : world.tiles){
+        /*for(Tile tile : world.tiles){
             tile.block().drawBase(tile);
-        }
+        }*/
 
         cacheWall = batch.endCache();
 
