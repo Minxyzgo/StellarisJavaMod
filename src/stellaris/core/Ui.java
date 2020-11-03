@@ -60,7 +60,7 @@ public class Ui{
         }).colspan(2);
        // t.reset();
         
-        ui.menuGroup.fill(t -> {
+        /*ui.menuGroup.fill(t -> {
             t.clear();
             t.setSize(Core.graphics.getWidth(), Core.graphics.getHeight());
             float size = 120f;
@@ -69,7 +69,7 @@ public class Ui{
             rows(t, 15);
             t.add(ste);
             t.visible = true;
-        });
+        });*/
 	}
 	
 	
