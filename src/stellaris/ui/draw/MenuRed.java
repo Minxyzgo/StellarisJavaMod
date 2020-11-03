@@ -56,7 +56,8 @@ public class MenuRed extends MenuRenderer{
         
         world.beginMapLoad();
         Tiles tiles = world.resize(width, height);
-        shadows = new FrameBuffer(width, height);
+        shadows = renderer.effectBuffer ;
+        renderer.effectBuffer.resize(width, height);
         //rend = new Rend();
         for(int x = 0; x < width; x++){
             for(int y = 0; y < height; y++){
@@ -81,15 +82,15 @@ public class MenuRed extends MenuRenderer{
     private void cache(){
         //draw shadows
         Core.camera = this.camera;
-        renderer.effectBuffer = shadows;
+        
         Draw.proj().setOrtho(0, 0, shadows.getWidth(), shadows.getHeight());
         
         
-        shadows.begin(Color.clear);
+       // shadows.begin(Color.clear);
         renderer.draw();
         //Draw.color(Color.black);
         //Draw.color();
-        shadows.end();
+       // shadows.end();
         
         
         
