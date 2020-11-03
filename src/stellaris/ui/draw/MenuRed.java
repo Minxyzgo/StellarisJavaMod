@@ -81,13 +81,13 @@ public class MenuRed extends MenuRenderer{
 
     private void cache(){
         //draw shadows
-        Core.camera = this.camera;
+        
         
         Draw.proj().setOrtho(0, 0, shadows.getWidth(), shadows.getHeight());
         
         
        // shadows.begin(Color.clear);
-        renderer.draw();
+        //renderer.draw();
         //Draw.color(Color.black);
         //Draw.color();
        // shadows.end();
@@ -103,33 +103,34 @@ public class MenuRed extends MenuRenderer{
         
         
 
-        Batch prev = Core.batch;
+        /*Batch prev = Core.batch;
 
         Core.batch = batch = new CacheBatch(new SpriteCache(width * height * 6, false));
         batch.beginCache();
 
-        /*for(Tile tile : world.tiles){
+        for(Tile tile : world.tiles){
             tile.floor().drawBase(tile);
         }
 
         for(Tile tile : world.tiles){
             tile.overlay().drawBase(tile);
-        }*/
+        }
 
         cacheFloor = batch.endCache();
         batch.beginCache();
 
-        /*for(Tile tile : world.tiles){
+        for(Tile tile : world.tiles){
             tile.block().drawBase(tile);
-        }*/
+        }
 
         cacheWall = batch.endCache();
 
-        Core.batch = prev;
+        Core.batch = prev;*/
     }
 
     public void render(){
         time += Time.delta;
+        
         float scaling = Math.max(Scl.scl(4f), Math.max(Core.graphics.getWidth() / ((width - 1f) * tilesize), Core.graphics.getHeight() / ((height - 1f) * tilesize)));
         camera.position.set(width * tilesize / 2f, height * tilesize / 2f);
         camera.resize(Core.graphics.getWidth() / scaling,
@@ -138,7 +139,8 @@ public class MenuRed extends MenuRenderer{
         mat.set(Draw.proj());
         Draw.flush();
         Draw.proj(camera);
-        batch.setProjection(camera.mat);
+      //  batch.setProjection(camera.mat);
+        /*
         batch.beginDraw();
         batch.drawCache(cacheFloor);
         batch.endDraw();
@@ -150,7 +152,8 @@ public class MenuRed extends MenuRenderer{
         batch.beginDraw();
         batch.drawCache(cacheWall);
         batch.endDraw();
-
+        */
+        renderer.draw();
         drawFlyers();
 
         Draw.proj(mat);

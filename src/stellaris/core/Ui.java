@@ -39,6 +39,7 @@ public class Ui{
 	    }catch(NoSuchFieldException | IllegalAccessException ex) {
 	        ui.showException(ex);
         }
+        /*
         Table t = ui.menuGroup.<Table>find("buttons");
         if(t == null) {
             Seq<String> s = new Seq<>();
@@ -51,6 +52,7 @@ public class Ui{
             //ui.showException(new NullPointerException("t is null"));
             return;
         }
+        
         t.table(table -> {
             table.defaults().set(t.defaults());
             table.row();
@@ -58,18 +60,20 @@ public class Ui{
             //ui.showInfo("over.");
             table.visible = true;
         }).colspan(2);
+        */
        // t.reset();
         
-        /*ui.menuGroup.fill(t -> {
+        ui.menuGroup.fill(t -> {
             t.clear();
             t.setSize(Core.graphics.getWidth(), Core.graphics.getHeight());
             float size = 120f;
             t.defaults().size(size).pad(5).padTop(4f);
             t.marginTop(60f);
+            t.left();
             rows(t, 15);
             t.add(ste);
             t.visible = true;
-        });*/
+        });
 	}
 	
 	
