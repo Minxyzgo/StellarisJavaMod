@@ -34,6 +34,7 @@ public class MenuRed extends MenuRenderer{
     public float time = 0f;
     public float flyerRot = 45f;
     public int flyers = Mathf.chance(0.2) ? Mathf.random(35) : Mathf.random(15);
+    public Tiles map;
     public UnitType flyerType = Structs.select(UnitTypes.flare, UnitTypes.flare, UnitTypes.horizon, UnitTypes.mono, UnitTypes.poly, UnitTypes.mega, UnitTypes.zenith);
    // public Rend rend;
     
@@ -55,7 +56,7 @@ public class MenuRed extends MenuRenderer{
     private void generate(){
         
         world.beginMapLoad();
-        Tiles tiles = world.resize(width, height);
+        map = world.resize(width, height);
         shadows = renderer.effectBuffer ;
         renderer.effectBuffer.resize(width, height);
         //rend = new Rend();
@@ -66,7 +67,8 @@ public class MenuRed extends MenuRenderer{
                 Block wall = Blocks.air;
 
                 Tile tile;
-                tiles.set(x, y, (tile = new CachedTile()));
+                
+                map.set(x, y, (tile = new Tile(x, y)));
                 tile.x = (short)x;
                 tile.y = (short)y;
                 tile.setFloor(floor.asFloor());
@@ -127,8 +129,13 @@ public class MenuRed extends MenuRenderer{
 
         Core.batch = prev;*/
     }
+    
 
     public void render(){
+        if(world.tiles != map){
+            generate();
+        }
+        
         time += Time.delta;
         
         float scaling = Math.max(Scl.scl(4f), Math.max(Core.graphics.getWidth() / ((width - 1f) * tilesize), Core.graphics.getHeight() / ((height - 1f) * tilesize)));
