@@ -146,7 +146,8 @@ public class MenuRed extends MenuRenderer{
         mat.set(Draw.proj());
         Draw.flush();
         Draw.proj(camera);
-      //  batch.setProjection(camera.mat);
+        if(Core.camera != camera) Core.camera = camera;
+      //  batch.setProjection(camer a.mat);
         /*
         batch.beginDraw();
         batch.drawCache(cacheFloor);
