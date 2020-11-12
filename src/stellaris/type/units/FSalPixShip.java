@@ -31,7 +31,7 @@ public class FSalPixShip extends UnitType {
 		abilities.add(ability);
 		constructor = () -> new FShip();
 		flying = true;
-		Weapon w = new FSMainWeapon("mainTurret");
+		Weapon w = new FSMainWeapon(content.transformName("mainTurret"));
 		w.bullet = new FSLaserBullet();
 		w.reload = 555;
 		w.shotDelay = 180;
@@ -53,7 +53,6 @@ public class FSalPixShip extends UnitType {
 		public Unit innerUnit;
 
 		static {
-		    // just
 			lights = new TextureRegion[6];
 			lasers = new TextureRegion[count];
 			laserHit = atlas.find(content.transformName("laser-end"));
@@ -80,7 +79,7 @@ public class FSalPixShip extends UnitType {
 					Draw.blend();
 					Draw.color();
 					Draw.alpha(Mathf.absin(1.75f, count));
-					Draw.rect(lights[(int)(mount.reload / frameSpeed) % count], mount.weapon.x, mount.weapon.y, unit.rotation - 90);
+					Draw.rect(lights[(int)(mount.reload / frameSpeed) % 6], mount.weapon.x, mount.weapon.y, unit.rotation - 90);
 				}
 			}
 		}
@@ -106,7 +105,7 @@ public class FSalPixShip extends UnitType {
 		{
 			absorbable = false;
 			length = 1000;
-			damage = 1000;
+			damage = 1;
 			drawSize = length * 1.25f;
 			shake = 1f;
 			fadeTime = 16f;
@@ -135,14 +134,14 @@ public class FSalPixShip extends UnitType {
 					Tmp.v1.trns(b.rotation() + 180f, (lenscales[i] - 1f) * 35f);
 					Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout * strokes[s] * tscales[i]);
 					Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.rotation(), baseLen * lenscales[i], false);
-
+					Drawf.laser(b.team, FSAbility.lasers[(int)Mathf.absin(FSAbility.frameSpeed, FSAbility.count - 0.001f)], FSAbility.laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
+				    Angles.randLenVectors(b.id, 3, 25 * b.fin(), b.rotation(), 360, (x, y) -> {
+					    Draw.color(Color.white, Color.valueOf("#529DFF"), b.fin() + 1.25f);
+					    Fill.circle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.fout() * 5);
+					    Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, Mathf.angle(x, y), b.fslope() * 12 + 1);
+				    });
 				}
-				Drawf.laser(b.team, FSAbility.lasers[(int)Mathf.absin(FSAbility.frameSpeed, FSAbility.count - 0.001f)], FSAbility.laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
-				Angles.randLenVectors(b.id, 3, 25 * b.fin(), b.rotation(), 360, (x, y) -> {
-					Draw.color(Color.white, Color.valueOf("#529DFF"), b.fin() + 1.25f);
-					Fill.circle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.fout() * 5);
-					Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, Mathf.angle(x, y), b.fslope() * 12 + 1);
-				});
+				
 
 			}
 			float x2 = Angles.trnsx(b.rotation(), baseLen);
