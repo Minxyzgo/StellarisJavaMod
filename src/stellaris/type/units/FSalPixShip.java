@@ -53,8 +53,9 @@ public class FSalPixShip extends UnitType {
 		public Unit innerUnit;
 
 		static {
-			lights = new TextureRegion[count];
-			lasers = new TextureRegion[6];
+		    // just
+			lights = new TextureRegion[6];
+			lasers = new TextureRegion[count];
 			laserHit = atlas.find(content.transformName("laser-end"));
 			for (int i = 0; i < count; i++) {
 				if (i < 6) lights[i] = atlas.find(content.transformName("light-" + i));
