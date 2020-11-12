@@ -20,6 +20,7 @@ public class Main extends Mod{
     public void loadContent(){
 		new AsItems().load();
 		new AsBlocks().load();
+		new AsUnits().load();
     }
     
     @Override
