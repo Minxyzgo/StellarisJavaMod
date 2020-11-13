@@ -35,7 +35,7 @@ public class FSalPixShip extends UnitType {
 		flying = true;
 		Weapon w = new FSMainWeapon(content.transformName("mainTurret"));
 		w.bullet = new FSLaserBullet();
-		w.reload = 85;
+		w.reload = 235;
 		w.shotDelay = 85;
 		weapons.add(w);
 	}
@@ -86,25 +86,28 @@ public class FSalPixShip extends UnitType {
 			float baseTime = ((FSMainWeapon)mount.weapon).shootDurtion;
 
 			if (mount.shoot) {
-				mount.reload = Integer.MAX_VALUE;
 				innerUnit.isShooting(true);
-
 			}
 			if (b != null && innerUnit.bulletLife <= 0f) innerUnit.bulletLife = baseTime;
 
 			if (innerUnit.bulletLife > 0 && b != null) {
-
-				b.rotation(mount.rotation);
-				b.set(mount.aimX, mount.aimY);
+			    Weapon weapon = mount.weapon;
+				float rotation = innerUnit.rotation - 90;
+				float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
+				float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
+				float wx = unit.x + Angles.trnsx(rotation, weapon.x, weapon.y) + Angles.trnsx(weaponRotation, 0, recoil),
+					  wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
+				b.rotation(weaponRotation);
+				b.set(wx, wy);
 				b.time(0f);
-				mount.shoot = true;
+				//mount.shoot = true;
 				mount.heat = 1f;
 				innerUnit.bulletLife -= Time.delta;
 				if (innerUnit.bulletLife <= 0f) {
 					innerUnit.bulletLife = Math.min(innerUnit.bulletLife, -1);
 					innerUnit.isShooting(false);
 					mount.reload = mount.weapon.reload;
-					mount.shoot = false;
+					//mount.shoot = false;
 					b.absorb();
 					b = null;
 				}
@@ -115,14 +118,20 @@ public class FSalPixShip extends UnitType {
 		public void draw(Unit unit) {
 
 			WeaponMount mount = MainShoot(unit);
+			Weapon weapon = mount.weapon;
+			float rotation = unit.rotation - 90;
+            float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
+            float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
+            float wx = unit.x + Angles.trnsx(rotation, weapon.x, weapon.y) + Angles.trnsx(weaponRotation, 0, recoil),
+                wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
 			if (mount.reload <= 60f) {
 				Draw.color();
 				Draw.blend(Blending.additive);
-				Drawf.light(unit.team, mount.aimX, mount.aimY, unit.hitSize * 2.25f, Color.valueOf("#0092DD"), mount.heat);
+				Drawf.light(unit.team, wx, wy, unit.hitSize * 2.25f, Color.valueOf("#0092DD"), mount.heat);
 				Draw.blend();
 				Draw.color();
 				Draw.alpha(Mathf.absin(1.75f, count));
-				Draw.rect(lights[(int)(mount.reload / frameSpeed) % 6], mount.aimX, mount.aimY, mount.rotation);
+				Draw.rect(lights[(int)(mount.reload / frameSpeed) % 6], wx, wy, weaponRotation);
 
 			}
 		}
