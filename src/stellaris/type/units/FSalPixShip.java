@@ -14,6 +14,8 @@ import arc.util.Interval;
 import arc.util.Nullable;
 import arc.util.Time;
 import arc.util.Tmp;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import mindustry.entities.Damage;
 import mindustry.entities.Effect;
 import mindustry.entities.abilities.Ability;
@@ -33,15 +35,26 @@ public class FSalPixShip extends UnitType {
 		flying = true;
 		Weapon w = new FSMainWeapon(content.transformName("mainTurret"));
 		w.bullet = new FSLaserBullet();
-		w.reload = 555;
-		w.shotDelay = 180;
+		w.reload = 85;
+		w.shotDelay = 85;
 		weapons.add(w);
 	}
 
 	public FSAbility ability = new FSAbility();
 
 	public class FShip extends MechUnit {
+		public float bulletLife = -1;
+		@Override
+		public void write(Writes write) {
+		    super.write(write);
+			write.f(bulletLife);
+		}
 
+		@Override
+		public void read(Reads read) {
+		    super.read(read);
+			bulletLife = read.f();
+		}
 	}
 
 	public static class FSAbility extends Ability {
@@ -50,21 +63,44 @@ public class FSalPixShip extends UnitType {
 		public static final int count = 8;
 		public final Interval timer = new Interval();
 		public static final float frameSpeed = 1.25f;
-		public Unit innerUnit;
+		public FShip innerUnit;
 
 		static {
 			lights = new TextureRegion[6];
 			lasers = new TextureRegion[count];
 			laserHit = atlas.find(content.transformName("laser-end"));
 			for (int i = 0; i < count; i++) {
-				if (i < 6) lights[i] = atlas.find(content.transformName("light-" + i));
-				lasers[i] = atlas.find(content.transformName("laser-" + i));
+				if (i < 6) lights[i] = atlas.find(content.transformName("light" + i));
+				lasers[i] = atlas.find(content.transformName("laser" + i));
 			}
 		}
 
 		@Override
 		public void update(Unit unit) {
-			if (innerUnit == null) innerUnit = unit;
+			if (innerUnit == null) innerUnit = (FShip)unit;
+			WeaponMount mount = MainShoot(unit);
+			Bullet b = mount.bullet;
+			if (b == null) return;
+			if (b.data == null) b.data = this;
+			if (mount.shoot) {
+				float realLength = Damage.findLaserLength(b, ((FSLaserBullet)mount.weapon.bullet).length);
+				Tmp.v1.trns(b.rotation(), realLength * 1.1f);
+				float baseTime = ((FSMainWeapon)mount.weapon).shootDurtion;
+				b.lifetime(baseTime);
+				if(innerUnit.bulletLife <= -1) innerUnit.bulletLife = baseTime;
+				if (innerUnit.bulletLife > 0 && b != null) {
+					b.rotation(mount.rotation);
+					b.set(b.x + Tmp.v1.x, b.y + Tmp.v1.y);
+					b.time(0f);
+					mount.heat = 1f;
+					innerUnit.bulletLife -= Time.delta;
+					if (innerUnit.bulletLife <= 0f) {
+					    innerUnit.bulletLife = Math.min(innerUnit.bulletLife, -1);
+						b.absorb();
+						b = null;
+					}
+				}
+			}
 		}
 
 		@Override
@@ -79,7 +115,7 @@ public class FSalPixShip extends UnitType {
 					Draw.blend();
 					Draw.color();
 					Draw.alpha(Mathf.absin(1.75f, count));
-					Draw.rect(lights[(int)(mount.reload / frameSpeed) % 6], mount.weapon.x, mount.weapon.y, unit.rotation - 90);
+					Draw.rect(lights[(int)(mount.reload / frameSpeed) % 6], mount.aimX, mount.aimY, unit.rotation - 90);
 				}
 			}
 		}
@@ -93,18 +129,27 @@ public class FSalPixShip extends UnitType {
 	}
 
 	public static class FSMainWeapon extends Weapon {
-	    public FSMainWeapon(String name){
-            this.name = name;
-        }
+		public int shootDurtion;
+		public FSMainWeapon(String name) {
+			this.name = name;
+		}
+		
+		{
+		    mirror = false;
+            x = 0f;
+            y = -3.5f;
+            rotateSpeed = 1.4f;
+            rotate = true;
+		}
 	}
 
 
 
 	public class FSLaserBullet extends ContinuousLaserBulletType {
-	    
+
 		{
-			absorbable = false;
-			length = 1000;
+			//absorbable = false;
+			length = 220;
 			damage = 1;
 			drawSize = length * 1.25f;
 			shake = 1f;
@@ -116,9 +161,9 @@ public class FSalPixShip extends UnitType {
 			float[] lens = {0.65f, 0.75f, 0.85f, 1f};
 			lenscales = lens;
 			width = 5f;
-		    oscScl = 1.2f;
-		    oscMag = 2.4f;
-		    largeHit = true;
+			oscScl = 1.2f;
+			oscMag = 2.4f;
+			largeHit = true;
 		}
 
 		@Override
@@ -126,7 +171,8 @@ public class FSalPixShip extends UnitType {
 			float realLength = Damage.findLaserLength(b, length);
 			float fout = Mathf.clamp(b.time > b.lifetime - fadeTime ? 1f - (b.time - (lifetime - fadeTime)) / fadeTime : 1f);
 			float baseLen = realLength * fout;
-
+			float x2 = Angles.trnsx(b.rotation(), baseLen, b.x);
+			float y2 = Angles.trnsy(b.rotation(), baseLen, b.y);
 			Lines.lineAngle(b.x, b.y, b.rotation(), baseLen);
 			for (int s = 0; s < colors.length; s++) {
 				Draw.color(Color.valueOf("#529DFF"));
@@ -134,26 +180,27 @@ public class FSalPixShip extends UnitType {
 					Tmp.v1.trns(b.rotation() + 180f, (lenscales[i] - 1f) * 35f);
 					Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout * strokes[s] * tscales[i]);
 					Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.rotation(), baseLen * lenscales[i], false);
-					Drawf.laser(b.team, FSAbility.lasers[(int)Mathf.absin(FSAbility.frameSpeed, FSAbility.count - 0.001f)], FSAbility.laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
-				    Angles.randLenVectors(b.id, 3, 25 * b.fin(), b.rotation(), 360, (x, y) -> {
-					    Draw.color(Color.white, Color.valueOf("#529DFF"), b.fin() + 1.25f);
-					    Fill.circle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.fout() * 5);
-					    Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, Mathf.angle(x, y), b.fslope() * 12 + 1);
-				    });
+
+
+					Angles.randLenVectors(b.id, 3, 25 * b.fin(), b.rotation(), 360, (x, y) -> {
+						Draw.color(Color.white, Color.valueOf("#529DFF"), b.fin() + 1.25f);
+						Fill.circle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.fout() * 5);
+						//Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, Mathf.angle(x, y), b.fslope() * 12 + 1);
+					});
 				}
-				
 
 			}
-			float x2 = Angles.trnsx(b.rotation(), baseLen);
-			float y2 = Angles.trnsy(b.rotation(), baseLen);
-			new Effect(40, e -> {
-				Draw.color(Color.white, Color.valueOf("#529DFF"), e.fin() * 0.625f);
-				Angles.randLenVectors(e.id, 7, 1 + 60 * e.fin(), e.rotation, 360, (x, y) -> {
-					Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 7 + 4);
-				});
-				Lines.stroke(e.fout() * 1.312f);
-				Lines.circle(e.x, e.y, e.fin() * 60);
-			}).at(x2, y2);
+			Drawf.laser(b.team, FSAbility.lasers[(int)Mathf.absin(Time.time(), FSAbility.frameSpeed, FSAbility.count - 0.001f)], FSAbility.laserHit, b.x, b.y, x2, y2);
+			if (b.timer.get(1, 8)) {
+				new Effect(40, e -> {
+					Draw.color(Color.white, Color.valueOf("#529DFF"), e.fin() * 0.625f);
+					Angles.randLenVectors(e.id, 7, 1 + 60 * e.fin(), e.rotation, 360, (x, y) -> {
+						Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 7 + 4);
+					});
+					Lines.stroke(e.fout() * 1.312f);
+					Lines.circle(e.x, e.y, e.fin() * 60);
+				}).at(x2, y2);
+			}
 			Tmp.v1.trns(b.rotation(), baseLen * 1.1f);
 
 			Drawf.light(b.team, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y, 40, lightColor, 0.7f);
