@@ -56,7 +56,7 @@ public class FSalPixShip extends UnitType {
 			lasers[i] = atlas.find(content.transformName("laser" + i));
 		}
 
-		laserHit = atlas.find(content.transformName("laser-end"));
+		laserHit = atlas.find("laser-end");
 	}
 
 
@@ -156,6 +156,7 @@ public class FSalPixShip extends UnitType {
 
 	public static class FSMainWeapon extends Weapon {
 		public int shootDurtion;
+		public static TextureRegion laserTest;
 		public FSMainWeapon(String name) {
 			this.name = name;
 		}
@@ -167,6 +168,12 @@ public class FSalPixShip extends UnitType {
 			y = -3.5f;
 			rotateSpeed = 1.4f;
 			rotate = true;
+		}
+		
+		@Override
+		public void load(){
+		    super.load();
+		    laserTest = atlas.find(name + "-laser-" + 0);
 		}
 	}
 
@@ -195,6 +202,7 @@ public class FSalPixShip extends UnitType {
 
 		@Override
 		public void draw(Bullet b) {
+		    
 			float realLength = Damage.findLaserLength(b, length);
 			float fout = Mathf.clamp(b.time > b.lifetime - fadeTime ? 1f - (b.time - (lifetime - fadeTime)) / fadeTime : 1f);
 			float baseLen = realLength * fout;
@@ -220,7 +228,7 @@ public class FSalPixShip extends UnitType {
 			});
 			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout);
 			for(int i = 0; i < 8; i++){
-			    Drawf.laser(b.team, atlas.find("laser"), laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
+			    Drawf.laser(b.team, FSMainWeapon.laserTest, laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
 			}
 			if (b.timer(2, 8)) {
 				new Effect(40, e -> {
