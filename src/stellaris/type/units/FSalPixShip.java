@@ -121,7 +121,7 @@ public class FSalPixShip extends UnitType {
 			//if (mount.reload == weapon.reload && (b == null || (b != null && !(b.type instanceof FSLaserBullet)))) b = weapon.bullet.create(innerUnit, wx, wy, weaponRotation);
 			
 
-			if (innerUnit.bulletLife < baseTime && b != null) {
+			if (innerUnit.bulletLife < baseTime && b != null && mount.shoot) {
 			    innerUnit.isShooting(true);
 			    mount.reload = weapon.reload;
 				b.rotation(f);
@@ -132,15 +132,20 @@ public class FSalPixShip extends UnitType {
 				innerUnit.bulletLife += Time.delta;
 			}
 			
-			if (innerUnit.bulletLife >= baseTime && b != null) {
+			
+			
+			
+			
+			if (innerUnit.bulletLife >= baseTime) {
 				innerUnit.bulletLife = 0;
 				innerUnit.isShooting(false);
-				mount.reload--;
-				//mount.shoot = false;
+				mount.reload = 0f;
+				mount.shoot = false;
 					//b.absorb();
 				b = null;
 				return;
 			}
+			
 			
 			if(Main.test) ui.showInfoToast("m-r" + mount.reload + " m-s:" + mount.shoot + " bIn:" + (mount.bullet == null) + " isS:" + unit.isShooting + " sbd:" + innerUnit.bulletLife, 0.1f);
 
