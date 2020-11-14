@@ -106,7 +106,7 @@ public class FSalPixShip extends UnitType {
 
 			if (innerUnit.bulletLife > 0 && b != null) {
 
-				b.rotation(mount.targetRotation);
+				b.rotation(weaponRotation + 90f);
 				b.set(wx, wy);
 				b.time(0f);
 				//mount.shoot = true;
@@ -219,7 +219,9 @@ public class FSalPixShip extends UnitType {
 				Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, Mathf.angle(x, y), b.fslope() * 12 + 1);
 			});
 			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout);
-			Drawf.laser(b.team, lasers[(int)Mathf.absin(Time.time(), frameSpeed, count - 0.001f)], laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
+			for(int i = 0; i < 8; i++){
+			    Drawf.laser(b.team, atlas.find(content.transformName("laser"+i)), laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
+			}
 			if (b.timer(2, 8)) {
 				new Effect(40, e -> {
 					Draw.color(Color.white, Color.valueOf("#529DFF"), e.fin() * 0.625f);
