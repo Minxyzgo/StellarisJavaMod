@@ -40,6 +40,26 @@ public class FSalPixShip extends UnitType {
 		weapons.add(w);
 	}
 
+	public TextureRegion[] lights, lasers;
+	public TextureRegion laserHit;
+	public static final int count = 8;
+	public static final float frameSpeed = 1.25f;
+
+	@Override
+	public void load() {
+	    super.load();
+		lights = new TextureRegion[6];
+		lasers = new TextureRegion[count];
+
+		for (int i = 0; i < count; i++) {
+			if (i < 6) lights[i] = atlas.find(content.transformName("light" + i));
+			lasers[i] = atlas.find(content.transformName("laser" + i));
+		}
+
+		laserHit = atlas.find(content.transformName("laser-end"));
+	}
+
+
 	public FSAbility ability = new FSAbility();
 
 	public class FShip extends MechUnit {
@@ -58,52 +78,35 @@ public class FSalPixShip extends UnitType {
 		}
 	}
 
-	public static class FSAbility extends Ability {
-		public static TextureRegion[] lights, lasers;
-		public static TextureRegion laserHit;
-		public static final int count = 8;
+	public class FSAbility extends Ability {
 
-		public static final float frameSpeed = 1.25f;
-		public FShip innerUnit;
-
-		static {
-			lights = new TextureRegion[6];
-			lasers = new TextureRegion[count];
-			
-			for (int i = 0; i < count; i++) {
-				if (i < 6) lights[i] = atlas.find(content.transformName("light" + i));
-				lasers[i] = atlas.find(content.transformName("laser" + i));
-			}
-			
-			laserHit = atlas.find(content.transformName("laser-end"));
-		}
 
 		@Override
 		public void update(Unit unit) {
-			if (innerUnit == null) innerUnit = (FShip)unit;
+			FShip innerUnit = (FShip)unit;
 			WeaponMount mount = MainShoot(unit);
 			Bullet b = mount.bullet;
-			
+
 			//if (b.data == null) b.data = this;
 			float baseTime = ((FSMainWeapon)mount.weapon).shootDurtion;
-			
+
 			Weapon weapon = mount.weapon;
 			float rotation = innerUnit.rotation - 90;
 			float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
 			float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
 			float wx = unit.x + Angles.trnsx(rotation, weapon.x, weapon.y) + Angles.trnsx(weaponRotation, 0, recoil),
-			    wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
+				  wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
 			if (mount.shoot) {
 				innerUnit.isShooting(true);
 				if (b == null || (b != null && !(b.type instanceof FSLaserBullet))) b = weapon.bullet.create(innerUnit, wx, wy, weaponRotation);
 			}
-			
-			
+
+
 			if (b != null && innerUnit.bulletLife <= 0f) innerUnit.bulletLife = baseTime;
 
 			if (innerUnit.bulletLife > 0 && b != null) {
-			    
-				b.rotation(mount.rotation);
+
+				b.rotation(mount.targetRotation);
 				b.set(wx, wy);
 				b.time(0f);
 				//mount.shoot = true;
@@ -127,10 +130,10 @@ public class FSalPixShip extends UnitType {
 			WeaponMount mount = MainShoot(unit);
 			Weapon weapon = mount.weapon;
 			float rotation = unit.rotation - 90;
-            float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
-            float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
-            float wx = unit.x + Angles.trnsx(rotation, weapon.x, weapon.y) + Angles.trnsx(weaponRotation, 0, recoil),
-                wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
+			float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
+			float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
+			float wx = unit.x + Angles.trnsx(rotation, weapon.x, weapon.y) + Angles.trnsx(weaponRotation, 0, recoil),
+				  wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
 			if (mount.reload <= 60f) {
 				Draw.color();
 				Draw.blend(Blending.additive);
@@ -195,7 +198,7 @@ public class FSalPixShip extends UnitType {
 			float realLength = Damage.findLaserLength(b, length);
 			float fout = Mathf.clamp(b.time > b.lifetime - fadeTime ? 1f - (b.time - (lifetime - fadeTime)) / fadeTime : 1f);
 			float baseLen = realLength * fout;
-			
+
 			Lines.lineAngle(b.x, b.y, b.rotation(), baseLen);
 			/*for (int s = 0; s < colors.length; s++) {
 				Draw.color(Color.valueOf("#529DFF"));
@@ -216,7 +219,7 @@ public class FSalPixShip extends UnitType {
 				Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, Mathf.angle(x, y), b.fslope() * 12 + 1);
 			});
 			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout);
-			Drawf.laser(b.team, FSAbility.lasers[(int)Mathf.absin(Time.time(), FSAbility.frameSpeed, FSAbility.count - 0.001f)], FSAbility.laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
+			Drawf.laser(b.team, lasers[(int)Mathf.absin(Time.time(), frameSpeed, count - 0.001f)], laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
 			if (b.timer(2, 8)) {
 				new Effect(40, e -> {
 					Draw.color(Color.white, Color.valueOf("#529DFF"), e.fin() * 0.625f);
@@ -227,7 +230,7 @@ public class FSalPixShip extends UnitType {
 					Lines.circle(e.x, e.y, e.fin() * 60);
 				}).at(b.x + Tmp.v1.x, b.y + Tmp.v1.y);
 			}
-			
+
 
 			Drawf.light(b.team, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y, 40, lightColor, 0.7f);
 			Draw.reset();
