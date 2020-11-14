@@ -139,10 +139,9 @@ public class FSalPixShip extends UnitType {
 			if (innerUnit.bulletLife >= baseTime || b == null) {
 				innerUnit.bulletLife = 0;
 				innerUnit.isShooting(false);
-				mount.reload = 450f;
+				if(b != null) mount.reload = 450f;
 					//b.absorb();
 				b = null;
-				return;
 			}
 			
 			
@@ -191,7 +190,7 @@ public class FSalPixShip extends UnitType {
 				Draw.blend();
 				Draw.color();
 				Draw.alpha(Mathf.absin(1.75f, count));
-				Draw.rect(FSMainWeapon.lightRegions[(int)(mount.reload / frameSpeed) % 6], wx, wy, weaponRotation + 90f);
+				Draw.rect(FSMainWeapon.lightRegions[(int)(mount.reload / frameSpeed) % 6], wx, wy, weaponRotation);
 
 			}
 		}
