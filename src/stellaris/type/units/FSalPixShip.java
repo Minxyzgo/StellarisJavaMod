@@ -3,6 +3,7 @@ package stellaris.type.units;
 import mindustry.type.UnitType;
 import mindustry.content.StatusEffects;
 import mindustry.type.Weapon;
+import stellaris.Main;
 import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
@@ -100,6 +101,7 @@ public class FSalPixShip extends UnitType {
 		public void update(Unit unit) {
 			FShip innerUnit = (FShip)unit;
 			WeaponMount mount = MainShoot(unit);
+			
 			Bullet b = mount.bullet;
 
 			//if (b.data == null) b.data = this;
@@ -116,7 +118,7 @@ public class FSalPixShip extends UnitType {
 			float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (innerUnit.rotation - innerUnit.angleTo(mount.aimX, mount.aimY));
 			
 			
-			if (mount.reload == weapon.reload && (b == null || (b != null && !(b.type instanceof FSLaserBullet)))) b = weapon.bullet.create(innerUnit, wx, wy, weaponRotation);
+			//if (mount.reload == weapon.reload && (b == null || (b != null && !(b.type instanceof FSLaserBullet)))) b = weapon.bullet.create(innerUnit, wx, wy, weaponRotation);
 			
 
 			if (innerUnit.bulletLife < baseTime && b != null) {
@@ -139,6 +141,8 @@ public class FSalPixShip extends UnitType {
 				b = null;
 				return;
 			}
+			
+			if(Main.test) ui.showInfoToast("m-r" + mount.reload + " m-s:" + mount.shoot + " bIn:" + (mount.bullet == null) + " isS:" + unit.isShooting + " sbd:" + innerUnit.bulletLife, 0.1f);
 
 			if (b != null && innerUnit.isShooting && b.timer(4, 5)) {
 				new  Effect(25, e -> {
@@ -291,10 +295,10 @@ public class FSalPixShip extends UnitType {
 				new Effect(40, e -> {
 					Draw.color(Color.white, Color.valueOf("#529DFF"), e.fin() * 0.625f);
 					Angles.randLenVectors(e.id, 7, 1 + 60 * e.fin(), e.rotation, 360, (x, y) -> {
-						Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 8 + 4);
+						Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 6 + 12);
 					});
-					Lines.stroke(e.fout() * 12f);
-					Lines.circle(e.x, e.y, e.fin() * 360);
+					Lines.stroke(e.fout() * 4.125f);
+					Lines.circle(e.x, e.y, e.fin() * 45);
 				}).at(b.x + Tmp.v1.x, b.y + Tmp.v1.y);
 			}
 

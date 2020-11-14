@@ -12,6 +12,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.Icon;
 import mindustry.ui.MobileButton;
 import mindustry.ui.fragments.MenuFragment;
+import stellaris.Main;
 import stellaris.ui.draw.MenuRed;
 import stellaris.ui.frg.MenuFrg;
 
@@ -21,7 +22,7 @@ public class Ui{
     public MobileButton ste;
     
     public Ui() {
-        ste = new MobileButton(Icon.menu, "stellaris", () -> ui.showInfo("by Minxyzgo"));
+        ste = new MobileButton(Icon.menu, "stellaris", () -> ui.showCustomConfirm("tool", "test-rule","test-open", "test-close", () -> Main.test = true, () -> Main.test = false));
         Events.on(ClientLoadEvent.class, a -> {
             menu();
             //place();

@@ -11,6 +11,7 @@ public class Main extends Mod{
 	public static int POINT = 150;
 	private static String ccxxxzzs = "I Saw Your Ship";
 	public static Ui asUi;
+	public static boolean test = false;
     public Main(){
 
     }
