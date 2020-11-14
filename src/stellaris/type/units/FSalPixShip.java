@@ -220,7 +220,7 @@ public class FSalPixShip extends UnitType {
 			});
 			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout);
 			for(int i = 0; i < 8; i++){
-			    Drawf.laser(b.team, atlas.find(content.transformName("laser"+i)), laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
+			    Drawf.laser(b.team, atlas.find("laser"), laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
 			}
 			if (b.timer(2, 8)) {
 				new Effect(40, e -> {
