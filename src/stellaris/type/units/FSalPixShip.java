@@ -71,19 +71,19 @@ public class FSalPixShip extends PowerUnit {
 		weapons.add(w);
 	}
 
-	
+
 	public static final int count = 8;
 	public static final float frameSpeed = 3f;
 	public float mainConsunePower = 2000f;
 	public FSAbility ability = new FSAbility();
 
-	public class FShip extends MechUnit implements Powerc{
+	public class FShip extends MechUnit implements Powerc {
 		public float bulletLife = -1;
 		public float power = 8000f;
-		
+
 		@Override
 		public float powerc() {
-		    return power / ((PowerUnit)type).maxPower;
+			return power / ((PowerUnit)type).maxPower;
 		}
 
 		@Override
@@ -122,17 +122,20 @@ public class FSalPixShip extends PowerUnit {
 				  wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
 			float shootX = wx + Angles.trnsx(weaponRotation, weapon.shootX, weapon.shootY),
 				  shootY = wy + Angles.trnsy(weaponRotation, weapon.shootX, weapon.shootY);
-			float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (innerUnit.rotation - innerUnit.angleTo(mount.aimX, mount.aimY));
+			//float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (innerUnit.rotation - innerUnit.angleTo(mount.aimX, mount.aimY));
 
 
 			//if (mount.reload == weapon.reload && (b == null || (b != null && !(b.type instanceof FSLaserBullet)))) b = weapon.bullet.create(innerUnit, wx, wy, weaponRotation);
 
+			if (unit.shield < maxShield) innerUnit.power = Math.max(innerUnit.power - forceConsumePower * Time.delta, 0f);
+
+			if (innerUnit.power < maxPower) innerUnit.power = Math.min(innerUnit.power + powerProduction * Time.delta, maxPower);
 
 			if (((innerUnit.bulletLife < baseTime && b != null && mount.reload == weapon.reload) || innerUnit.isShooting) && innerUnit.power > mainConsunePower) {
 				innerUnit.isShooting(true);
-				innerUnit.power = Math.max(innerUnit.power -  (mainConsunePower / baseTime * Time.delta), 0f);
+				innerUnit.power = Math.max(innerUnit.power - (mainConsunePower / baseTime * Time.delta), 0f);
 				mount.reload = weapon.reload;
-				b.rotation(f);
+				b.rotation(unit.rotation - 90);
 				b.set(shootX, shootY);
 				b.time(0f);
 				//mount.shoot = true;
@@ -140,15 +143,12 @@ public class FSalPixShip extends PowerUnit {
 				innerUnit.bulletLife += Time.delta;
 			}
 
-
-
-
-
 			if (innerUnit.bulletLife >= baseTime || b == null || innerUnit.power < mainConsunePower) {
 				innerUnit.bulletLife = 0;
 				innerUnit.isShooting(false);
-				if (b != null) mount.reload = weapon.reload - 1;
-				if(innerUnit.power <= 2.99f) innerUnit.shield = -(maxShield * 0.5f);
+				/*float reloade = weapon.reload - 1;
+				if (b != null && innerUnit.power >= mainConsunePower) mount.reload = reloade;*/
+				if (innerUnit.power <= 2.99f) innerUnit.shield = -(maxShield * 0.5f);
 				//b.absorb();
 				b = null;
 			}
@@ -168,11 +168,9 @@ public class FSalPixShip extends PowerUnit {
 					Angles.randLenVectors(e.id, 25, 1 + 120 * e.fout(), e.rotation, 100, (x, y) -> {
 						Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 12f + 1);
 					});
-				}).at(shootX, shootY, f);
-				
-				if(unit.shield < maxShield) innerUnit.power = Math.max(innerUnit.power - forceConsumePower * Time.delta, 0f);
-				
-				if(innerUnit.power < maxPower) innerUnit.power = Math.min(innerUnit.power + powerProduction * Time.delta, maxPower);
+				}).at(shootX, shootY, unit.rotation - 90);
+
+
 			}
 		}
 
@@ -188,14 +186,14 @@ public class FSalPixShip extends PowerUnit {
 				  wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
 			float shootX = wx + Angles.trnsx(weaponRotation, weapon.shootX, weapon.shootY),
 				  shootY = wy + Angles.trnsy(weaponRotation, weapon.shootX, weapon.shootY);
-			float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
+			//float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
 			float s = 0.3f;
 			float ts = 0.6f;
 			if (!unit.isShooting) {
 				Draw.color();
 				Draw.blend(Blending.additive);
 				Draw.color(unit.team.color);
-				Tmp.v1.trns(f, ((FSLaserBullet)weapon.bullet).length * 1.1f);
+				Tmp.v1.trns(weaponRotation, ((FSLaserBullet)weapon.bullet).length * 1.1f);
 				Draw.alpha(mount.reload * ts * (1f - s + Mathf.absin(Time.time(), 3f, s)));
 				Drawf.laser(unit.team, FSMainWeapon.warning, atlas.find("clear"), shootX, shootY, unit.x + Tmp.v1.x, unit.y + Tmp.v1.y);
 				Draw.color();
@@ -203,7 +201,7 @@ public class FSalPixShip extends PowerUnit {
 				Draw.blend();
 				Draw.color();
 				Draw.alpha(Mathf.absin(1.75f, count));
-				Draw.rect(FSMainWeapon.lightRegions[(int)(mount.reload / frameSpeed) % 6], wx, wy, unit.rotation - 90);
+				Draw.rect(FSMainWeapon.lightRegions[(int)(mount.reload / frameSpeed) % 6], wx, wy, weaponRotation);
 
 			}
 		}
@@ -263,7 +261,26 @@ public class FSalPixShip extends PowerUnit {
 			oscMag = 2.4f;
 			largeHit = true;
 			status = StatusEffects.none;
-			hitEffect = Fx.hitLaser;
+			hitEffect = Fx.none;
+		}
+
+		@Override
+		public void update(Bullet b) {
+			Effect hit = new Effect(8, e -> {
+				Draw.color(Color.white, b.team.color, e.fin());
+				Lines.stroke(0.5f + e.fout());
+				Lines.circle(e.x, e.y, e.fin() * 5f);
+			});
+
+
+
+			if (b.timer(1, 5f)) {
+				Damage.collideLine(b, b.team, hit, b.x, b.y, b.rotation(), length, largeHit);
+			}
+
+			if (shake > 0) {
+				Effect.shake(shake, shake, b);
+			}
 		}
 
 		@Override
