@@ -63,6 +63,7 @@ public class FSalPixShip extends PowerUnit {
 				x = 0f;
 				y = 75f;
 				//rotateSpeed = 0.12f;
+				shootCone = 45f;
 				rotate = false;
 				ejectEffect = Fx.none;
 			}
@@ -129,7 +130,7 @@ public class FSalPixShip extends PowerUnit {
 
 			if (((innerUnit.bulletLife < baseTime && b != null && mount.reload == weapon.reload) || innerUnit.isShooting) && innerUnit.power > mainConsunePower) {
 				innerUnit.isShooting(true);
-				innerUnit.power = Math.max(innerUnit.power - (mainConsunePower / (baseTime / Time.time()) * Time.delta), 0f);
+				innerUnit.power = Math.max(innerUnit.power -  (mainConsunePower / baseTime * Time.delta), 0f);
 				mount.reload = weapon.reload;
 				b.rotation(f);
 				b.set(shootX, shootY);
@@ -143,10 +144,11 @@ public class FSalPixShip extends PowerUnit {
 
 
 
-			if (innerUnit.bulletLife >= baseTime || b == null) {
+			if (innerUnit.bulletLife >= baseTime || b == null || innerUnit.power < mainConsunePower) {
 				innerUnit.bulletLife = 0;
 				innerUnit.isShooting(false);
 				if (b != null) mount.reload = weapon.reload - 1;
+				if(innerUnit.power <= 2.99f) innerUnit.shield = -(maxShield * 0.5f);
 				//b.absorb();
 				b = null;
 			}
@@ -189,7 +191,7 @@ public class FSalPixShip extends PowerUnit {
 			float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
 			float s = 0.3f;
 			float ts = 0.6f;
-			if (mount.reload <= mount.weapon.reload / 2) {
+			if (!unit.isShooting) {
 				Draw.color();
 				Draw.blend(Blending.additive);
 				Draw.color(unit.team.color);
@@ -201,7 +203,7 @@ public class FSalPixShip extends PowerUnit {
 				Draw.blend();
 				Draw.color();
 				Draw.alpha(Mathf.absin(1.75f, count));
-				Draw.rect(FSMainWeapon.lightRegions[(int)(mount.reload / frameSpeed) % 6], wx, wy, weaponRotation);
+				Draw.rect(FSMainWeapon.lightRegions[(int)(mount.reload / frameSpeed) % 6], wx, wy, unit.rotation - 90);
 
 			}
 		}
