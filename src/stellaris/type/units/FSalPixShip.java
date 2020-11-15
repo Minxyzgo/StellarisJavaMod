@@ -41,16 +41,13 @@ public class FSalPixShip extends PowerUnit {
 	{
 		health = 125000;
 		flying = true;
-		speed = 0.01f;
-		drag = -0.25f;
+		speed = 0.17f;
+		drag = 0.05f;
 		hitSize = 150f;
 		accel = 0.12f;
-		rotateSpeed = 0.09f;
+		rotateSpeed = 0.23f;
 		armor = 85f;
 		trailLength = 70;
-		trailX = 35f;
-		trailY = -34f;
-		trailScl = 1.5f;
 		maxPower = 8000f;
 		powerProduction = 5f;
 		constructor = () -> new FShip();
@@ -81,7 +78,7 @@ public class FSalPixShip extends PowerUnit {
 
 	public class FShip extends MechUnit implements Powerc{
 		public float bulletLife = -1;
-		public float power = 0.0f;
+		public float power = 8000f;
 		
 		@Override
 		public float powerc() {
