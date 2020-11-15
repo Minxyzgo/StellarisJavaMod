@@ -36,6 +36,7 @@ public class FSalPixShip extends PowerUnit {
 		super(name);
 		abilities.add(ability);
 		abilities.add(new ForceFieldAbility(320, 100, maxShield, 550));
+		abilities.add(new LaserAbility());
 	}
 
 	{
@@ -69,6 +70,11 @@ public class FSalPixShip extends PowerUnit {
 			}
 		};
 		weapons.add(w);
+		/*24    丨  2146    丨  2187    丨  13-64   丨  26*/
+		weapons.add(SmallLaserWeapon.newInstance(21, 24));
+		weapons.add(SmallLaserWeapon.newInstance(21, 46));
+		weapons.add(SmallLaserWeapon.newInstance(13, 87));
+		weapons.add(SmallLaserWeapon.newInstance(26, 64));
 	}
 
 
@@ -135,7 +141,7 @@ public class FSalPixShip extends PowerUnit {
 				innerUnit.isShooting(true);
 				innerUnit.power = Math.max(innerUnit.power - (mainConsunePower / baseTime * Time.delta), 0f);
 				mount.reload = weapon.reload;
-				b.rotation(unit.rotation - 90);
+				b.rotation(unit.rotation);
 				b.set(shootX, shootY);
 				b.time(0f);
 				//mount.shoot = true;
@@ -168,7 +174,7 @@ public class FSalPixShip extends PowerUnit {
 					Angles.randLenVectors(e.id, 25, 1 + 120 * e.fout(), e.rotation, 100, (x, y) -> {
 						Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 12f + 1);
 					});
-				}).at(shootX, shootY, unit.rotation - 90);
+				}).at(shootX, shootY, unit.rotation);
 
 
 			}
@@ -193,7 +199,7 @@ public class FSalPixShip extends PowerUnit {
 				Draw.color();
 				Draw.blend(Blending.additive);
 				Draw.color(unit.team.color);
-				Tmp.v1.trns(weaponRotation, ((FSLaserBullet)weapon.bullet).length * 1.1f);
+				Tmp.v1.trns(unit.rotation, ((FSLaserBullet)weapon.bullet).length * 1.1f);
 				Draw.alpha(mount.reload * ts * (1f - s + Mathf.absin(Time.time(), 3f, s)));
 				Drawf.laser(unit.team, FSMainWeapon.warning, atlas.find("clear"), shootX, shootY, unit.x + Tmp.v1.x, unit.y + Tmp.v1.y);
 				Draw.color();
@@ -240,22 +246,120 @@ public class FSalPixShip extends PowerUnit {
 	}
 
 
+	public static class SmallLaserWeapon extends Weapon {
+		public float consumePower = 20f;
+		public SmallLaserWeapon(String name) {
+		    super(name);
+		}
+		
+		{
+			bullet = new SmallLaser();
+			reload = 18f;
+			rotate = true;
+			rotateSpeed = 7f;
+		}
+		
+		public static SmallLaserWeapon newInstance(int x2, int y2) {
+		    SmallLaserWeapon weapon = new SmallLaserWeapon(content.transformName("smallLaserTurret")){{
+		        x = x2;
+		        y = y2;
+		    }};
+		    return weapon;
+		}
+		
+
+	}
+
+	public static class LaserAbility extends Ability {
+
+		@Override
+		public void update(Unit unit) {
+			FShip innerUnit = (FShip)unit;
+			for (WeaponMount mount : unit.mounts) {
+				if (mount.weapon instanceof  SmallLaserWeapon) {
+					SmallLaserWeapon weapon = (SmallLaserWeapon)mount.weapon;
+					float rotation = unit.rotation - 90;
+					float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
+					float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
+					float wx = unit.x + Angles.trnsx(rotation, weapon.x, weapon.y) + Angles.trnsx(weaponRotation, 0, recoil),
+						  wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
+					float shootX = wx + Angles.trnsx(weaponRotation, weapon.shootX, weapon.shootY),
+						  shootY = wy + Angles.trnsy(weaponRotation, weapon.shootX, weapon.shootY);
+					float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
+					Bullet b = mount.bullet;
+					boolean consume = innerUnit.power >= weapon.consumePower;
+					if (mount.shoot && b != null && consume) {
+						innerUnit.power = Math.max(innerUnit.power - (weapon.consumePower / Time.toSeconds * Time.delta), 0f);
+						mount.reload = weapon.reload;
+						b.data = mount;
+						b.rotation(f);
+						b.set(shootX, shootY);
+						b.time(0f);
+						mount.heat = 1f;
+					}
+
+					if (!mount.shoot || !consume) {
+						b = null;
+					}
+				}
+			}
+		}
+	}
+
+	public static class SmallLaser extends ContinuousLaserBulletType {
+
+
+		{
+			tscales = new float[] {1f, 0.6f, 0.4f, 0.2f};
+			strokes = new float[] {0.1f, 0.1f, 0.1f, 0.1f};
+			damage = 12;
+			largeHit = false;
+		}
+
+		@Override
+		public void update(Bullet b) {
+			Effect hit = new Effect(8, e -> {
+				Draw.color(Color.white, b.team.color, e.fin());
+				Lines.stroke(e.fout() * 1f + 0.2f);
+				Lines.circle(e.x, e.y, e.fin() * 6f);
+			});
+			float realLength = Damage.findLaserLength(b, length);
+			float fout = Mathf.clamp(b.time > b.lifetime - fadeTime ? 1f - (b.time - (lifetime - fadeTime)) / fadeTime : 1f);
+			if (b.data == null || !(b.data instanceof WeaponMount))return;
+			WeaponMount mount = (WeaponMount)b.data;
+			float baseLen = Math.min(realLength * fout, Mathf.dst(b.x, b.y, mount.aimX, mount.aimY));
+			if (b.timer(1, 5f)) {
+				Damage.collideLine(b, b.team, hit, b.x, b.y, b.rotation(), baseLen, largeHit);
+			}
+		}
+
+		@Override
+		public void draw(Bullet b) {
+			float realLength = Damage.findLaserLength(b, length);
+			float fout = Mathf.clamp(b.time > b.lifetime - fadeTime ? 1f - (b.time - (lifetime - fadeTime)) / fadeTime : 1f);
+			if (b.data == null || !(b.data instanceof WeaponMount))return;
+			WeaponMount mount = (WeaponMount)b.data;
+			float baseLen = Math.min(realLength * fout, Mathf.dst(b.x, b.y, mount.aimX, mount.aimY));
+
+			Lines.lineAngle(b.x, b.y, b.rotation(), baseLen);
+			Draw.color(b.team.color);
+
+			Tmp.v1.trns(b.rotation(), baseLen * 1.1f);
+			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout * 0.1f);
+			Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.rotation(), baseLen, false);
+			Draw.reset();
+		}
+	}
 
 	public class FSLaserBullet extends ContinuousLaserBulletType {
 
 		{
 			//absorbable = false;
-			length = 450;
-			damage = 1;
+			length = 1050;
+			damage = 10000f / 60f / 5f;
 			drawSize = length * 1.25f;
 			shake = 1f;
 			fadeTime = 16f;
-			float[] tscales = {2f, 0.6f, 0.4f, 0.2f};
-			this.tscales = tscales;
-			float[] strokes = {1.125f, 1f, 0.85f, 0.7f};
-			this.strokes = strokes;
-			float[] lens = {0.65f, 0.75f, 0.85f, 1f};
-			lenscales = lens;
 			width = 7f;
 			oscScl = 1.2f;
 			oscMag = 2.4f;
