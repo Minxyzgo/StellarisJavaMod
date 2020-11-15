@@ -43,7 +43,7 @@ public class FSalPixShip extends PowerUnit {
 		flying = true;
 		speed = 0.01f;
 		drag = -0.25f;
-		hitSize = 170f;
+		hitSize = 150f;
 		accel = 0.12f;
 		rotateSpeed = 0.09f;
 		armor = 85f;
@@ -300,8 +300,9 @@ public class FSalPixShip extends PowerUnit {
 				Lines.stroke(b.fout() * 0.75f);
 				Lines.lineAngle(b.x + x, b.y + y, b.rotation(), b.fslope() * 6.25f + 4);
 			});
-
-
+			Draw.color(Color.white);
+			Lines.stroke(2f);
+			Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.rotation(), baseLen, false);
 
 			if (b.timer(2, 8)) {
 				new Effect(40, e -> {

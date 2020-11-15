@@ -79,20 +79,21 @@ public class Ui{
             t.add(ste);
             t.visible = true;
         });
-        
-        if(Main.test && !Vars.net.active()) {
-            ui.hudGroup.fill(t -> {
-                t.right();
-                t.marginTop(15f);
+        Events.on(WorldLoadEvent.class, a -> {
+            if(Main.test && !Vars.net.active()) {
+                ui.hudGroup.fill(t -> {
+                    t.right();
+                    t.marginTop(15f);
                 
-                t.button(Icon.admin, () -> {
-                    Player player = Vars.player;
-                    AsUnits.fship.spawn(player.team(), player.getX(), player.getY());
+                    t.button(Icon.admin, () -> {
+                        Player player = Vars.player;
+                        AsUnits.fship.spawn(player.team(), player.getX(), player.getY());
+                    });
+                
+                    t.visible = true;
                 });
-                
-                t.visible = true;
-            });
-        }
+            }
+        });
 	}
 	
 	
