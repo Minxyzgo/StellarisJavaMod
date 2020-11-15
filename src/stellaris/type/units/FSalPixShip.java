@@ -52,9 +52,11 @@ public class FSalPixShip extends PowerUnit {
 		maxPower = 8000f;
 		powerProduction = 5f;
 		constructor = () -> new FShip();
-		Weapon w = new FSMainWeapon(content.transformName("mainTurret")) {
+		String n = content.transformName("smallLaserTurret");
+		Weapon
+		w = new FSMainWeapon(content.transformName("mainTurret")) {
 			{
-				bullet = new FSLaserBullet();
+			    bullet = new FSLaserBullet();
 				reload = 755;
 				shotDelay = 15;
 				shootY = 9.5f;
@@ -68,13 +70,30 @@ public class FSalPixShip extends PowerUnit {
 				rotate = false;
 				ejectEffect = Fx.none;
 			}
-		};
+		},
+		l1 = new SmallLaserWeapon(n){{
+		    x = 21;
+		    y = 24;
+		}},
+		l2 = new SmallLaserWeapon(n){{
+		    x = 21;
+		    y = 46;
+		}},
+		l3 = new SmallLaserWeapon(n){{
+		    x = 13;
+		    y = 87;
+		}},
+		l4 = new SmallLaserWeapon(n){{
+		    x = 26;
+		    y = 64;
+		}};
+		
 		weapons.add(w);
 		/*24    丨  2146    丨  2187    丨  13-64   丨  26*/
-		weapons.add(SmallLaserWeapon.newInstance(21, 24));
-		weapons.add(SmallLaserWeapon.newInstance(21, 46));
-		weapons.add(SmallLaserWeapon.newInstance(13, 87));
-		weapons.add(SmallLaserWeapon.newInstance(26, 64));
+		weapons.add(l1);
+		weapons.add(l2);
+		weapons.add(l3);
+		weapons.add(l4);
 	}
 
 
@@ -249,25 +268,15 @@ public class FSalPixShip extends PowerUnit {
 	public static class SmallLaserWeapon extends Weapon {
 		public float consumePower = 20f;
 		public SmallLaserWeapon(String name) {
-		    super(name);
+			super(name);
 		}
-		
+
 		{
 			bullet = new SmallLaser();
 			reload = 18f;
 			rotate = true;
 			rotateSpeed = 7f;
 		}
-		
-		public static Weapon newInstance(int x2, int y2) {
-		    SmallLaserWeapon weapon = new SmallLaserWeapon(content.transformName("smallLaserTurret")){{
-		        x = x2;
-		        y = y2;
-		    }};
-		    return (Weapon)weapon;
-		}
-		
-
 	}
 
 	public static class LaserAbility extends Ability {
