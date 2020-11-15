@@ -70,8 +70,8 @@ public class FSalPixShip extends PowerUnit {
 				rotate = false;
 				ejectEffect = Fx.none;
 			}
-		},
-		l1 = new SmallLaserWeapon(n){{
+		};
+	/*	l1 = new SmallLaserWeapon(n){{
 		    x = 21;
 		    y = 24;
 		}},
@@ -87,13 +87,15 @@ public class FSalPixShip extends PowerUnit {
 		    x = 26;
 		    y = 64;
 		}};
-		
+	*/
 		weapons.add(w);
 		/*24    丨  2146    丨  2187    丨  13-64   丨  26*/
+	/*
 		weapons.add(l1);
 		weapons.add(l2);
 		weapons.add(l3);
 		weapons.add(l4);
+	*/
 	}
 
 
