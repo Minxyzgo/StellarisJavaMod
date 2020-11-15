@@ -259,12 +259,12 @@ public class FSalPixShip extends PowerUnit {
 			rotateSpeed = 7f;
 		}
 		
-		public static SmallLaserWeapon newInstance(int x2, int y2) {
+		public static Weapon newInstance(int x2, int y2) {
 		    SmallLaserWeapon weapon = new SmallLaserWeapon(content.transformName("smallLaserTurret")){{
 		        x = x2;
 		        y = y2;
 		    }};
-		    return weapon;
+		    return (Weapon)weapon;
 		}
 		
 
