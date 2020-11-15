@@ -31,30 +31,11 @@ import mindustry.graphics.Drawf;
 
 import static mindustry.Vars.*;
 import static arc.Core.*;
-public class FSalPixShip extends UnitType {
+public class FSalPixShip extends PowerUnit {
 	public FSalPixShip(String name) {
 		super(name);
 		abilities.add(ability);
-		abilities.add(new ForceFieldAbility(320, 100, 150000, 550));
-		constructor = () -> new FShip();
-
-		Weapon w = new FSMainWeapon(content.transformName("mainTurret")) {
-			{
-				bullet = new FSLaserBullet();
-				reload = 755;
-				shotDelay = 15;
-				shootY = 9.5f;
-				occlusion = 20f;
-				recoil = 9f;
-				shootSound = Sounds.laserbig;
-				x = 0f;
-				y = 75f;
-				rotateSpeed = 0.12f;
-				rotate = true;
-				ejectEffect = Fx.none;
-			}
-		};
-		weapons.add(w);
+		abilities.add(new ForceFieldAbility(320, 100, maxShield, 550));
 	}
 
 	{
@@ -70,27 +51,55 @@ public class FSalPixShip extends UnitType {
 		trailX = 35f;
 		trailY = -34f;
 		trailScl = 1.5f;
-
+		maxPower = 8000f;
+		powerProduction = 5f;
+		constructor = () -> new FShip();
+		Weapon w = new FSMainWeapon(content.transformName("mainTurret")) {
+			{
+				bullet = new FSLaserBullet();
+				reload = 755;
+				shotDelay = 15;
+				shootY = 9.5f;
+				occlusion = 20f;
+				recoil = 9f;
+				shootSound = Sounds.laserbig;
+				x = 0f;
+				y = 75f;
+				//rotateSpeed = 0.12f;
+				rotate = false;
+				ejectEffect = Fx.none;
+			}
+		};
+		weapons.add(w);
 	}
 
+	
 	public static final int count = 8;
 	public static final float frameSpeed = 3f;
-
+	public float mainConsunePower = 2000f;
 	public FSAbility ability = new FSAbility();
 
-	public class FShip extends MechUnit {
+	public class FShip extends MechUnit implements Powerc{
 		public float bulletLife = -1;
+		public float power = 0.0f;
+		
+		@Override
+		public float powerc() {
+		    return power / ((PowerUnit)type).maxPower;
+		}
 
 		@Override
 		public void write(Writes write) {
 			super.write(write);
 			write.f(bulletLife);
+			write.f(power);
 		}
 
 		@Override
 		public void read(Reads read) {
 			super.read(read);
 			bulletLife = read.f();
+			power = read.f();
 		}
 	}
 
@@ -101,7 +110,7 @@ public class FSalPixShip extends UnitType {
 		public void update(Unit unit) {
 			FShip innerUnit = (FShip)unit;
 			WeaponMount mount = MainShoot(unit);
-			
+
 			Bullet b = mount.bullet;
 
 			//if (b.data == null) b.data = this;
@@ -116,14 +125,15 @@ public class FSalPixShip extends UnitType {
 			float shootX = wx + Angles.trnsx(weaponRotation, weapon.shootX, weapon.shootY),
 				  shootY = wy + Angles.trnsy(weaponRotation, weapon.shootX, weapon.shootY);
 			float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (innerUnit.rotation - innerUnit.angleTo(mount.aimX, mount.aimY));
-			
-			
-			//if (mount.reload == weapon.reload && (b == null || (b != null && !(b.type instanceof FSLaserBullet)))) b = weapon.bullet.create(innerUnit, wx, wy, weaponRotation);
-			
 
-			if ((innerUnit.bulletLife < baseTime && b != null && mount.reload == weapon.reload) || innerUnit.isShooting) {
-			    innerUnit.isShooting(true);
-			    mount.reload = weapon.reload;
+
+			//if (mount.reload == weapon.reload && (b == null || (b != null && !(b.type instanceof FSLaserBullet)))) b = weapon.bullet.create(innerUnit, wx, wy, weaponRotation);
+
+
+			if (((innerUnit.bulletLife < baseTime && b != null && mount.reload == weapon.reload) || innerUnit.isShooting) && innerUnit.power > mainConsunePower) {
+				innerUnit.isShooting(true);
+				innerUnit.power = Math.max(innerUnit.power - (mainConsunePower / (baseTime / Time.time()) * Time.delta), 0f);
+				mount.reload = weapon.reload;
 				b.rotation(f);
 				b.set(shootX, shootY);
 				b.time(0f);
@@ -131,25 +141,25 @@ public class FSalPixShip extends UnitType {
 				mount.heat = 1f;
 				innerUnit.bulletLife += Time.delta;
 			}
-			
-			
-			
-			
-			
+
+
+
+
+
 			if (innerUnit.bulletLife >= baseTime || b == null) {
 				innerUnit.bulletLife = 0;
 				innerUnit.isShooting(false);
-				if(b != null) mount.reload = 450f;
-					//b.absorb();
+				if (b != null) mount.reload = weapon.reload - 1;
+				//b.absorb();
 				b = null;
 			}
-			
-			
-			if(Main.test) ui.showInfoToast("m-r" + mount.reload + " m-s:" + mount.shoot + " bIn:" + (mount.bullet == null) + " isS:" + unit.isShooting + " sbd:" + innerUnit.bulletLife, 0.1f);
+
+
+			if (Main.test) ui.showInfoToast("m-r" + mount.reload + " m-s:" + mount.shoot + " bIn:" + (mount.bullet == null) + " isS:" + unit.isShooting + " sbd:" + innerUnit.bulletLife, Time.delta);
 
 			if (b != null && innerUnit.isShooting && b.timer(4, 5)) {
 				new  Effect(25, e -> {
-					Draw.color(Color.valueOf("#0092DD"), Color.valueOf("#529DFF"), e.fin());
+					Draw.color(Color.white, unit.team.color, e.fin());
 
 					Lines.stroke(e.fin() * 3f);
 					Lines.circle(e.x, e.y, e.fout() * 60f);
@@ -160,6 +170,10 @@ public class FSalPixShip extends UnitType {
 						Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 12f + 1);
 					});
 				}).at(shootX, shootY, f);
+				
+				if(unit.shield < maxShield) innerUnit.power = Math.max(innerUnit.power - forceConsumePower * Time.delta, 0f);
+				
+				if(innerUnit.power < maxPower) innerUnit.power = Math.min(innerUnit.power + powerProduction * Time.delta, maxPower);
 			}
 		}
 
@@ -178,10 +192,10 @@ public class FSalPixShip extends UnitType {
 			float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
 			float s = 0.3f;
 			float ts = 0.6f;
-			if (mount.reload <= 485f) {
+			if (mount.reload <= mount.weapon.reload / 2) {
 				Draw.color();
 				Draw.blend(Blending.additive);
-				Draw.color(Color.valueOf("#D64821"));
+				Draw.color(unit.team.color);
 				Tmp.v1.trns(f, ((FSLaserBullet)weapon.bullet).length * 1.1f);
 				Draw.alpha(mount.reload * ts * (1f - s + Mathf.absin(Time.time(), 3f, s)));
 				Drawf.laser(unit.team, FSMainWeapon.warning, atlas.find("clear"), shootX, shootY, unit.x + Tmp.v1.x, unit.y + Tmp.v1.y);
@@ -212,7 +226,7 @@ public class FSalPixShip extends UnitType {
 		}
 
 		{
-			shootDurtion = 180;
+			shootDurtion = 185;
 			mirror = false;
 		}
 
@@ -250,12 +264,7 @@ public class FSalPixShip extends UnitType {
 			oscMag = 2.4f;
 			largeHit = true;
 			status = StatusEffects.none;
-			hitEffect = new Effect(18, e -> {
-				Draw.color(Color.valueOf("#D64821"));
-				Angles.randLenVectors(e.id, 1, 80 * e.fin(), 0, 360, (x, y) -> {
-				    Fill.poly(e.x + x, e.y + y, 6, 10 * e.fout());
-				});
-			});
+			hitEffect = Fx.hitLaser;
 		}
 
 		@Override
@@ -280,28 +289,28 @@ public class FSalPixShip extends UnitType {
 			}*/
 			Tmp.v1.trns(b.rotation(), baseLen * 1.1f);
 			Angles.randLenVectors(b.id, 3, 25 * b.fin(), b.rotation(), 360, (x, y) -> {
-				Draw.color(Color.white, Color.valueOf("#529DFF"), b.fin() + 1.25f);
+				Draw.color(Color.white, b.team.color, b.fin() + 1.25f);
 				Fill.circle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.fout() * 5);
 				Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, Mathf.angle(x, y), b.fslope() * 12 + 1);
 			});
 			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout);
-			
+
 			Drawf.laser(b.team, FSMainWeapon.laserRegions[(int) Mathf.absin(Time.time(), frameSpeed, count - 0.001f)], FSMainWeapon.laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
 			Angles.randLenVectors(b.id, 5, 1 + 75 * b.fin(), b.rotation(), 180, (x, y) -> {
 				Lines.stroke(b.fout() * 0.75f);
 				Lines.lineAngle(b.x + x, b.y + y, b.rotation(), b.fslope() * 6.25f + 4);
 			});
-			
+
 
 
 			if (b.timer(2, 8)) {
 				new Effect(40, e -> {
-					Draw.color(Color.white, Color.valueOf("#529DFF"), e.fin() * 0.625f);
+					Draw.color(Color.white, b.team.color, e.fin() * 0.625f);
 					Angles.randLenVectors(e.id, 7, 1 + 60 * e.fin(), e.rotation, 360, (x, y) -> {
 						Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 6 + 12);
 					});
-					Lines.stroke(e.fout() * 4.125f);
-					Lines.circle(e.x, e.y, e.fin() * 45);
+					Lines.stroke(e.fout() * 5.125f);
+					Lines.circle(e.x, e.y, e.fin() * 15);
 				}).at(b.x + Tmp.v1.x, b.y + Tmp.v1.y);
 			}
 

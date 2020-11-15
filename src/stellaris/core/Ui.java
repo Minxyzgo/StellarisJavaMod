@@ -8,13 +8,17 @@ import arc.scene.Element;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 import arc.util.Strings;
+import mindustry.Vars;
 import mindustry.game.EventType.*;
 import mindustry.gen.Icon;
+import mindustry.gen.Player;
 import mindustry.ui.MobileButton;
 import mindustry.ui.fragments.MenuFragment;
 import stellaris.Main;
+import stellaris.content.AsUnits;
 import stellaris.ui.draw.MenuRed;
 import stellaris.ui.frg.MenuFrg;
+
 
 import static mindustry.Vars.*;
 
@@ -75,6 +79,20 @@ public class Ui{
             t.add(ste);
             t.visible = true;
         });
+        
+        if(Main.test && !Vars.net.active()) {
+            ui.hudGroup.fill(t -> {
+                t.right();
+                t.marginTop(15f);
+                
+                t.button(Icon.admin, () -> {
+                    Player player = Vars.player;
+                    AsUnits.fship.spawn(player.team(), player.getX(), player.getY());
+                });
+                
+                t.visible = true;
+            });
+        }
 	}
 	
 	
