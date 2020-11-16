@@ -33,7 +33,7 @@ public class AsUnits implements ContentList {
 				ls2.x = 21;
 				ls2.y = 46;
 				ls3.x = 13;
-				ls3.y = 87;
+				ls3.y = -87;
 				ls4.x = 26;
 				ls4.y = 64;
 

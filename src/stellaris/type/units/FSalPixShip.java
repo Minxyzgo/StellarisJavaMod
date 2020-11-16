@@ -269,12 +269,12 @@ public class FSalPixShip extends PowerUnit {
 	}
 
 	public static class LaserAbility extends Ability {
-	    public float consumePower = 20f;
+	    public float consumePower = 25f;
 		@Override
 		public void update(Unit unit) {
 			FShip innerUnit = (FShip)unit;
 			for (WeaponMount mount : unit.mounts) {
-				if (mount.weapon.name.equals(smallLaserName)) {
+				if (mount.weapon.name.equals(smallLaserName) && !(mount.weapon instanceof FSMainWeapon)){
 				    Weapon weapon = mount.weapon;
 					float rotation = unit.rotation - 90;
 					float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
@@ -339,12 +339,13 @@ public class FSalPixShip extends PowerUnit {
 			WeaponMount mount = (WeaponMount)b.data;
 			float baseLen = Math.min(realLength * fout, Mathf.dst(b.x, b.y, mount.aimX, mount.aimY));
 
-			Lines.lineAngle(b.x, b.y, b.rotation(), baseLen);
+			//Lines.lineAngle(b.x, b.y, b.rotation(), baseLen);
+			Draw.blend(Blending.additive);
 			Draw.color(b.team.color);
-
-			Tmp.v1.trns(b.rotation(), baseLen * 1.1f);
 			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout * 0.1f);
-			Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.rotation(), baseLen, false);
+			Lines.lineAngle(b.x, b.y, b.rotation(), baseLen);
+			Draw.blend();
+			Draw.color();
 			Draw.reset();
 		}
 	}
@@ -354,7 +355,8 @@ public class FSalPixShip extends PowerUnit {
 		{
 			//absorbable = false;
 			length = 1050;
-			damage = 10000f / 60f / 5f;
+			damage = 3000f;
+			pierce = true;
 			drawSize = length * 1.25f;
 			shake = 1f;
 			fadeTime = 16f;
@@ -412,7 +414,7 @@ public class FSalPixShip extends PowerUnit {
 				Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, Mathf.angle(x, y), b.fslope() * 12 + 1);
 			});
 			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout);
-
+			Draw.blend(Blending.additive);
 			Drawf.laser(b.team, FSMainWeapon.laserRegions[(int) Mathf.absin(Time.time(), frameSpeed, count - 0.001f)], FSMainWeapon.laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
 			Angles.randLenVectors(b.id, 5, 1 + 75 * b.fin(), b.rotation(), 180, (x, y) -> {
 				Lines.stroke(b.fout() * 0.75f);
@@ -420,8 +422,9 @@ public class FSalPixShip extends PowerUnit {
 			});
 			Draw.color(Color.white);
 			Lines.stroke(2f);
-			Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.rotation(), baseLen, false);
-
+			Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.rotation(), baseLen * 0.6f, false);
+			Draw.blend();
+			Draw.color();
 			if (b.timer(2, 8)) {
 				new Effect(40, e -> {
 					Draw.color(Color.white, b.team.color, e.fin() * 0.625f);
