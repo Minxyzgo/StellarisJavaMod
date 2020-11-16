@@ -13,9 +13,13 @@ public class AsUnits implements ContentList{
     @Override
 	public void load(){
 	    fship = new FSalPixShip("fs") {{
-	        Weapon ls = new PowerUnit.PowerWeapon(Vars.content.transformName("smallLaserTurret")) {{
+	        Weapon ls = new Weapon(Vars.content.transformName("smallLaserTurret")) {{
 	            x = 21;
 		        y = 24;
+		        bullet = new FSalPixShip.SmallLaser();
+		     	reload = 18f;
+		    	rotate = true;
+		     	rotateSpeed = 7f;
 	    	    ejectEffect = Fx.none;
 	    	    shootCone = 15f;
 	        }};
