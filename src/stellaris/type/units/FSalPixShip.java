@@ -28,6 +28,7 @@ import mindustry.entities.bullet.LaserBulletType;
 import mindustry.entities.units.WeaponMount;
 import mindustry.gen.*;
 import mindustry.graphics.Drawf;
+import stellaris.type.units.PowerUnit.PowerWeapon;
 
 import static mindustry.Vars.*;
 import static arc.Core.*;
@@ -266,29 +267,14 @@ public class FSalPixShip extends PowerUnit {
 		}
 	}
 
-
-	public static class SmallLaserWeapon extends Weapon {
-		public float consumePower = 20f;
-		public SmallLaserWeapon(String name) {
-			super(name);
-		}
-
-		{
-			bullet = new SmallLaser();
-			reload = 18f;
-			rotate = true;
-			rotateSpeed = 7f;
-		}
-	}
-
 	public static class LaserAbility extends Ability {
 
 		@Override
 		public void update(Unit unit) {
 			FShip innerUnit = (FShip)unit;
 			for (WeaponMount mount : unit.mounts) {
-				if (mount.weapon instanceof  SmallLaserWeapon) {
-					SmallLaserWeapon weapon = (SmallLaserWeapon)mount.weapon;
+				if (mount.weapon instanceof  PowerWeapon) {
+					PowerWeapon weapon = (PowerWeapon)mount.weapon;
 					float rotation = unit.rotation - 90;
 					float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
 					float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
