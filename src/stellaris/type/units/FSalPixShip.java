@@ -28,7 +28,7 @@ import mindustry.entities.bullet.LaserBulletType;
 import mindustry.entities.units.WeaponMount;
 import mindustry.gen.*;
 import mindustry.graphics.Drawf;
-import stellaris.type.units.PowerUnit.PowerWeapon;
+//import stellaris.type.units.PowerUnit.PowerWeapon;
 
 import static mindustry.Vars.*;
 import static arc.Core.*;
@@ -53,7 +53,7 @@ public class FSalPixShip extends PowerUnit {
 		maxPower = 8000f;
 		powerProduction = 5f;
 		constructor = () -> new FShip();
-		String n = content.transformName("smallLaserTurret");
+		
 		Weapon
 		w = new FSMainWeapon(content.transformName("mainTurret")) {
 			{
@@ -104,6 +104,7 @@ public class FSalPixShip extends PowerUnit {
 	public static final float frameSpeed = 3f;
 	public float mainConsunePower = 2000f;
 	public FSAbility ability = new FSAbility();
+	public static String smallLaserName = content.transformName("smallLaserTurret");
 
 	public class FShip extends MechUnit implements Powerc {
 		public float bulletLife = -1;
@@ -268,13 +269,13 @@ public class FSalPixShip extends PowerUnit {
 	}
 
 	public static class LaserAbility extends Ability {
-
+	    public float consumePower = 20f;
 		@Override
 		public void update(Unit unit) {
 			FShip innerUnit = (FShip)unit;
 			for (WeaponMount mount : unit.mounts) {
-				if (mount.weapon instanceof  PowerWeapon) {
-					PowerWeapon weapon = (PowerWeapon)mount.weapon;
+				if (mount.weapon.name.equals(smallLaserName)) {
+				    Weapon weapon = mount.weapon;
 					float rotation = unit.rotation - 90;
 					float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
 					float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
@@ -284,9 +285,9 @@ public class FSalPixShip extends PowerUnit {
 						  shootY = wy + Angles.trnsy(weaponRotation, weapon.shootX, weapon.shootY);
 					float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
 					Bullet b = mount.bullet;
-					boolean consume = innerUnit.power >= weapon.consumePower;
+					boolean consume = innerUnit.power >= consumePower;
 					if (mount.shoot && b != null && consume) {
-						innerUnit.power = Math.max(innerUnit.power - (weapon.consumePower / Time.toSeconds * Time.delta), 0f);
+						innerUnit.power = Math.max(innerUnit.power - (consumePower / Time.toSeconds * Time.delta), 0f);
 						mount.reload = weapon.reload;
 						b.data = mount;
 						b.rotation(f);

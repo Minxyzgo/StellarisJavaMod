@@ -8,7 +8,8 @@ import arc.util.*;
 import mindustry.Vars;
 import mindustry.ai.types.*;
 import mindustry.content.*;
-import mindustry.entities.abilities.ForceFieldAbility;import mindustry.entities.bullet.BulletType;
+import mindustry.entities.abilities.ForceFieldAbility;
+import mindustry.entities.bullet.BulletType;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
@@ -67,20 +68,5 @@ public abstract class PowerUnit extends UnitType{
 	    float powerc();
 	}
 	
-	public static class PowerWeapon extends Weapon {
-	    public float consumePower = 0.0f;
-	    
-	    public PowerWeapon(String name) {
-	        super(name);
-	    }
-	    
-	    PowerWeapon(){}
-	    {
-	        bullet = new FSalPixShip.SmallLaser();
-			reload = 18f;
-			rotate = true;
-			rotateSpeed = 7f;
-	    }
-	    
-	}
+	
 }
