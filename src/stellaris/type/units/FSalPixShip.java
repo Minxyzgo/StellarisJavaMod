@@ -287,7 +287,7 @@ public class FSalPixShip extends PowerUnit {
 					float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
 					Bullet b = mount.bullet;
 					boolean consume = innerUnit.power >= consumePower;
-					if (!((b.type instanceof SmallLaser) || b == null) && consume && mount.shoot) b = AsBullets.smallLaser.create(unit, shootX, shootY, f);
+					if ((b == null || !(b.type instanceof SmallLaser)) && consume && mount.shoot) b = AsBullets.smallLaser.create(unit, shootX, shootY, f);
 					
 					if (mount.shoot && b != null && consume) {
 						innerUnit.power = Math.max(innerUnit.power - (consumePower / Time.toSeconds * Time.delta), 0f);
