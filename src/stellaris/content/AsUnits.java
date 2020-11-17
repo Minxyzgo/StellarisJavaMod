@@ -18,7 +18,7 @@ public class AsUnits implements ContentList {
 					{
 						x = 21;
 						y = 24;
-						bullet = new FSalPixShip.SmallLaser();
+						bullet = AsBullets.smallLaser;
 						reload = 18f;
 						rotate = true;
 						rotateSpeed = 7f;

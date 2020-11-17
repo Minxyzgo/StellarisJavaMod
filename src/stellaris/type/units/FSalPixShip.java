@@ -4,6 +4,7 @@ import mindustry.type.UnitType;
 import mindustry.content.StatusEffects;
 import mindustry.type.Weapon;
 import stellaris.Main;
+import stellaris.content.AsBullets;
 import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
@@ -286,6 +287,8 @@ public class FSalPixShip extends PowerUnit {
 					float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
 					Bullet b = mount.bullet;
 					boolean consume = innerUnit.power >= consumePower;
+					if (!((b.type instanceof SmallLaser) || b == null) && consume && mount.shoot) b = AsBullets.smallLaser.create(unit, shootX, shootY, f);
+					
 					if (mount.shoot && b != null && consume) {
 						innerUnit.power = Math.max(innerUnit.power - (consumePower / Time.toSeconds * Time.delta), 0f);
 						mount.reload = weapon.reload;
@@ -311,6 +314,7 @@ public class FSalPixShip extends PowerUnit {
 			tscales = new float[] {1f, 0.6f, 0.4f, 0.2f};
 			strokes = new float[] {0.1f, 0.1f, 0.1f, 0.1f};
 			damage = 12;
+			pierce = true;
 			largeHit = false;
 		}
 
@@ -342,6 +346,7 @@ public class FSalPixShip extends PowerUnit {
 			//Lines.lineAngle(b.x, b.y, b.rotation(), baseLen);
 			Draw.blend(Blending.additive);
 			Draw.color(b.team.color);
+			Draw.z(120f);
 			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout * 0.1f);
 			Lines.lineAngle(b.x, b.y, b.rotation(), baseLen);
 			Draw.blend();
