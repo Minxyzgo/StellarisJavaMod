@@ -24,6 +24,7 @@ import mindustry.entities.Damage;
 import mindustry.entities.Effect;
 import mindustry.entities.abilities.Ability;
 import mindustry.entities.abilities.ForceFieldAbility;
+import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.ContinuousLaserBulletType;
 import mindustry.entities.bullet.LaserBulletType;
 import mindustry.entities.units.WeaponMount;
@@ -39,6 +40,7 @@ public class FSalPixShip extends PowerUnit {
 		abilities.add(ability);
 		abilities.add(new ForceFieldAbility(320, 100, maxShield, 550));
 		abilities.add(new LaserAbility());
+		abilities.add(new BcAbility());
 	}
 
 	{
@@ -54,11 +56,11 @@ public class FSalPixShip extends PowerUnit {
 		maxPower = 8000f;
 		powerProduction = 5f;
 		constructor = () -> new FShip();
-		
+
 		Weapon
 		w = new FSMainWeapon(content.transformName("mainTurret")) {
 			{
-			    bullet = new FSLaserBullet();
+				bullet = new FSLaserBullet();
 				reload = 755;
 				shotDelay = 15;
 				shootY = 9.5f;
@@ -73,31 +75,31 @@ public class FSalPixShip extends PowerUnit {
 				ejectEffect = Fx.none;
 			}
 		};
-	/*	l1 = new SmallLaserWeapon(n){{
-		    x = 21;
-		    y = 24;
-		}},
-		l2 = new SmallLaserWeapon(n){{
-		    x = 21;
-		    y = 46;
-		}},
-		l3 = new SmallLaserWeapon(n){{
-		    x = 13;
-		    y = 87;
-		}},
-		l4 = new SmallLaserWeapon(n){{
-		    x = 26;
-		    y = 64;
-		}};
-	*/
+		/*	l1 = new SmallLaserWeapon(n){{
+			    x = 21;
+			    y = 24;
+			}},
+			l2 = new SmallLaserWeapon(n){{
+			    x = 21;
+			    y = 46;
+			}},
+			l3 = new SmallLaserWeapon(n){{
+			    x = 13;
+			    y = 87;
+			}},
+			l4 = new SmallLaserWeapon(n){{
+			    x = 26;
+			    y = 64;
+			}};
+		*/
 		weapons.add(w);
 		/*24    丨  2146    丨  2187    丨  13-64   丨  26*/
-	/*
-		weapons.add(l1);
-		weapons.add(l2);
-		weapons.add(l3);
-		weapons.add(l4);
-	*/
+		/*
+			weapons.add(l1);
+			weapons.add(l2);
+			weapons.add(l3);
+			weapons.add(l4);
+		*/
 	}
 
 
@@ -105,7 +107,8 @@ public class FSalPixShip extends PowerUnit {
 	public static final float frameSpeed = 3f;
 	public float mainConsunePower = 2000f;
 	public FSAbility ability = new FSAbility();
-	public static String smallLaserName = content.transformName("smallLaserTurret");
+	public static String smallLaserName = content.transformName("smallLaserTurret"),
+	    bcWeapon = content.transformName("BcWeapon");
 
 	public class FShip extends MechUnit implements Powerc {
 		public float bulletLife = -1;
@@ -270,13 +273,13 @@ public class FSalPixShip extends PowerUnit {
 	}
 
 	public static class LaserAbility extends Ability {
-	    public float consumePower = 25f;
+		public float consumePower = 25f;
 		@Override
 		public void update(Unit unit) {
 			FShip innerUnit = (FShip)unit;
 			for (WeaponMount mount : unit.mounts) {
-				if (mount.weapon.name.equals(smallLaserName) && !(mount.weapon instanceof FSMainWeapon)){
-				    Weapon weapon = mount.weapon;
+				if (mount.weapon.name.equals(smallLaserName) && !(mount.weapon instanceof FSMainWeapon)) {
+					Weapon weapon = mount.weapon;
 					float rotation = unit.rotation - 90;
 					float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
 					float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
@@ -288,7 +291,7 @@ public class FSalPixShip extends PowerUnit {
 					Bullet b = mount.bullet;
 					boolean consume = innerUnit.power >= consumePower;
 					if ((b == null || !(b.type instanceof SmallLaser)) && consume && mount.shoot) b = AsBullets.smallLaser.create(unit, shootX, shootY, f);
-					
+
 					if (mount.shoot && b != null && consume) {
 						innerUnit.power = Math.max(innerUnit.power - (consumePower / Time.toSeconds * Time.delta), 0f);
 						mount.reload = weapon.reload;
@@ -313,8 +316,9 @@ public class FSalPixShip extends PowerUnit {
 		{
 			tscales = new float[] {1f, 0.6f, 0.4f, 0.2f};
 			strokes = new float[] {0.1f, 0.1f, 0.1f, 0.1f};
-			damage = 12;
+			damage = 60;
 			pierce = true;
+			length = 40f * 8f;
 			largeHit = false;
 		}
 
@@ -353,6 +357,65 @@ public class FSalPixShip extends PowerUnit {
 			Draw.color();
 			Draw.reset();
 		}
+	}
+
+	public static class BcBulletType extends BasicBulletType {
+		{
+		    height = 8f;
+		    width = 2f;
+		    damage = 45;
+		    sprite = content.transformName("BcBullet");
+		    splashDamage = 45f;
+		    splashDamageRadius = 8f;
+		}
+
+		@Override
+		public void hit(Bullet b, float x, float y) {
+			new Effect(20f, e -> {
+				Draw.color(Color.white, b.team.color, e.fin());
+				Angles.randLenVectors(e.id, 5, e.finpow() * 6f, e.rotation, 20f, (x2, y2) -> {
+					Fill.circle(e.x + x, e.y + y, e.fout() * 1.5f);
+				});
+			}).at(x, y, b.rotation());
+			hitSound.at(b);
+
+			Effect.shake(hitShake, hitShake, b);
+			if (splashDamageRadius > 0)
+				Damage.damage(b.team, x, y, splashDamageRadius, splashDamage * b.damageMultiplier(), collidesAir, collidesGround);
+		}
+
+		@Override
+		public void draw(Bullet b) {
+			float height = this.height * ((1f - shrinkY) + shrinkY * b.fout());
+			float width = this.width * ((1f - shrinkX) + shrinkX * b.fout());
+			float offset = -90 + (spin != 0 ? Mathf.randomSeed(b.id, 360f) + b.time * spin : 0f);
+
+			Color mix = Tmp.c1.set(mixColorFrom).lerp(mixColorTo, b.fin());
+
+			Draw.mixcol(mix, mix.a);
+
+			Draw.color(b.team.color);
+			Draw.rect(frontRegion, b.x, b.y, width, height, b.rotation() + offset);
+
+			Draw.reset();
+		}
+	}
+	
+	public static class BcAbility extends Ability {
+	    
+	    @Override
+	    public void update(Unit unit) {
+	        for(WeaponMount mount : unit.mounts) {
+	            if(mount.weapon.name.equals(bcWeapon)) {
+	                FShip innerUnit = (FShip)unit;
+	                float con = 1f;
+	                boolean consume = innerUnit.power >= con;
+	                if(mount.reload == mount.weapon.reload && consume) {
+	                    innerUnit.power = Math.max(innerUnit.power - 1f, 0f);
+	                }
+	            }
+	        }
+	    }
 	}
 
 	public class FSLaserBullet extends ContinuousLaserBulletType {

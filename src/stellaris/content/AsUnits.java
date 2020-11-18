@@ -7,6 +7,7 @@ import mindustry.type.UnitType;
 import mindustry.type.Weapon;
 import stellaris.type.units.FSalPixShip;
 import stellaris.type.units.PowerUnit;
+import arc.func.Cons2;
 
 public class AsUnits implements ContentList {
 	public static UnitType fship;
@@ -33,14 +34,48 @@ public class AsUnits implements ContentList {
 				ls2.x = 21;
 				ls2.y = 46;
 				ls3.x = 13;
-				ls3.y = -87;
+				ls3.y = 87;
 				ls4.x = 26;
-				ls4.y = 64;
+				ls4.y = -64;
 
 				weapons.add(ls);
 				weapons.add(ls2);
 				weapons.add(ls3);
 				weapons.add(ls4);
+				
+				/*  丨  32    丨  21
+				39    丨  21
+				55    丨  20
+				80    丨  16
+				96    丨  12
+				100   丨  12-
+				28   丨  26-
+				39   丨  26-
+				88   丨  26*/
+				Weapon bc = new Weapon(FSalPixShip.bcWeapon) {
+				    {
+				        shots = 3;
+				        reload = 35f;
+				        bullet = new FSalPixShip.BcBulletType();
+				        x = 21;
+				        y = 32;
+				    }
+				};
+				Cons2<Float, Float> bw = (x, y) -> {
+				    Weapon wn = bc.copy();
+				    wn.x = x;
+				    wn.y = y;
+				    weapons.add(wn);
+				    
+				};
+				bw.get(21f, 39f);
+				bw.get(20f, 55f);
+				bw.get(16f, 80f);
+				bw.get(12f, 96f);
+				bw.get(12f, 100f);
+				bw.get(26f, 28f);
+				bw.get(26f, 39f);
+				bw.get(26f, 88f);
 			}
 		};
 	}
