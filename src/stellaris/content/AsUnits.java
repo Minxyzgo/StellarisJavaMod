@@ -56,6 +56,10 @@ public class AsUnits implements ContentList {
 				    {
 				        shots = 3;
 				        reload = 35f;
+				        shootCone = 25f;
+				        inaccuracy = 3f;
+				        spacing = 3f;
+				        ejectEffect = Fx.none;
 				        bullet = new FSalPixShip.BcBulletType();
 				        x = 21;
 				        y = 32;
@@ -68,14 +72,14 @@ public class AsUnits implements ContentList {
 				    weapons.add(wn);
 				    
 				};
-				bw.get(21f, 39f);
-				bw.get(20f, 55f);
-				bw.get(16f, 80f);
-				bw.get(12f, 96f);
-				bw.get(12f, 100f);
-				bw.get(26f, 28f);
-				bw.get(26f, 39f);
-				bw.get(26f, 88f);
+				bw.get(21f, 40f);
+				bw.get(20f, 56f);
+				bw.get(16f, 81f);
+				bw.get(12f, 97f);
+				bw.get(12f, 101f);
+				bw.get(26f, -28f);
+				bw.get(26f, -39f);
+				bw.get(26f, -88f);
 			}
 		};
 	}

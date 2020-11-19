@@ -108,7 +108,7 @@ public class FSalPixShip extends PowerUnit {
 	public float mainConsunePower = 2000f;
 	public FSAbility ability = new FSAbility();
 	public static String smallLaserName = content.transformName("smallLaserTurret"),
-	    bcWeapon = content.transformName("BcWeapon");
+						 bcWeapon = content.transformName("BcWeapon");
 
 	public class FShip extends MechUnit implements Powerc {
 		public float bulletLife = -1;
@@ -293,7 +293,7 @@ public class FSalPixShip extends PowerUnit {
 					if ((b == null || !(b.type instanceof SmallLaser)) && consume && mount.shoot) b = AsBullets.smallLaser.create(unit, shootX, shootY, f);
 
 					if (mount.shoot && b != null && consume) {
-						innerUnit.power = Math.max(innerUnit.power - (consumePower / Time.toSeconds * Time.delta), 0f);
+						innerUnit.power = Math.max(innerUnit.power - (consumePower * Time.delta), 0f);
 						mount.reload = weapon.reload;
 						b.data = mount;
 						b.rotation(f);
@@ -318,7 +318,7 @@ public class FSalPixShip extends PowerUnit {
 			strokes = new float[] {0.1f, 0.1f, 0.1f, 0.1f};
 			damage = 60;
 			pierce = true;
-			length = 40f * 8f;
+			length = 80f * 8f;
 			largeHit = false;
 		}
 
@@ -361,12 +361,14 @@ public class FSalPixShip extends PowerUnit {
 
 	public static class BcBulletType extends BasicBulletType {
 		{
-		    height = 8f;
-		    width = 2f;
-		    damage = 45;
-		    sprite = content.transformName("BcBullet");
-		    splashDamage = 45f;
-		    splashDamageRadius = 8f;
+			lifetime = 70f;
+			speed = 5f;
+			height = 8f;
+			width = 2f;
+			damage = 45;
+			sprite = content.transformName("BcBullet");
+			splashDamage = 45f;
+			splashDamageRadius = 8f;
 		}
 
 		@Override
@@ -375,6 +377,7 @@ public class FSalPixShip extends PowerUnit {
 				Draw.color(Color.white, b.team.color, e.fin());
 				Angles.randLenVectors(e.id, 5, e.finpow() * 6f, e.rotation, 20f, (x2, y2) -> {
 					Fill.circle(e.x + x, e.y + y, e.fout() * 1.5f);
+					Lines.line(e.x, e.y, e.x + x, e.y + y);
 				});
 			}).at(x, y, b.rotation());
 			hitSound.at(b);
@@ -399,23 +402,36 @@ public class FSalPixShip extends PowerUnit {
 
 			Draw.reset();
 		}
+
+		@Override
+		public void init(Bullet b) {
+			super.init(b);
+			 new Effect(20f, e -> {
+				Draw.color(Color.white, b.team.color, e.fin());
+				Lines.stroke(0.5f + e.fout());
+				Lines.circle(e.x, e.y, e.fin() * 5f);
+				Angles.randLenVectors(e.id, 5, e.finpow() * 6f, e.rotation, 20f, (x, y) -> {
+					Fill.circle(e.x + x, e.y + y, e.fout() * 1.5f);
+				});
+			}).at(b.x, b.y, b.rotation());
+		}
 	}
-	
+
 	public static class BcAbility extends Ability {
-	    
-	    @Override
-	    public void update(Unit unit) {
-	        for(WeaponMount mount : unit.mounts) {
-	            if(mount.weapon.name.equals(bcWeapon)) {
-	                FShip innerUnit = (FShip)unit;
-	                float con = 1f;
-	                boolean consume = innerUnit.power >= con;
-	                if(mount.reload == mount.weapon.reload && consume) {
-	                    innerUnit.power = Math.max(innerUnit.power - 1f, 0f);
-	                }
-	            }
-	        }
-	    }
+
+		@Override
+		public void update(Unit unit) {
+			for (WeaponMount mount : unit.mounts) {
+				if (mount.weapon.name.equals(bcWeapon)) {
+					FShip innerUnit = (FShip)unit;
+					float con = 1f;
+					boolean consume = innerUnit.power >= con;
+					if (mount.reload == mount.weapon.reload && consume) {
+						innerUnit.power = Math.max(innerUnit.power - 1f, 0f);
+					}
+				}
+			}
+		}
 	}
 
 	public class FSLaserBullet extends ContinuousLaserBulletType {
