@@ -290,7 +290,7 @@ public class FSalPixShip extends PowerUnit {
 					float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
 					Bullet b = mount.bullet;
 					boolean consume = innerUnit.power >= consumePower;
-					if(b == null) return;
+					if (b == null) b = AsBullets.smallLaser.create(unit, shootX, shootY, f);
 					if ((!(b.type instanceof SmallLaser) && consume && mount.shoot) || b.team != unit.team) return;
 
 					if (mount.shoot && b != null && consume) {
@@ -389,18 +389,15 @@ public class FSalPixShip extends PowerUnit {
 		}
 
 		@Override
-		public void hit(Bullet b, float x, float y) {
+		public void hit(Bullet b) {
 			new Effect(20f, e -> {
 				Draw.color(Color.white, b.team.color, e.fin());
 				Angles.randLenVectors(e.id, 5, e.finpow() * 6f, e.rotation, 20f, (x2, y2) -> {
-					Fill.circle(e.x + x, e.y + y, e.fout() * 1.5f);
+					Fill.circle(e.x + x2, e.y + y2, e.fout() * 1.5f);
 				});
-			}).at(x, y, b.rotation());
-			hitSound.at(b);
-
-			Effect.shake(hitShake, hitShake, b);
-			if (splashDamageRadius > 0)
-				Damage.damage(b.team, x, y, splashDamageRadius, splashDamage * b.damageMultiplier(), collidesAir, collidesGround);
+			}).at(b.x, b.y, b.rotation());
+			hit(b, b.x, b.y);
+			
 		}
 
 		@Override
@@ -433,19 +430,6 @@ public class FSalPixShip extends PowerUnit {
 				if (mount.weapon.name.equals(bcWeapon)) {
 
 					FShip innerUnit = (FShip)unit;
-					boolean consume = innerUnit.power >= con;
-					if (mount.reload == mount.weapon.reload && consume) {
-						innerUnit.power = Math.max(innerUnit.power - 1f, 0f);
-					}
-				}
-			}
-		}
-
-		@Override
-		public void draw(Unit unit) {
-			for (WeaponMount mount : unit.mounts) {
-				if (mount.weapon.name.equals(bcWeapon)) {
-					FShip innerUnit = (FShip)unit;
 					Weapon weapon = mount.weapon;
 					float rotation = unit.rotation - 90;
 					float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
@@ -458,6 +442,7 @@ public class FSalPixShip extends PowerUnit {
 					boolean consume = innerUnit.power >= con;
 					if (mount.reload == mount.weapon.reload && consume) {
 						new Effect(20f, e -> {
+						    Draw.z(120f);
 							Draw.color(Color.white, unit.team.color, e.fin());
 							Lines.stroke(0.5f + e.fout());
 							Lines.circle(e.x, e.y, e.fin() * 5f);
@@ -465,6 +450,7 @@ public class FSalPixShip extends PowerUnit {
 								Fill.circle(e.x + x, e.y + y, e.fout() * 1.5f);
 							});
 						}).at(shootX, shootY, f);
+						innerUnit.power = Math.max(innerUnit.power - 1f, 0f);
 					}
 				}
 			}
