@@ -61,6 +61,8 @@ public class AsUnits implements ContentList {
 				        spacing = 3f;
 				        ejectEffect = Fx.none;
 				        bullet = new FSalPixShip.BcBulletType();
+				        rotate = true;
+				        rotateSpeed = 6f;
 				        x = 21;
 				        y = 32;
 				    }

@@ -369,6 +369,22 @@ public class FSalPixShip extends PowerUnit {
 			sprite = content.transformName("BcBullet");
 			splashDamage = 25f;
 			splashDamageRadius = 6f;
+			trailChance = 1.5f;
+		}
+
+		@Override
+		public void update(Bullet b) {
+			if (trailChance > 0) {
+				if (Mathf.chanceDelta(trailChance)) {
+					new Effect(12, e -> {
+						Lines.stroke(e.fout() * 3);
+						Angles.randLenVectors(e.id, 1, 1 + 0 * e.fin(), e.rotation, 0, (x, y) -> {
+							Draw.color(Color.white, b.team.color, e.fin());
+							Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 12 + 5);
+						});
+					});
+				}
+			}
 		}
 
 		@Override
@@ -403,12 +419,12 @@ public class FSalPixShip extends PowerUnit {
 		}
 		@Override
 		public void despawned(Bullet b) {
-		    
+			hit(b);
 		}
 		@Override
 		public void init(Bullet b) {
 			super.init(b);
-			 new Effect(20f, e -> {
+			new Effect(20f, e -> {
 				Draw.color(Color.white, b.team.color, e.fin());
 				Lines.stroke(0.5f + e.fout());
 				Lines.circle(e.x, e.y, e.fin() * 5f);
