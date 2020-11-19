@@ -290,7 +290,7 @@ public class FSalPixShip extends PowerUnit {
 					float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
 					Bullet b = mount.bullet;
 					boolean consume = innerUnit.power >= consumePower;
-					if ((b == null || !(b.type instanceof SmallLaser)) && consume && mount.shoot) b = AsBullets.smallLaser.create(unit, shootX, shootY, f);
+					if (((b == null || !(b.type instanceof SmallLaser)) && consume && mount.shoot) || b.team != unit.team) return;
 
 					if (mount.shoot && b != null && consume) {
 						innerUnit.power = Math.max(innerUnit.power - (consumePower / Time.toSeconds * Time.delta), 0f);
@@ -382,7 +382,7 @@ public class FSalPixShip extends PowerUnit {
 							Draw.color(Color.white, b.team.color, e.fin());
 							Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 12 + 5);
 						});
-					});
+					}).at(b.x, b.y, b.rotation());
 				}
 			}
 		}
@@ -421,31 +421,49 @@ public class FSalPixShip extends PowerUnit {
 		public void despawned(Bullet b) {
 			hit(b);
 		}
-		@Override
-		public void init(Bullet b) {
-			super.init(b);
-			new Effect(20f, e -> {
-				Draw.color(Color.white, b.team.color, e.fin());
-				Lines.stroke(0.5f + e.fout());
-				Lines.circle(e.x, e.y, e.fin() * 5f);
-				Angles.randLenVectors(e.id, 5, e.finpow() * 6f, e.rotation, 20f, (x, y) -> {
-					Fill.circle(e.x + x, e.y + y, e.fout() * 1.5f);
-				});
-			}).at(b.x, b.y, b.rotation());
-		}
 	}
 
 	public static class BcAbility extends Ability {
+		public float con = 1f;
 
 		@Override
 		public void update(Unit unit) {
 			for (WeaponMount mount : unit.mounts) {
 				if (mount.weapon.name.equals(bcWeapon)) {
+
 					FShip innerUnit = (FShip)unit;
-					float con = 1f;
 					boolean consume = innerUnit.power >= con;
 					if (mount.reload == mount.weapon.reload && consume) {
 						innerUnit.power = Math.max(innerUnit.power - 1f, 0f);
+					}
+				}
+			}
+		}
+
+		@Override
+		public void draw(Unit unit) {
+			for (WeaponMount mount : unit.mounts) {
+				if (mount.weapon.name.equals(bcWeapon)) {
+					FShip innerUnit = (FShip)unit;
+					Weapon weapon = mount.weapon;
+					float rotation = unit.rotation - 90;
+					float weaponRotation  = rotation + (weapon.rotate ? mount.rotation : 0);
+					float recoil = -((mount.reload) / weapon.reload * weapon.recoil);
+					float wx = unit.x + Angles.trnsx(rotation, weapon.x, weapon.y) + Angles.trnsx(weaponRotation, 0, recoil),
+						  wy = unit.y + Angles.trnsy(rotation, weapon.x, weapon.y) + Angles.trnsy(weaponRotation, 0, recoil);
+					float shootX = wx + Angles.trnsx(weaponRotation, weapon.shootX, weapon.shootY),
+						  shootY = wy + Angles.trnsy(weaponRotation, weapon.shootX, weapon.shootY);
+					float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
+					boolean consume = innerUnit.power >= con;
+					if (mount.reload == mount.weapon.reload && consume) {
+						new Effect(20f, e -> {
+							Draw.color(Color.white, unit.team.color, e.fin());
+							Lines.stroke(0.5f + e.fout());
+							Lines.circle(e.x, e.y, e.fin() * 5f);
+							Angles.randLenVectors(e.id, 5, e.finpow() * 6f, e.rotation, 20f, (x, y) -> {
+								Fill.circle(e.x + x, e.y + y, e.fout() * 1.5f);
+							});
+						}).at(shootX, shootY, f);
 					}
 				}
 			}
