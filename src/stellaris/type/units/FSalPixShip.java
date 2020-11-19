@@ -293,7 +293,7 @@ public class FSalPixShip extends PowerUnit {
 					if ((b == null || !(b.type instanceof SmallLaser)) && consume && mount.shoot) b = AsBullets.smallLaser.create(unit, shootX, shootY, f);
 
 					if (mount.shoot && b != null && consume) {
-						innerUnit.power = Math.max(innerUnit.power - (consumePower * Time.delta), 0f);
+						innerUnit.power = Math.max(innerUnit.power - (consumePower / Time.toSeconds * Time.delta), 0f);
 						mount.reload = weapon.reload;
 						b.data = mount;
 						b.rotation(f);
@@ -363,12 +363,12 @@ public class FSalPixShip extends PowerUnit {
 		{
 			lifetime = 70f;
 			speed = 5f;
-			height = 8f;
-			width = 2f;
+			height = 8f * 2f;
+			width = 2f * 2f;
 			damage = 45;
 			sprite = content.transformName("BcBullet");
-			splashDamage = 45f;
-			splashDamageRadius = 8f;
+			splashDamage = 25f;
+			splashDamageRadius = 6f;
 		}
 
 		@Override
@@ -377,7 +377,6 @@ public class FSalPixShip extends PowerUnit {
 				Draw.color(Color.white, b.team.color, e.fin());
 				Angles.randLenVectors(e.id, 5, e.finpow() * 6f, e.rotation, 20f, (x2, y2) -> {
 					Fill.circle(e.x + x, e.y + y, e.fout() * 1.5f);
-					Lines.line(e.x, e.y, e.x + x, e.y + y);
 				});
 			}).at(x, y, b.rotation());
 			hitSound.at(b);
@@ -402,7 +401,10 @@ public class FSalPixShip extends PowerUnit {
 
 			Draw.reset();
 		}
-
+		@Override
+		public void despawned(Bullet b) {
+		    
+		}
 		@Override
 		public void init(Bullet b) {
 			super.init(b);
