@@ -113,6 +113,11 @@ public class FSalPixShip extends PowerUnit {
 	public class FShip extends MechUnit implements Powerc {
 		public float bulletLife = -1;
 		public float power = 8000f;
+		public boolean isMainShooting = false;
+		
+		public void isMS(boolean bool) {
+		    isMainShooting = bool;
+		}
 
 		@Override
 		public float powerc() {
@@ -124,6 +129,7 @@ public class FSalPixShip extends PowerUnit {
 			super.write(write);
 			write.f(bulletLife);
 			write.f(power);
+			write.bool(isMainShooting);
 		}
 
 		@Override
@@ -131,6 +137,7 @@ public class FSalPixShip extends PowerUnit {
 			super.read(read);
 			bulletLife = read.f();
 			power = read.f();
+			isMainShooting = read.bool();
 		}
 	}
 
@@ -164,13 +171,14 @@ public class FSalPixShip extends PowerUnit {
 
 			if (innerUnit.power < maxPower) innerUnit.power = Math.min(innerUnit.power + powerProduction * Time.delta, maxPower);
 
-			if (((innerUnit.bulletLife < baseTime && b != null && mount.reload == weapon.reload) || innerUnit.isShooting) && innerUnit.power > mainConsunePower) {
-				innerUnit.isShooting(true);
+			if (((innerUnit.bulletLife < baseTime && b != null && mount.reload == weapon.reload) || innerUnit.isMainShooting) && innerUnit.power > mainConsunePower) {
+				innerUnit.isMS(true);
 				innerUnit.power = Math.max(innerUnit.power - (mainConsunePower / baseTime * Time.delta), 0f);
-				mount.reload = weapon.reload;
+				
 				b.rotation(unit.rotation);
 				b.set(shootX, shootY);
 				b.time(0f);
+				mount.reload = weapon.reload;
 				//mount.shoot = true;
 				mount.heat = 1f;
 				innerUnit.bulletLife += Time.delta;
@@ -178,7 +186,7 @@ public class FSalPixShip extends PowerUnit {
 
 			if (innerUnit.bulletLife >= baseTime || b == null || innerUnit.power < mainConsunePower) {
 				innerUnit.bulletLife = 0;
-				innerUnit.isShooting(false);
+				innerUnit.isMS(false);
 				/*float reloade = weapon.reload - 1;
 				if (b != null && innerUnit.power >= mainConsunePower) mount.reload = reloade;*/
 				if (innerUnit.power <= 2.99f) innerUnit.shield = -(maxShield * 0.5f);
@@ -187,9 +195,9 @@ public class FSalPixShip extends PowerUnit {
 			}
 
 
-			if (Main.test) ui.showInfoToast("m-r" + mount.reload + " m-s:" + mount.shoot + " bIn:" + (mount.bullet == null) + " isS:" + unit.isShooting + " sbd:" + innerUnit.bulletLife, Time.delta);
+			if (Main.test) ui.showInfoToast("m-r" + mount.reload + " m-s:" + mount.shoot + " bIn:" + (mount.bullet == null) + " isS:" + innerUnit.isMainShooting + " sbd:" + innerUnit.bulletLife, Time.delta);
 
-			if (b != null && innerUnit.isShooting && b.timer(4, 5)) {
+			if (b != null && innerUnit.isMainShooting && b.timer(4, 5)) {
 				new  Effect(25, e -> {
 					Draw.color(Color.white, unit.team.color, e.fin());
 
@@ -209,7 +217,7 @@ public class FSalPixShip extends PowerUnit {
 
 		@Override
 		public void draw(Unit unit) {
-
+		    FShip innerUnit = (FShip)unit;
 			WeaponMount mount = MainShoot(unit);
 			Weapon weapon = mount.weapon;
 			float rotation = unit.rotation - 90;
@@ -222,7 +230,7 @@ public class FSalPixShip extends PowerUnit {
 			//float f = weapon.rotate ? weaponRotation + 90f : Angles.angle(shootX, shootY, mount.aimX, mount.aimY) + (unit.rotation - unit.angleTo(mount.aimX, mount.aimY));
 			float s = 0.3f;
 			float ts = 0.6f;
-			if (!unit.isShooting) {
+			if (!innerUnit.isMainShooting) {
 				Draw.color();
 				Draw.blend(Blending.additive);
 				Draw.color(unit.team.color);
