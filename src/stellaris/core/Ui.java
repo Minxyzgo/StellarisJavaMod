@@ -17,7 +17,7 @@ import mindustry.ui.fragments.MenuFragment;
 import stellaris.Main;
 import stellaris.content.AsUnits;
 import stellaris.ui.draw.MenuRed;
-import stellaris.ui.frg.MenuFrg;
+//import stellaris.ui.frg.MenuFrg;
 
 
 import static mindustry.Vars.*;
