@@ -45,13 +45,13 @@ public class InvisibleUnit extends UnitEntity implements Powerc {
 
 	@Override
 	public float maxPower() {
-		abilities().forEach(a -> {
+		/*abilities().forEach(a -> {
 		    if(a instanceof PowerAbility) {
 		        PowerAbility ab = (PowerAbility)a;
 		        if(maxPower < ab.maxPower) maxPower = ab.maxPower;
 		    }
-		});
-		return maxPower;
+		});NoClassDefFoundError*/
+		return 480f;
 	}
 
 	@Override
