@@ -110,7 +110,7 @@ public class AsUnits implements ContentList {
 				range = 140f;
 				targetAir = false;
 				commandLimit = 4;
-				abilities.add(new InvisibleAbility(480f, 0.3f, 200f / Time.toSeconds));
+				abilities.add(new InvisibleAbility(480f, 0.3f, 200f));
 				constructor = () -> new InvisibleUnit();
 				Weapon w = new Weapon("mount-weapon") {
 					{
@@ -129,14 +129,23 @@ public class AsUnits implements ContentList {
 				InvisibleUnit innerUnit = (InvisibleUnit)unit;
 				applyColor(unit);
 				if (Vars.player.team() == unit.team && innerUnit.isVisible) {
-					Draw.alpha(innerUnit.visDuction * 0.01f);
-					Draw.mixcol(Color.white, innerUnit.visDuction * 0.01f);
+					Draw.alpha(0.25f);
 					Draw.rect(region, unit.x, unit.y, unit.rotation - 90);
 				} else if (!innerUnit.isVisible) {
 					Draw.rect(region, unit.x, unit.y, unit.rotation - 90);
 				}
 
 				Draw.reset();
+			}
+			
+			@Override
+			public void applyColor(Unit unit) {
+			    InvisibleUnit innerUnit = (InvisibleUnit)unit;
+			    if(innerUnit.isVisible) {
+			        Draw.mixcol(Color.white, 0.25f);
+			    }else{
+			        super.applyColor(unit);
+			    }
 			}
 
 			@Override
