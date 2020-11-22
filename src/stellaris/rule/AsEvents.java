@@ -1,6 +1,7 @@
 package stellaris.rule;
 
 import arc.func.Cons;
+import stellaris.type.units.InvisibleUnit;
 
 public class AsEvents {
 	public static class RuleLoadEvent{
@@ -25,4 +26,6 @@ public class AsEvents {
 	        this.r = r;
 	    }
 	}
+	
+	
 }

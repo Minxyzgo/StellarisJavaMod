@@ -14,6 +14,7 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.ui.*;
+import stellaris.type.intf.Powerc;
 
 public abstract class PowerUnit extends UnitType{
 	public float maxPower = 100f;
@@ -45,7 +46,7 @@ public abstract class PowerUnit extends UnitType{
                 bars.add(new Bar("power", Pal.powerBar, pu::powerc));
             }
             bars.row();
-            if(abilities.contains(a -> a instanceof ForceFieldAbility)) bars.add(new Bar("force", unit.team.color, () -> unit.shield / maxShield).blink(Color.white));
+            if(abilities.contains(a -> a instanceof ForceFieldAbility)) bars.add(new Bar("shield", unit.team.color, () -> unit.shield / maxShield).blink(Color.white));
             bars.row();
             if(Vars.state.rules.unitAmmo){
                 bars.add(new Bar(ammoType.icon + " " + Core.bundle.get("stat.ammo"), ammoType.barColor, () -> unit.ammo / ammoCapacity));
@@ -64,9 +65,7 @@ public abstract class PowerUnit extends UnitType{
 	}
 	
 	
-	public static interface Powerc {
-	    float powerc();
-	}
+	
 	
 	
 }

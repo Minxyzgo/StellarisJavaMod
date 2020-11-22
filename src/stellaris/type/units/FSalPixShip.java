@@ -5,6 +5,7 @@ import mindustry.content.StatusEffects;
 import mindustry.type.Weapon;
 import stellaris.Main;
 import stellaris.content.AsBullets;
+import stellaris.type.intf.Powerc;
 import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;

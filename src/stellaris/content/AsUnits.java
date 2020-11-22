@@ -1,16 +1,29 @@
 package stellaris.content;
 
 import mindustry.Vars;
-import mindustry.content.Fx;
-import mindustry.ctype.ContentList;
-import mindustry.type.UnitType;
-import mindustry.type.Weapon;
-import stellaris.type.units.FSalPixShip;
-import stellaris.type.units.PowerUnit;
-import arc.func.Cons2;
+import mindustry.content.*;
+import mindustry.ctype.*;
+import mindustry.type.*;
+import stellaris.type.abilities.*;
+import stellaris.type.intf.Powerc;
+import stellaris.type.units.*;
+import arc.func.*;
+import arc.graphics.g2d.*;
+import arc.scene.ui.layout.*;
+import arc.util.Time;
+import arc.*;
+import arc.graphics.*;
+import arc.scene.ui.*;
+import arc.util.*;
+import mindustry.ai.types.*;
+import mindustry.entities.abilities.ForceFieldAbility;
+import mindustry.entities.bullet.BulletType;
+import mindustry.gen.*;
+import mindustry.graphics.*;
+import mindustry.ui.*;
 
 public class AsUnits implements ContentList {
-	public static UnitType fship;
+	public static UnitType fship, fhz;
 	@Override
 	public void load() {
 		fship = new FSalPixShip("fs") {
@@ -42,7 +55,7 @@ public class AsUnits implements ContentList {
 				weapons.add(ls2);
 				weapons.add(ls3);
 				weapons.add(ls4);
-				
+
 				/*  丨  32    丨  21
 				39    丨  21
 				55    丨  20
@@ -53,26 +66,26 @@ public class AsUnits implements ContentList {
 				39   丨  26-
 				88   丨  26*/
 				Weapon bc = new Weapon(FSalPixShip.bcWeapon) {
-				    {
-				        shots = 3;
-				        reload = 35f;
-				        shootCone = 25f;
-				        inaccuracy = 3f;
-				        spacing = 3f;
-				        ejectEffect = Fx.none;
-				        bullet = new FSalPixShip.BcBulletType();
-				        rotate = true;
-				        rotateSpeed = 6f;
-				        x = 21;
-				        y = 32;
-				    }
+					{
+						shots = 3;
+						reload = 35f;
+						shootCone = 25f;
+						inaccuracy = 3f;
+						spacing = 3f;
+						ejectEffect = Fx.none;
+						bullet = new FSalPixShip.BcBulletType();
+						rotate = true;
+						rotateSpeed = 6f;
+						x = 21;
+						y = 32;
+					}
 				};
 				Cons2<Float, Float> bw = (x, y) -> {
-				    Weapon wn = bc.copy();
-				    wn.x = x;
-				    wn.y = y;
-				    weapons.add(wn);
-				    
+					Weapon wn = bc.copy();
+					wn.x = x;
+					wn.y = y;
+					weapons.add(wn);
+
 				};
 				bw.get(21f, 40f);
 				bw.get(20f, 56f);
@@ -82,6 +95,82 @@ public class AsUnits implements ContentList {
 				bw.get(26f, -28f);
 				bw.get(26f, -39f);
 				bw.get(26f, -88f);
+			}
+		};
+
+		fhz = new UnitType("fhz") {
+			{
+				speed = 3f;
+				accel = 0.08f;
+				drag = 0.01f;
+				flying = true;
+				health = 75;
+				engineOffset = 5.5f;
+				range = 140f;
+				targetAir = false;
+				commandLimit = 4;
+				abilities.add(new InvisibleAbility(480f, 0.3f, 200f / Time.toSeconds));
+				constructor = () -> new InvisibleUnit();
+				Weapon w = new Weapon("mount-weapon") {
+					{
+						reload = 16f;
+						x = 8.5f;
+						y = -7f;
+						rotate = true;
+						ejectEffect = Fx.casing1;
+						bullet = Bullets.standardThoriumBig;
+					}
+				};
+				weapons.add(w);
+			}
+			@Override
+			public void drawBody(Unit unit) {
+				InvisibleUnit innerUnit = (InvisibleUnit)unit;
+				applyColor(unit);
+
+				if (Vars.player.team() == unit.team && innerUnit.isVisible) {
+					Draw.alpha(innerUnit.visDuction);
+					Draw.rect(region, unit.x, unit.y, unit.rotation - 90);
+				} else if (!innerUnit.isVisible) {
+					Draw.rect(region, unit.x, unit.y, unit.rotation - 90);
+				}
+
+				Draw.reset();
+			}
+
+			@Override
+			public void display(Unit unit, Table table) {
+				table.table(t -> {
+					t.left();
+					t.add(new Image(icon(Cicon.medium))).size(8 * 4).scaling(Scaling.fit);
+					t.labelWrap(localizedName).left().width(190f).padLeft(5);
+				}).growX().left();
+				table.row();
+
+				table.table(bars -> {
+					bars.defaults().growX().height(20f).pad(4);
+
+					bars.add(new Bar("stat.health", Pal.health, unit::healthf).blink(Color.white));
+					bars.row();
+					if (unit instanceof Powerc) {
+						Powerc pu = (Powerc)unit;
+						bars.add(new Bar("power", Pal.powerBar, pu::powerc));
+					}
+					bars.row();
+					if (Vars.state.rules.unitAmmo) {
+						bars.add(new Bar(ammoType.icon + " " + Core.bundle.get("stat.ammo"), ammoType.barColor, () -> unit.ammo / ammoCapacity));
+						bars.row();
+					}
+				}).growX();
+
+				if (unit.controller() instanceof LogicAI) {
+					table.row();
+					table.add(Blocks.microProcessor.emoji() + " " + Core.bundle.get("units.processorcontrol")).growX().left();
+					table.row();
+					table.label(() -> Iconc.settings + " " + (long)unit.flag + "").color(Color.lightGray).growX().wrap().left();
+				}
+
+				table.row();
 			}
 		};
 	}
