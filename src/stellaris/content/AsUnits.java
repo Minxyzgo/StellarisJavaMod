@@ -100,12 +100,13 @@ public class AsUnits implements ContentList {
 
 		fhz = new UnitType("fhz") {
 			{
+			    health = 750f;
 				speed = 3f;
 				accel = 0.08f;
 				drag = 0.01f;
 				flying = true;
 				health = 75;
-				engineOffset = 5.5f;
+				engineOffset = 2.5f;
 				range = 140f;
 				targetAir = false;
 				commandLimit = 4;
@@ -127,9 +128,9 @@ public class AsUnits implements ContentList {
 			public void drawBody(Unit unit) {
 				InvisibleUnit innerUnit = (InvisibleUnit)unit;
 				applyColor(unit);
-
 				if (Vars.player.team() == unit.team && innerUnit.isVisible) {
-					Draw.alpha(innerUnit.visDuction);
+					Draw.alpha(innerUnit.visDuction * 0.01f);
+					Draw.mixcol(Color.white, innerUnit.visDuction * 0.01f);
 					Draw.rect(region, unit.x, unit.y, unit.rotation - 90);
 				} else if (!innerUnit.isVisible) {
 					Draw.rect(region, unit.x, unit.y, unit.rotation - 90);

@@ -1,5 +1,6 @@
 package stellaris.type.abilities;
 
+import arc.math.Mathf;
 import arc.util.Time;
 import mindustry.Vars;
 import mindustry.content.Fx;
@@ -10,6 +11,7 @@ import stellaris.Main;
 import stellaris.type.units.InvisibleUnit;
 
 public class InvisibleAbility extends BasicAbilities.PowerAbility {
+    public int mainWeaponIndex = 0;
     public float invisibleDuration = 8 * 60;
     public float reloadInvisible = 5 * 60;
     public boolean isUnVisibleShoot = true;
@@ -23,11 +25,12 @@ public class InvisibleAbility extends BasicAbilities.PowerAbility {
 	public void powerAct(Unit unit) {
 	    InvisibleUnit innerUnit = (InvisibleUnit)unit;
 	    if((!innerUnit.isVisible) && innerUnit.visDuction > 0f && innerUnit.visDuction <= invisibleDuration && innerUnit.conPower(consumePower)) {
-	        Fx.unitSpawn.at(unit.x, unit.y, unit.rotation - 90, unit);
+	        Fx.unitSpawn.at(unit.x, unit.y, unit.rotation - 90, unit.type);
 	        innerUnit.isVisible = true;
 	    }
-	    Teamc u = Units.closestTarget(unit.team, unit.x, unit.y, unVisibleRange);
-	    if(innerUnit.visDuction < 0f || !innerUnit.conPower(consumePower) || ((u == null && isUnVisibleShoot) || innerUnit.isShooting)){
+	    
+	    float length = Mathf.dst(unit.x, unit.y, unit.aimX, unit.aimY);
+	    if(innerUnit.visDuction < 0f || !innerUnit.conPower(consumePower) || ((length < unVisibleRange && isUnVisibleShoot) || innerUnit.isShooting)){
 	        innerUnit.isVisible = false;
 	        innerUnit.visDuction = invisibleDuration + reloadInvisible;
 	    }
