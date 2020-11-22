@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 
 import arc.*;
 import arc.scene.Element;
+import arc.scene.ui.Dialog;
 import arc.scene.ui.layout.Table;
 import arc.struct.Seq;
 import arc.util.Strings;
@@ -86,8 +87,8 @@ public class Ui {
 			t.marginTop(15f);
 
 			t.button(Icon.admin, () -> {
-				Player player = Vars.player;
-				AsUnits.fship.spawn(player.team(), player.getX(), player.getY());
+			    Player player = Vars.player;
+			    ui.showCustomConfirm("", "test", "fship", "fhz", () -> AsUnits.fship.spawn(player.team(), player.getX(), player.getY()), () -> AsUnits.fhz.spawn(player.team(), player.getX(), player.getY()));
 			});
 			t.visible(() -> Main.test && !Vars.net.active());
 		});

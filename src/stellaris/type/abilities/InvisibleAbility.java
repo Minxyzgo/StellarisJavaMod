@@ -1,10 +1,12 @@
 package stellaris.type.abilities;
 
 import arc.util.Time;
+import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.entities.Units;
 import mindustry.gen.Teamc;
 import mindustry.gen.Unit;
+import stellaris.Main;
 import stellaris.type.units.InvisibleUnit;
 
 public class InvisibleAbility extends BasicAbilities.PowerAbility {
@@ -30,7 +32,8 @@ public class InvisibleAbility extends BasicAbilities.PowerAbility {
 	        innerUnit.visDuction = invisibleDuration + reloadInvisible;
 	    }
 	    
-	    if(con(unit)) innerUnit.visDuction -= Time.delta;
+	    if(innerUnit.conPower(consumePower)) innerUnit.visDuction -= Time.delta;
+	    if(Main.test) Vars.ui.showInfoToast("isV:" + innerUnit.isVisible + " vd:" + innerUnit.visDuction, Time.delta);
 	}
 	
 	@Override
