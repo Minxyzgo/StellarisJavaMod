@@ -143,7 +143,7 @@ public class FSalPixShip extends PowerUnit {
 
 		@Override
 		public float maxPower() {
-			return 0;
+			return maxPower;
 		}
 
 		@Override

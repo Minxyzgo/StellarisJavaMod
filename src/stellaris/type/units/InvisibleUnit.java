@@ -13,7 +13,7 @@ public class InvisibleUnit extends UnitEntity implements Powerc {
     public float visDuction;
     public float power;
 	public boolean isVisible;
-	private transient float maxPower;
+	private float maxPower;
 
 	@Override
 	public void hitbox(Rect rect) {
