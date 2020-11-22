@@ -115,9 +115,9 @@ public class FSalPixShip extends PowerUnit {
 		public float bulletLife = -1;
 		public float power = 8000f;
 		public boolean isMainShooting = false;
-		
+
 		public void isMS(boolean bool) {
-		    isMainShooting = bool;
+			isMainShooting = bool;
 		}
 
 		@Override
@@ -139,6 +139,26 @@ public class FSalPixShip extends PowerUnit {
 			bulletLife = read.f();
 			power = read.f();
 			isMainShooting = read.bool();
+		}
+
+		@Override
+		public float maxPower() {
+			return 0;
+		}
+
+		@Override
+		public float status() {
+			return power;
+		}
+
+		@Override
+		public void status(float value) {
+			power = value;
+		}
+
+		@Override
+		public boolean conPower(float value) {
+			return power >= (value * Time.toSeconds);
 		}
 	}
 
@@ -175,7 +195,7 @@ public class FSalPixShip extends PowerUnit {
 			if (((innerUnit.bulletLife < baseTime && b != null && mount.reload == weapon.reload) || innerUnit.isMainShooting) && innerUnit.power > mainConsunePower) {
 				innerUnit.isMS(true);
 				innerUnit.power = Math.max(innerUnit.power - (mainConsunePower / baseTime * Time.delta), 0f);
-				
+
 				b.rotation(unit.rotation);
 				b.set(shootX, shootY);
 				b.time(0f);
@@ -218,7 +238,7 @@ public class FSalPixShip extends PowerUnit {
 
 		@Override
 		public void draw(Unit unit) {
-		    FShip innerUnit = (FShip)unit;
+			FShip innerUnit = (FShip)unit;
 			WeaponMount mount = MainShoot(unit);
 			Weapon weapon = mount.weapon;
 			float rotation = unit.rotation - 90;
@@ -406,7 +426,7 @@ public class FSalPixShip extends PowerUnit {
 				});
 			}).at(b.x, b.y, b.rotation());
 			hit(b, b.x, b.y);
-			
+
 		}
 
 		@Override
@@ -451,7 +471,7 @@ public class FSalPixShip extends PowerUnit {
 					boolean consume = innerUnit.power >= con;
 					if (mount.reload == mount.weapon.reload && consume) {
 						new Effect(20f, e -> {
-						    Draw.z(120f);
+							Draw.z(120f);
 							Draw.color(Color.white, unit.team.color, e.fin());
 							Lines.stroke(0.5f + e.fout());
 							Lines.circle(e.x, e.y, e.fin() * 5f);
