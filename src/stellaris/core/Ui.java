@@ -39,6 +39,7 @@ import static mindustry.Vars.*;
 public class Ui {
 	public MobileButton ste;
 	public int spawnNum = 1;
+	public ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 
 	public Ui() {
 		ste = new MobileButton(Icon.menu, "stellaris", () -> ui.showCustomConfirm("tool", "[green]test" + Main.test, "test-button", "log-test", () -> Main.test = Main.test ? false : true,
@@ -160,19 +161,17 @@ public class Ui {
 		dialog.cont.row();
 		dialog.cont.pane(table -> {
 			table.left();
-			PrintStream old = System.out;
-			ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 			PrintStream stream = new PrintStream(out);
 			System.setOut(stream);
 			byte[] b = out.toByteArray();
-			ByteArrayInputStream in = new ByteArrayInputStream(b);
-			System.setOut(old);
-			byte[] bytes = in.readAllBytes();
+	//		ByteArrayInputStream in = new ByteArrayInputStream(b);
+		//	System.setOut(old);
+		//	byte[] bytes = in.readAllBytes();
 			StringBuffer buffer = new StringBuffer();
-			for (byte bb : bytes) {
-				buffer.append(Character.toString(Integer.valueOf(String.valueOf(bb))));
+			for (byte bb : b) {
+				buffer.append(Character.toString((int)bb));
 			}
-			in.reset();
+			
 			String[] msg = buffer.toString().split("\\n");
 			for (String s : msg) {
 				table.add("[lightgray]" + s).left().pad(3).padLeft(6).padRight(6);
