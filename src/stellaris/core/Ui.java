@@ -169,7 +169,8 @@ public class Ui {
 		//	byte[] bytes = in.readAllBytes();
 			StringBuffer buffer = new StringBuffer();
 			for (byte bb : b) {
-				buffer.append(Character.toString((int)bb));
+				//buffer.append(Character.toString((int)bb));
+				buffer.append(bb);
 			}
 			
 			String[] msg = buffer.toString().split("\\n");
