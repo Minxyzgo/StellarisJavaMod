@@ -5,18 +5,14 @@ import java.lang.reflect.Field;
 
 
 import arc.*;
-import arc.math.geom.Vec2;
-import arc.scene.Element;
-import arc.scene.ui.Dialog;
+import arc.math.Mathf;
 import arc.scene.ui.Slider;
-import arc.scene.ui.Label.LabelStyle;
-import arc.scene.ui.SettingsDialog.SettingsTable;
 import arc.scene.style.TextureRegionDrawable;
 import arc.scene.ui.layout.Table;
-import arc.struct.Seq;
-import arc.util.Align;
-import arc.util.Strings;
+import arc.util.Time;
 import mindustry.Vars;
+import mindustry.content.Fx;
+import mindustry.game.Team;
 import mindustry.game.EventType.*;
 import mindustry.gen.Icon;
 import mindustry.gen.Player;
@@ -29,7 +25,6 @@ import mindustry.ui.Styles;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustry.ui.fragments.MenuFragment;
 import stellaris.Main;
-import stellaris.content.AsUnits;
 import stellaris.ui.draw.MenuRed;
 //import stellaris.ui.frg.MenuFrg;
 
@@ -38,7 +33,9 @@ import static mindustry.Vars.*;
 
 public class Ui {
 	public MobileButton ste;
-	public int spawnNum = 1;
+	public PrintStream stream;
+	public int spawnNum = 1, touchCount = 0;
+	public Team spawnTeam;
 	public ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 
 	public Ui() {
@@ -112,6 +109,7 @@ public class Ui {
 	public void unitSpawnDialog() {
 		BaseDialog dialog = new BaseDialog("SetUnitType @author Yuria");
 		dialog.cont.add("<<-Spawns: " + spawnNum + " ->>").row();
+		Player player = Vars.player;
 		dialog.cont.pane(t -> {
 			int num = 0;
 			for (UnitType type : Vars.content.units()) {
@@ -120,10 +118,19 @@ public class Ui {
 				if (!(num == 0) && num % 5 == 0)t.row();
 
 				t.button(new TextureRegionDrawable(type.icon(Cicon.medium)), () -> {
-					Player player = Vars.player;
-					Unit unit = type.create(player.team());
-					unit.set(player.getX(), player.getY());
-					unit.add();
+					
+					Unit unit = type.create(spawnTeam == null ? player.team() : spawnTeam);
+					for (int i = 0; i < spawnNum; i++) {
+						float spread = 40f;
+						unit.set(player.getX() + Mathf.range(spread), player.getY() + Mathf.range(spread));
+						Time.run(50, () -> {
+							Fx.unitSpawn.at(unit.x, unit.y, 0, unit);
+							Time.run(30, () -> {
+								unit.add();
+								Fx.spawn.at(unit);
+							});
+						});
+					}
 
 				}).size(80f);
 			}
@@ -138,6 +145,12 @@ public class Ui {
 			slider.change();
 			t.left().defaults().left();
 			t.add(slider).width(100);
+			t.button(Icon.add, () -> {
+			    touchCount++;
+			    spawnTeam = Team.all[touchCount];
+			});
+			
+			
 		}).left().padTop(3);
 		dialog.cont.row();
 		dialog.addCloseButton();
@@ -155,17 +168,17 @@ public class Ui {
 		dialog.cont.row();
 		dialog.cont.pane(table -> {
 			table.left();
-			PrintStream stream = new PrintStream(out);
+			if (stream == null) stream = new PrintStream(out);
 			System.setOut(stream);
 			byte[] b = out.toByteArray();
-	//		ByteArrayInputStream in = new ByteArrayInputStream(b);
-		//	System.setOut(old);
-		//	byte[] bytes = in.readAllBytes();
+			//		ByteArrayInputStream in = new ByteArrayInputStream(b);
+			//	System.setOut(old);
+			//	byte[] bytes = in.readAllBytes();
 			StringBuffer buffer = new StringBuffer();
 			for (byte bb : b) {
 				buffer.appendCodePoint(bb);
 			}
-			
+
 			String[] msg = buffer.toString().split("\\n");
 			for (String s : msg) {
 				table.add("[lightgray]" + s).left().pad(3).padLeft(6).padRight(6);
