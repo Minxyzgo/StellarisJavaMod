@@ -102,10 +102,7 @@ public class Ui {
 			t.right();
 			t.marginTop(15f);
 
-			t.button(Icon.admin, () -> {
-				Player player = Vars.player;
-				ui.showCustomConfirm("", "test", "fship", "fhz", () -> AsUnits.fship.spawn(player.team(), player.getX(), player.getY()), () -> AsUnits.fhz.spawn(player.team(), player.getX(), player.getY()));
-			});
+			t.button(Icon.admin, this::unitSpawnDialog);
 			t.visible(() -> Main.test && !Vars.net.active());
 		});
 
@@ -148,13 +145,10 @@ public class Ui {
 	}
 
 	public void showLogDialog() {
-
-
 		BaseDialog dialog = new BaseDialog("System");
 		dialog.addCloseButton();
-		dialog.cont.add("------------------------").fillX().wrap().get().setAlignment(Align.center);
+		dialog.cont.top();
 		dialog.cont.row();
-
 		dialog.cont.image().color(Pal.accent).fillX().height(3f).pad(3f);
 		dialog.cont.row();
 		dialog.cont.add("[red]all log");
@@ -169,8 +163,7 @@ public class Ui {
 		//	byte[] bytes = in.readAllBytes();
 			StringBuffer buffer = new StringBuffer();
 			for (byte bb : b) {
-				//buffer.append(Character.toString((int)bb));
-				buffer.append(bb);
+				buffer.appendCodePoint(bb);
 			}
 			
 			String[] msg = buffer.toString().split("\\n");
