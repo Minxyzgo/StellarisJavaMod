@@ -108,7 +108,7 @@ public class Ui {
 
 	public void unitSpawnDialog() {
 		BaseDialog dialog = new BaseDialog("SetUnitType @author Yuria");
-		dialog.cont.add("<<-Spawns: " + spawnNum + " ->>").row();
+		dialog.cont.add("[" + (spawnTeam == null ? Team.derelict.color.toString() : spawnTeam.toString()) + "]<<-Spawns: " + spawnNum + " ->>").row();
 		Player player = Vars.player;
 		dialog.cont.pane(t -> {
 			int num = 0;
@@ -119,8 +119,9 @@ public class Ui {
 
 				t.button(new TextureRegionDrawable(type.icon(Cicon.medium)), () -> {
 					
-					Unit unit = type.create(spawnTeam == null ? player.team() : spawnTeam);
+					
 					for (int i = 0; i < spawnNum; i++) {
+					    Unit unit = type.create(spawnTeam == null ? player.team() : spawnTeam);
 						float spread = 40f;
 						unit.set(player.getX() + Mathf.range(spread), player.getY() + Mathf.range(spread));
 						Time.run(50, () -> {
@@ -145,13 +146,19 @@ public class Ui {
 			slider.change();
 			t.left().defaults().left();
 			t.add(slider).width(100);
-			t.button(Icon.add, () -> {
+		}).left().padTop(3);
+		dialog.cont.pane(t -> {
+		    t.right().defaults().right();
+		    t.button(Icon.add, () -> {
 			    touchCount++;
+			    if(touchCount > Team.all.length) touchCount = 0;
 			    spawnTeam = Team.all[touchCount];
 			});
-			
-			
-		}).left().padTop(3);
+			t.button(Icon.commandRally, () -> {
+			    player.team(spawnTeam);
+			});
+			t.button(Icon.android, this::showLogDialog);
+		}).right().padTop(3);
 		dialog.cont.row();
 		dialog.addCloseButton();
 		dialog.show();
@@ -162,7 +169,7 @@ public class Ui {
 		dialog.addCloseButton();
 		dialog.cont.top();
 		dialog.cont.row();
-		dialog.cont.image().color(Pal.accent).fillX().height(3f).pad(3f);
+	//	dialog.cont.image().color(Pal.accent).fillX().height(3f).pad(3f);
 		dialog.cont.row();
 		dialog.cont.add("[red]all log");
 		dialog.cont.row();

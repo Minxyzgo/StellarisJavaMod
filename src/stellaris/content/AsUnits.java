@@ -21,6 +21,7 @@ import mindustry.entities.bullet.BulletType;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
+import mindustry.world.meta.BlockFlag;
 
 public class AsUnits implements ContentList {
 	public static UnitType fship, fhz;
@@ -100,29 +101,41 @@ public class AsUnits implements ContentList {
 
 		fhz = new UnitType("fhz") {
 			{
-			    health = 750f;
-				speed = 3f;
-				accel = 0.08f;
-				drag = 0.01f;
-				flying = true;
-				health = 75;
-				engineOffset = 2.5f;
-				range = 140f;
-				targetAir = false;
+				health = 750f;
 				commandLimit = 4;
 				abilities.add(new InvisibleAbility(480f, 0.3f, 200f));
 				constructor = () -> new InvisibleUnit();
-				Weapon w = new Weapon("mount-weapon") {
+				armor = 11f;
+				speed = 2.7f;
+				rotateSpeed = 4f;
+				accel = 0.05f;
+				drag = 0.015f;
+				lowAltitude = false;
+				flying = true;
+				engineOffset = 4f;
+				rotateShooting = false;
+				hitSize = 8f;
+				range = 140f;
+				targetAir = false;
+				targetFlag = BlockFlag.battery;
+
+				weapons.add(
+				new Weapon() {
 					{
-						reload = 16f;
-						x = 8.5f;
-						y = -7f;
-						rotate = true;
-						ejectEffect = Fx.casing1;
-						bullet = Bullets.standardThoriumBig;
+						x = y = 0f;
+						mirror = false;
+						ejectEffect = Fx.casing3;
+						reload = 55f;
+						minShootVelocity = 0.01f;
+						shots = 4;
+						soundPitchMin = 1f;
+						shootSound = Sounds.plasmadrop;
+						bullet = AsBullets.purpleBomb;
+						shootCone = 180f;
+						ignoreRotation = true;
+
 					}
-				};
-				weapons.add(w);
+				});
 			}
 			@Override
 			public void drawBody(Unit unit) {
@@ -137,19 +150,31 @@ public class AsUnits implements ContentList {
 
 				Draw.reset();
 			}
-			
+
 			@Override
 			public void applyColor(Unit unit) {
-			    InvisibleUnit innerUnit = (InvisibleUnit)unit;
-			    if(innerUnit.isVisible) {
-			        Draw.mixcol(Color.white, 0.25f);
-			    }else{
-			        super.applyColor(unit);
-			    }
+				InvisibleUnit innerUnit = (InvisibleUnit)unit;
+				if (innerUnit.isVisible) {
+					Draw.mixcol(Color.white, 0.25f);
+				} else {
+					super.applyColor(unit);
+				}
+			}
+
+			@Override
+			public void drawWeapons(Unit unit) {
+
+			}
+
+			@Override
+			public void drawEngine(Unit unit) {
+				InvisibleUnit innerUnit = (InvisibleUnit)unit;
+				if (!innerUnit.isVisible) super.drawEngine(unit);
 			}
 
 			@Override
 			public void display(Unit unit, Table table) {
+
 				table.table(t -> {
 					t.left();
 					t.add(new Image(icon(Cicon.medium))).size(8 * 4).scaling(Scaling.fit);
@@ -182,6 +207,8 @@ public class AsUnits implements ContentList {
 
 				table.row();
 			}
+
 		};
+
 	}
 }
