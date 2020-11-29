@@ -57,6 +57,7 @@ public class Ui {
 	    try {
 	        Method m2 = SoundControl.class.getDeclaredMethod("play", Music.class);
 	        m2.invoke(Vars.control.sound, music);
+	        Log.info("Start playing " + music);
 	    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 	        Log.err(e);
 	    }
@@ -204,14 +205,6 @@ public class Ui {
 				table.add("[lightgray]" + s).left().pad(3).padLeft(6).padRight(6);
 				table.row();
 			}
-		});
-		dialog.cont.bottom().left().defaults().pad(5f);
-		dialog.cont.pane(table -> {
-		    TextField f = new TextField("");
-		    f.setStyle(Styles.areaField);
-		    table.left();
-		    table.add(f);
-		    table.button(Icon.wrench, () -> System.out.println(f.getText()));
 		});
 		
 		dialog.show();

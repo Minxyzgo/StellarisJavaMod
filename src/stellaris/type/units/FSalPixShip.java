@@ -116,7 +116,13 @@ public class FSalPixShip extends PowerUnit {
 		public float bulletLife = -1;
 		public float power = 8000f;
 		public boolean isMainShooting = false;
-
+		
+		@Override
+		public void add() {
+		    super.add();
+		    Main.asUi.play(Musics.game8);
+		}
+		
 		public void isMS(boolean bool) {
 			isMainShooting = bool;
 		}

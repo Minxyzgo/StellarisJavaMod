@@ -124,12 +124,13 @@ public class CommandTermanal {
 				table.row();
 			}
 		});*/
+		dialog.cont.row();
 		dialog.cont.pane(table -> {
 		    table.bottom().left();
 			TextField f = new TextField("");
 			f.setStyle(Styles.areaField);
-			table.add(f).size(7).pad(15).padLeft(0).padRight(15);
-			table.button(Icon.wrench, () -> Events.fire(new MessageEvent(f.getText()))).pad(15).padRight(0).fillX();
+			table.add(f).size(144).pad(10).padLeft(0).padRight(0).fillX();
+			table.button(Icon.wrench, () -> Events.fire(new MessageEvent(f.getText()))).pad(10).padRight(0).fillX();
 		});
 		
 	}
