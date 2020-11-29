@@ -34,7 +34,7 @@ public class CommandTermanal {
 			"help",
 			new OutputStructure("help", true).with(Integer.class, "page", i -> {
 			    Integer in = (Integer)i;
-			    if(in < 1) throw new IllegalArgumentException("Page cannot be less than 1");
+			    if(in < 0) throw new IllegalArgumentException("Page cannot be less than 0");
 			    StringBuffer buffer = new StringBuffer();
 			    input.each((key, st) -> buffer.append(st.display()));
 			    String[] ss = buffer.toString().split("\\n");
@@ -79,7 +79,7 @@ public class CommandTermanal {
 		dialog.cont.pane(table -> {
 			table.left();
 			printTable = table;
-		});
+		}).size(256);
 		//	dialog.cont.image().color(Pal.accent).fillX().height(3f).pad(3f);
 		Events.on(MessageEvent.class, e -> {
 		    printTable.add("-> " + e.message).left().pad(3).padLeft(6).padRight(6).color(info);
@@ -129,9 +129,9 @@ public class CommandTermanal {
 		    table.bottom().left();
 			TextField f = new TextField("");
 			f.setStyle(Styles.areaField);
-			table.add(f).size(144).pad(10).padLeft(0).padRight(0).fillX();
+			table.add(f).size(14).pad(10).padLeft(0).padRight(0).fillX();
 			table.button(Icon.wrench, () -> Events.fire(new MessageEvent(f.getText()))).pad(10).padRight(0).fillX();
-		});
+		}).fillX().size(14);
 		
 	}
 

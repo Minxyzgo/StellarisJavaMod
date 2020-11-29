@@ -56,6 +56,7 @@ public class Ui {
 	public void play(Music music) {
 	    try {
 	        Method m2 = SoundControl.class.getDeclaredMethod("play", Music.class);
+	        m2.setAccessible(true);
 	        m2.invoke(Vars.control.sound, music);
 	        Log.info("Start playing " + music);
 	    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
