@@ -12,6 +12,7 @@ import arc.scene.ui.Slider;
 import arc.scene.ui.TextField;
 import arc.scene.style.TextureRegionDrawable;
 import arc.scene.ui.layout.Table;
+import arc.util.Log;
 import arc.util.Time;
 import mindustry.Vars;
 import mindustry.audio.SoundControl;
@@ -57,7 +58,7 @@ public class Ui {
 	        Method m2 = SoundControl.class.getDeclaredMethod("play", Music.class);
 	        m2.invoke(Vars.control.sound, music);
 	    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-	        ui.showException(e);
+	        Log.err(e);
 	    }
 	}
 
@@ -177,7 +178,7 @@ public class Ui {
 	}
 
 	public void showLogDialog() {
-		BaseDialog dialog = new BaseDialog("System");
+		BaseDialog dialog = new BaseDialog("Last Log");
 		dialog.addCloseButton();
 		dialog.cont.top();
 		dialog.cont.row();

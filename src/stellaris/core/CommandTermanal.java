@@ -22,7 +22,7 @@ public class CommandTermanal {
 	private int pageamount = 25;
 	private PrintStream stream;
 	private ByteArrayOutputStream out;
-	private BaseDialog dialog = new BaseDialog("System");
+	private BaseDialog dialog = new BaseDialog("Termanal");
 	
 	public CommandTermanal() {
 	    init();
@@ -41,7 +41,7 @@ public class CommandTermanal {
 			    int index = Math.min(pageamount, ss.length);
 			    int allpage = (int)Math.ceil(ss.length / pageamount);
 			    StringJoiner join = new StringJoiner("\\n");
-			    if(in > allpage) throw new IllegalArgumentException("Page cannot be biger than allpage");
+			    if(in > allpage) throw new IllegalArgumentException("Page cannot be biger than allpage. allpage:" + allpage + " input:" + in.intValue());
 			    if(in == 1) {
 			        for(int lx = 0; lx < index; lx++) {
 			            join.add(ss[lx]);
@@ -60,7 +60,7 @@ public class CommandTermanal {
 			    }
 			    
 			    return "-----help----- page:" + in +" allpage: 1~" + allpage + "\\n" + join.toString();
-			})
+			}).withFunc(out -> out.run.run.get(Integer.valueOf(1)))
 		);
 		out = new ByteArrayOutputStream(1024);
 		stream = new PrintStream(out);
@@ -82,7 +82,7 @@ public class CommandTermanal {
 		});
 		//	dialog.cont.image().color(Pal.accent).fillX().height(3f).pad(3f);
 		Events.on(MessageEvent.class, e -> {
-		    printTable.add("-> " + e).left().pad(3).padLeft(6).padRight(6).color(info);
+		    printTable.add("-> " + e.message).left().pad(3).padLeft(6).padRight(6).color(info);
 		    printTable.row();
 			String msg = e.message.trim();
 			String[] msg2 = msg.split(" ");
@@ -96,9 +96,8 @@ public class CommandTermanal {
 			    Log.err(err);
 			    if(err.getMessage() == null) return;
 			    String[] outErr = err.getMessage().split("\\n");
-			    printTable.add("Error:").left().pad(3).padLeft(6).padRight(6).color(error);
 			    for(String s : outErr) {
-			        printTable.add(s).left().pad(3).padLeft(6).padRight(6).color(error);
+			        printTable.add("Error:" + s).left().pad(3).padLeft(6).padRight(6).color(error);
 			        printTable.row();
 			    }
 			}
@@ -125,13 +124,12 @@ public class CommandTermanal {
 				table.row();
 			}
 		});*/
-		dialog.cont.bottom().left().defaults().fillX().pad(10f);
 		dialog.cont.pane(table -> {
+		    table.bottom().left();
 			TextField f = new TextField("");
 			f.setStyle(Styles.areaField);
-			table.left();
-			table.add(f);
-			table.button(Icon.wrench, () -> Events.fire(new MessageEvent(f.getText())));
+			table.add(f).size(7).pad(15).padLeft(0).padRight(15);
+			table.button(Icon.wrench, () -> Events.fire(new MessageEvent(f.getText()))).pad(15).padRight(0).fillX();
 		});
 		
 	}
@@ -155,7 +153,7 @@ public class CommandTermanal {
 
 
 		} else {
-			throw new IllegalAccessException();
+			throw new IllegalAccessException("There is no instruction like " + ti);
 		}
 	}
 
@@ -176,17 +174,17 @@ public class CommandTermanal {
 		public boolean needArgument;
 		private ObjectMap<String, OutputStructure> arguments = new ObjectMap<>(16);
 		protected PrintStack run;
-		protected Prov<String> prov;
+		protected Func<OutputStructure, String> fun;
 		protected FuncArray func;
 		protected Seq<ValueStack> value;
 
 		public String run(int count, Object... obj) throws Exception {
-			int baseCount = count + 1;
-			if (!needArgument || obj.length <= baseCount) {
-				return prov.get();
+			
+			if (!needArgument || obj.length <= count) {
+				return fun.get(this);
 			}
 
-			if (!(obj[baseCount] instanceof String)) {
+			if (!(obj[count] instanceof String)) {
 				if (func != null) {
 					return func.get(obj);
 				} else {
@@ -197,9 +195,9 @@ public class CommandTermanal {
 					}
 				}
 			} else {
-				String s = (String)obj[baseCount];
+				String s = (String)obj[count];
 				OutputStructure st = arguments.get(s);
-				return st.run(baseCount, obj);
+				return st.run(count + 1, obj);
 			}
 		}
 
@@ -208,8 +206,8 @@ public class CommandTermanal {
 			needArgument = argument;
 		}
 
-		public OutputStructure withProv(Prov<String> prov) {
-			this.prov = prov;
+		public OutputStructure withFunc(Func<OutputStructure,String> func) {
+			this.fun = func;
 			return this;
 		}
 
