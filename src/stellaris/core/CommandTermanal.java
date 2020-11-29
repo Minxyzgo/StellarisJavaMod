@@ -42,19 +42,18 @@ public class CommandTermanal {
 			    int allpage = (int)Math.ceil(ss.length / pageamount);
 			    StringJoiner join = new StringJoiner("\\n");
 			    if(in > allpage) throw new IllegalArgumentException("Page cannot be biger than allpage. allpage:" + allpage + " input:" + in.intValue());
-			    if(in == 1) {
+			    if(in == 0) {
 			        for(int lx = 0; lx < index; lx++) {
 			            join.add(ss[lx]);
 			        }
 			        
-			    } else if(in < allpage){
-			        for(int lx = in * pageamount; lx < pageamount; lx++) {
-			            join.add(ss[lx]);
-			        }
-			        
-			    } else {
+			    }  else if (in == allpage) {
 			        int lastPage = allpage % pageamount;
 			        for(int lx = in * pageamount; lx < lastPage; lx++) {
+			            join.add(ss[lx]);
+			        }
+			    } else if (in < allpage){
+			        for(int lx = in * pageamount; lx < pageamount; lx++) {
 			            join.add(ss[lx]);
 			        }
 			    }
@@ -75,10 +74,11 @@ public class CommandTermanal {
 
 		dialog.addCloseButton();
 		dialog.cont.row();
+		dialog.cont.row();
 		dialog.cont.pane(table -> {
 			table.left();
 			printTable = table;
-		}).top().size(80);
+		}).top().size(480, 320);
 		//	dialog.cont.image().color(Pal.accent).fillX().height(3f).pad(3f);
 		Events.on(MessageEvent.class, e -> {
 		    printTable.add("-> " + e.message).left().pad(3).padLeft(6).padRight(6).color(info);
@@ -124,12 +124,13 @@ public class CommandTermanal {
 			}
 		});*/
 		dialog.cont.row();
+		dialog.cont.row();
 		dialog.cont.pane(table -> {
 		    table.bottom().left();
 			TextField f = new TextField("");
 			f.setStyle(Styles.areaField);
-			table.add(f).size(120, 50).padLeft(0).padRight(0);
-			table.button(Icon.wrench, () -> Events.fire(new MessageEvent(f.getText()))).size(120, 50).pad(10).padRight(0);
+			table.add(f).size(200, 50).padLeft(0).padRight(0);
+			table.button(Icon.wrench, () -> Events.fire(new MessageEvent(f.getText()))).size(50, 50).pad(10).padRight(0);
 		}).bottom().size(400, 80);
 		
 	}
