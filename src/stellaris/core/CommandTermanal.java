@@ -59,8 +59,8 @@ public class CommandTermanal {
 			        }
 			    }
 			    
-			    return "-----help----- page:" + in +" allpage: 1~" + allpage + "\\n" + join.toString();
-			}).withFunc(out -> out.run.run.get(Integer.valueOf(1)))
+			    return "-----help----- page:" + in +" allpage: 0~" + allpage + "\\n" + join.toString();
+			}).withFunc(out -> out.run.run.get(Integer.valueOf(0)))
 		);
 		out = new ByteArrayOutputStream(1024);
 		stream = new PrintStream(out);
@@ -74,12 +74,11 @@ public class CommandTermanal {
 	private void initLogDialog() {
 
 		dialog.addCloseButton();
-		dialog.cont.top();
 		dialog.cont.row();
 		dialog.cont.pane(table -> {
 			table.left();
 			printTable = table;
-		}).size(256);
+		}).top().size(80);
 		//	dialog.cont.image().color(Pal.accent).fillX().height(3f).pad(3f);
 		Events.on(MessageEvent.class, e -> {
 		    printTable.add("-> " + e.message).left().pad(3).padLeft(6).padRight(6).color(info);
@@ -129,9 +128,9 @@ public class CommandTermanal {
 		    table.bottom().left();
 			TextField f = new TextField("");
 			f.setStyle(Styles.areaField);
-			table.add(f).size(14).pad(10).padLeft(0).padRight(0).fillX();
-			table.button(Icon.wrench, () -> Events.fire(new MessageEvent(f.getText()))).pad(10).padRight(0).fillX();
-		}).fillX().size(14);
+			table.add(f).size(120, 50).padLeft(0).padRight(0);
+			table.button(Icon.wrench, () -> Events.fire(new MessageEvent(f.getText()))).size(120, 50).pad(10).padRight(0);
+		}).bottom().size(400, 80);
 		
 	}
 
