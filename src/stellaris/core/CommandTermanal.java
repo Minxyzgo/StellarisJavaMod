@@ -17,7 +17,7 @@ import mindustry.ui.dialogs.*;
 
 public class CommandTermanal {
 	ObjectMap<String, OutputStructure> input = new ObjectMap<>(256);
-	Color error = Color.red, warning = Pal.missileYellow, info = Color.lightGray;
+	final Color error = Color.red, warning = Pal.missileYellow, info = Color.lightGray, print = Color.white;
 	private Table printTable;
 	private int pageamount = 25;
 	private PrintStream stream;
@@ -88,9 +88,13 @@ public class CommandTermanal {
 			try {
 			    String[] outString = outputmsg(msg2).split("\\n");
 			    for(String s : outString) {
-				    printTable.add(s).left().pad(3).padLeft(6).padRight(6).color(info);
+				    printTable.add(s).left().pad(3).padLeft(6).padRight(6).color(print);
 				    printTable.row();
 			    }
+			    printTable.add("before: " + outString[0]).left().pad(3).padLeft(6).padRight(6).color(print);
+			    printTable.row();
+			    if(outString.length > 1)  printTable.add("after: " + outString[1]).left().pad(3).padLeft(6).padRight(6).color(print);
+			    printTable.row();
 			} catch (Exception err) {
 			    Log.err(err);
 			    if(err.getMessage() == null) return;
