@@ -2,6 +2,7 @@ package stellaris.type.units;
 
 
 import arc.math.geom.Rect;
+import arc.util.Interval;
 import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
@@ -13,6 +14,7 @@ public class InvisibleUnit extends UnitEntity implements Powerc {
     public float visDuction;
     public float power;
 	public boolean isVisible;
+	public Interval timer = new Interval(1);
 	private float maxPower;
 
 	@Override

@@ -45,6 +45,7 @@ public class FSalPixShip extends PowerUnit {
 	}
 
 	{
+	    
 		health = 125000;
 		flying = true;
 		speed = 0.17f;

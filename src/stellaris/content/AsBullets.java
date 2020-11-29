@@ -9,6 +9,7 @@ import arc.math.Mathf;
 import mindustry.ctype.ContentList;
 import mindustry.entities.bullet.BulletType;
 import mindustry.gen.Sounds;
+import mindustry.graphics.Drawf;
 import stellaris.type.units.FSalPixShip;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.BasicBulletType;
@@ -38,8 +39,21 @@ public class AsBullets implements ContentList {
 				collidesAir = false;
 
 				lifetime = 70f;
+				despawnEffect = new Effect(25, e -> {
+					Draw.color(Color.valueOf("#e4ebff"), e.fin());
+					Lines.stroke(e.fout() * 2.5f);
+					Lines.circle(e.x, e.y, 4f + e.finpow() * 65f);
+					Draw.color(Color.valueOf("#e4ebff"), e.fin());
+					for (int i = 0; i < 5; i++) {
+						Drawf.tri(e.x, e.y, 6f, 100f * e.fout(), i * 90);
+					}
 
-				despawnEffect = hitEffect = new Effect(30, e -> {
+					Draw.color();
+					for (int i = 0; i < 5; i++) {
+						Drawf.tri(e.x, e.y, 3f, 35f * e.fout(), i * 90);
+					}
+				});
+				hitEffect = new Effect(30, e -> {
 					Draw.color(Color.valueOf("#e4ebff"), e.fin());
 
 					e.scaled(8, i -> {

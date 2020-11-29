@@ -2,9 +2,11 @@ package stellaris.core;
 
 import java.io.*;
 import java.lang.reflect.Field;
-
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 import arc.*;
+import arc.audio.Music;
 import arc.math.Mathf;
 import arc.scene.ui.Slider;
 import arc.scene.ui.TextField;
@@ -12,6 +14,7 @@ import arc.scene.style.TextureRegionDrawable;
 import arc.scene.ui.layout.Table;
 import arc.util.Time;
 import mindustry.Vars;
+import mindustry.audio.SoundControl;
 import mindustry.content.Fx;
 import mindustry.game.Team;
 import mindustry.game.EventType.*;
@@ -48,14 +51,21 @@ public class Ui {
 			//place();
 		});
 	}
-
+	
+	public void play(Music music) {
+	    try {
+	        Method m2 = SoundControl.class.getDeclaredMethod("play", Music.class);
+	        m2.invoke(Vars.control.sound, music);
+	    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+	        ui.showException(e);
+	    }
+	}
 
 	private void menu() {
 		try {
 			Field A = MenuFragment.class.getDeclaredField("renderer");
 			A.setAccessible(true);
 			A.set(ui.menufrag, new MenuRed());
-
 
 		} catch (NoSuchFieldException | IllegalAccessException ex) {
 			ui.showException(ex);
@@ -153,7 +163,7 @@ public class Ui {
 		    t.right().defaults().right();
 		    t.button(Icon.add, () -> {
 			    touchCount++;
-			    if(touchCount > Team.all.length) touchCount = 0;
+			    if(touchCount > 6) touchCount = 0;
 			    spawnTeam = Team.all[touchCount];
 			});
 			t.button(Icon.commandRally, () -> {

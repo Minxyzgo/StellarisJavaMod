@@ -124,10 +124,13 @@ public class AsUnits implements ContentList {
 					{
 						x = y = 0f;
 						mirror = false;
-						ejectEffect = Fx.casing3;
+						spacing = 15f;
+						inaccuracy = 5f;
+						//ejectEffect = Fx.casing3;
 						reload = 55f;
+						shotDelay = 15f;
 						minShootVelocity = 0.01f;
-						shots = 4;
+						shots = 2;
 						soundPitchMin = 1f;
 						shootSound = Sounds.plasmadrop;
 						bullet = AsBullets.purpleBomb;

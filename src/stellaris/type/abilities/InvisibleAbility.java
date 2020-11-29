@@ -9,13 +9,14 @@ import mindustry.entities.Units;
 import mindustry.gen.Teamc;
 import mindustry.gen.Unit;
 import stellaris.Main;
+import stellaris.content.AsEffects;
 import stellaris.type.units.InvisibleUnit;
 
 public class InvisibleAbility extends BasicAbilities.PowerAbility {
     public int mainWeaponIndex = 0;
     public float reloadInvisible = 5 * 60;
     public boolean isUnVisibleShoot = true;
-    public float unVisibleRange = 200;
+    public float unVisibleRange = 30;
     public boolean canDetection = true;
 	public InvisibleAbility(float maxPower, float powerProduction, float consumePower) {
 		super(maxPower, powerProduction, consumePower);
@@ -24,6 +25,10 @@ public class InvisibleAbility extends BasicAbilities.PowerAbility {
 	@Override
 	public void powerAct(Unit unit) {
 	    InvisibleUnit innerUnit = (InvisibleUnit)unit;
+	    if(!innerUnit.isVisible && innerUnit.timer.get(4f)) {
+	        AsEffects.purpledst.at(unit.x - 7f, unit.y - 5f, unit.rotation);
+	        AsEffects.purpledst.at(unit.x + 7f, unit.y - 5f, unit.rotation);
+	    }
 	    
 	    if((!innerUnit.isVisible) && innerUnit.visDuction <= 0 && innerUnit.status() >= consumePower) {
 	        Fx.unitSpawn.at(unit.x, unit.y, unit.rotation, unit.type);

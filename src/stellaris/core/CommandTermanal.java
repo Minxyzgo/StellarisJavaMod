@@ -8,7 +8,9 @@ import arc.*;
 import arc.func.*;
 import arc.graphics.*;
 import arc.scene.ui.*;
+import arc.scene.ui.layout.Table;
 import arc.struct.*;
+import arc.util.Log;
 import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
@@ -16,6 +18,7 @@ import mindustry.ui.dialogs.*;
 public class CommandTermanal {
 	ObjectMap<String, OutputStructure> input = new ObjectMap<>(256);
 	Color error = Color.red, warning = Pal.missileYellow, info = Color.lightGray;
+	private Table printTable;
 	private int pageamount = 25;
 	private PrintStream stream;
 	private ByteArrayOutputStream out;
@@ -73,29 +76,35 @@ public class CommandTermanal {
 		dialog.addCloseButton();
 		dialog.cont.top();
 		dialog.cont.row();
+		dialog.cont.pane(table -> {
+			table.left();
+			printTable = table;
+		});
 		//	dialog.cont.image().color(Pal.accent).fillX().height(3f).pad(3f);
-		dialog.cont.row();
 		Events.on(MessageEvent.class, e -> {
-		    dialog.cont.add("-> " + e).left().pad(3).padLeft(6).padRight(6).color(info);
+		    printTable.add("-> " + e).left().pad(3).padLeft(6).padRight(6).color(info);
+		    printTable.row();
 			String msg = e.message.trim();
 			String[] msg2 = msg.split(" ");
 			try {
 			    String[] outString = outputmsg(msg2).split("\\n");
 			    for(String s : outString) {
-				    dialog.cont.add(s).left().pad(3).padLeft(6).padRight(6).color(info);
-				    dialog.cont.row();
+				    printTable.add(s).left().pad(3).padLeft(6).padRight(6).color(info);
+				    printTable.row();
 			    }
 			} catch (Exception err) {
+			    Log.err(err);
+			    if(err.getMessage() == null) return;
 			    String[] outErr = err.getMessage().split("\\n");
-			    dialog.cont.add("Error:").left().pad(3).padLeft(6).padRight(6).color(error);
+			    printTable.add("Error:").left().pad(3).padLeft(6).padRight(6).color(error);
 			    for(String s : outErr) {
-			        dialog.cont.add(s).left().pad(3).padLeft(6).padRight(6).color(error);
-			        dialog.cont.row();
+			        printTable.add(s).left().pad(3).padLeft(6).padRight(6).color(error);
+			        printTable.row();
 			    }
 			}
 			Events.fire(new PrintEvent());
 		});
-		Events.on(PrintEvent.class, e -> dialog.invalidate());
+		Events.on(PrintEvent.class, e -> {dialog.cont.invalidate();printTable.invalidate();});
 		/*dialog.cont.add("[red]all log");
 		dialog.cont.row();
 		dialog.cont.pane(table -> {
@@ -116,7 +125,7 @@ public class CommandTermanal {
 				table.row();
 			}
 		});*/
-		dialog.cont.bottom().left().defaults().pad(5f);
+		dialog.cont.bottom().left().defaults().fillX().pad(10f);
 		dialog.cont.pane(table -> {
 			TextField f = new TextField("");
 			f.setStyle(Styles.areaField);

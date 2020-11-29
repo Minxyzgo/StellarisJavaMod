@@ -21,11 +21,18 @@ import static arc.math.Angles.*;
 import static mindustry.Vars.*;
 
 public class AsEffects {
-    public final static Effect
-        energyMedium = new Effect(15, e -> {
-            randLenVectors(e.id, 5, 3f + e.fin() * 8f, (x, y) -> {
-                color(Color.valueOf("#74DFC7"));
-                Fill.square(e.x + x, e.y + y, e.fout() * 1f + 0.75f, 45);
-            });
-        });
+	public final static Effect
+	energyMedium = new Effect(15, e -> {
+		randLenVectors(e.id, 5, 3f + e.fin() * 8f, (x, y) -> {
+			color(Color.valueOf("#74DFC7"));
+			Fill.square(e.x + x, e.y + y, e.fout() * 1f + 0.75f, 45);
+		});
+	}),
+	purpledst = new Effect(25, e -> {
+		Lines.stroke(e.fout() * 3);
+		Angles.randLenVectors(e.id, 1, 1 + 0 * e.fin(), e.rotation, 0, (x, y) -> {
+			Draw.color(Color.valueOf("#e4ebff"), Color.valueOf("#7b68ee"), e.fin());
+			Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 12 + 5);
+		});
+	});
 }
