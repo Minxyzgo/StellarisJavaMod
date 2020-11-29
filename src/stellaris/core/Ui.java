@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import arc.*;
 import arc.math.Mathf;
 import arc.scene.ui.Slider;
+import arc.scene.ui.TextField;
 import arc.scene.style.TextureRegionDrawable;
 import arc.scene.ui.layout.Table;
 import arc.util.Time;
@@ -37,10 +38,11 @@ public class Ui {
 	public int spawnNum = 1, touchCount = 0;
 	public Team spawnTeam;
 	public ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+	public CommandTermanal test = new CommandTermanal();
 
 	public Ui() {
-		ste = new MobileButton(Icon.menu, "stellaris", () -> ui.showCustomConfirm("tool", "[green]test" + Main.test, "test-button", "log-test", () -> Main.test = Main.test ? false : true,
-							   this::showLogDialog));
+		ste = new MobileButton(Icon.menu, "stellaris", () -> ui.showCustomConfirm("tool", "[green]test" + Main.test, "test-button", "Termanal-test", () -> Main.test = Main.test ? false : true,
+							   test::show));
 		Events.on(ClientLoadEvent.class, a -> {
 			menu();
 			//place();
@@ -192,7 +194,15 @@ public class Ui {
 				table.row();
 			}
 		});
-
+		dialog.cont.bottom().left().defaults().pad(5f);
+		dialog.cont.pane(table -> {
+		    TextField f = new TextField("");
+		    f.setStyle(Styles.areaField);
+		    table.left();
+		    table.add(f);
+		    table.button(Icon.wrench, () -> System.out.println(f.getText()));
+		});
+		
 		dialog.show();
 	}
 

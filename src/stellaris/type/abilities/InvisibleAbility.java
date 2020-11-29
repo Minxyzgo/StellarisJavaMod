@@ -40,7 +40,7 @@ public class InvisibleAbility extends BasicAbilities.PowerAbility {
 	      /*  if(!innerUnit.isPlayer() && !innerUnit.isVisible) {
 	            float rotation = Angles.angle(unit.x, unit.y, unit.aimX, unit.aimY);
 	            innerUnit.rotation(rotation - 180f);
-	        }*/
+	        }*/ 
 	    }
 	    
 	    if(!innerUnit.isVisible) innerUnit.visDuction = Math.max(innerUnit.visDuction - Time.delta, 0);
