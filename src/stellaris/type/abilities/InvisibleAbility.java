@@ -3,6 +3,7 @@ package stellaris.type.abilities;
 import arc.math.Angles;
 import arc.math.Mathf;
 import arc.util.Time;
+import arc.util.Tmp;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.entities.Units;
@@ -26,8 +27,9 @@ public class InvisibleAbility extends BasicAbilities.PowerAbility {
 	public void powerAct(Unit unit) {
 	    InvisibleUnit innerUnit = (InvisibleUnit)unit;
 	    if(!innerUnit.isVisible && innerUnit.timer.get(4f)) {
-	        AsEffects.purpledst.at(unit.x - 7f, unit.y - 5f, unit.rotation);
-	        AsEffects.purpledst.at(unit.x + 7f, unit.y - 5f, unit.rotation);
+	        Tmp.v1.trns(unit.rotation, unit.hitSize());
+	        AsEffects.purpledst.at(unit.x + Tmp.v1.x, unit.y - Tmp.v1.y, unit.rotation);
+	        AsEffects.purpledst.at(unit.x - Tmp.v1.x, unit.y - Tmp.v1.y, unit.rotation);
 	    }
 	    
 	    if((!innerUnit.isVisible) && innerUnit.visDuction <= 0 && innerUnit.status() >= consumePower) {
