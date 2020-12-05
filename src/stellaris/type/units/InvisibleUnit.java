@@ -6,7 +6,7 @@ import arc.util.Interval;
 import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import mindustry.gen.UnitEntity;
+import mindustry.gen.*;
 import stellaris.type.abilities.BasicAbilities.PowerAbility;
 import stellaris.type.intf.Powerc;
 
@@ -25,7 +25,16 @@ public class InvisibleUnit extends UnitEntity implements Powerc {
 	    	super.hitbox(rect);
 		}
 	}
-
+	
+	static {
+	    EntityMapping.idMap[29] = InvisibleUnit::new;
+	}
+	
+	@Override
+	public int classId() {
+	    return 29;
+	}
+	
 	@Override
 	public void write(Writes write) {
 		super.write(write);

@@ -111,12 +111,22 @@ public class FSalPixShip extends PowerUnit {
 	public FSAbility ability = new FSAbility();
 	public static String smallLaserName = content.transformName("smallLaserTurret"),
 						 bcWeapon = content.transformName("BcWeapon");
+	
+						 
 
-	public class FShip extends MechUnit implements Powerc {
+	public static class FShip extends MechUnit implements Powerc {
 		public float bulletLife = -1;
 		public float power = 8000f;
 		public boolean isMainShooting = false;
-		
+		static {
+	        EntityMapping.idMap[30] = FShip::new;
+        }
+        
+        @Override
+        public int classId() {
+            return 30;
+        }
+        
 		@Override
 		public void add() {
 		    super.add();
@@ -150,7 +160,7 @@ public class FSalPixShip extends PowerUnit {
 
 		@Override
 		public float maxPower() {
-			return maxPower;
+			return 150000f;
 		}
 
 		@Override
