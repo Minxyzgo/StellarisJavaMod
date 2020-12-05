@@ -27,7 +27,7 @@ public class InvisibleAbility extends BasicAbilities.PowerAbility {
 	public void powerAct(Unit unit) {
 	    InvisibleUnit innerUnit = (InvisibleUnit)unit;
 	    if(!innerUnit.isVisible && innerUnit.timer.get(4f)) {
-	        Tmp.v1.trns(unit.rotation, unit.hitSize());
+	        Tmp.v1.trns(unit.rotation, unit.hitSize() * 2.5f);
 	        AsEffects.purpledst.at(unit.x + Tmp.v1.x, unit.y - Tmp.v1.y, unit.rotation);
 	        AsEffects.purpledst.at(unit.x - Tmp.v1.x, unit.y - Tmp.v1.y, unit.rotation);
 	    }
@@ -51,7 +51,7 @@ public class InvisibleAbility extends BasicAbilities.PowerAbility {
 	    }
 	    
 	    if(!innerUnit.isVisible) innerUnit.visDuction = Math.max(innerUnit.visDuction - Time.delta, 0);
-	    if(Main.test) Vars.ui.showInfoToast("isV:" + innerUnit.isVisible + " vd:" + innerUnit.visDuction, Time.delta);
+	   // if(Main.test) Vars.ui.showInfoToast("isV:" + innerUnit.isVisible + " vd:" + innerUnit.visDuction, Time.delta);
 	}
 	
 	@Override

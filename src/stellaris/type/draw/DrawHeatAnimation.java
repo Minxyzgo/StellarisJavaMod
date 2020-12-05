@@ -53,7 +53,7 @@ public class DrawHeatAnimation extends DrawBlock{
         Draw.rect(entity.block.region, entity.x, entity.y);
         if (drawHeat) {
             Draw.color(heatColor);
-            Draw.alpha(entity.warmup * ts * (1f - s + Mathf.absin(Time.time(), 3f, s)));
+            Draw.alpha(entity.warmup * ts * (1f - s + Mathf.absin(Time.time, 3f, s)));
             Draw.blend(Blending.additive);
         }
         

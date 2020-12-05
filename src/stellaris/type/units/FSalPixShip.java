@@ -223,7 +223,7 @@ public class FSalPixShip extends PowerUnit {
 			}
 
 
-			if (Main.test) ui.showInfoToast("m-r" + mount.reload + " m-s:" + mount.shoot + " bIn:" + (mount.bullet == null) + " isS:" + innerUnit.isMainShooting + " sbd:" + innerUnit.bulletLife, Time.delta);
+			//if (Main.test) ui.showInfoToast("m-r" + mount.reload + " m-s:" + mount.shoot + " bIn:" + (mount.bullet == null) + " isS:" + innerUnit.isMainShooting + " sbd:" + innerUnit.bulletLife, Time.delta);
 
 			if (b != null && innerUnit.isMainShooting && b.timer(4, 5)) {
 				new  Effect(25, e -> {
@@ -263,7 +263,7 @@ public class FSalPixShip extends PowerUnit {
 				Draw.blend(Blending.additive);
 				Draw.color(unit.team.color);
 				Tmp.v1.trns(unit.rotation, ((FSLaserBullet)weapon.bullet).length * 1.1f);
-				Draw.alpha(mount.reload * ts * (1f - s + Mathf.absin(Time.time(), 3f, s)));
+				Draw.alpha(mount.reload * ts * (1f - s + Mathf.absin(Time.time, 3f, s)));
 				Drawf.laser(unit.team, FSMainWeapon.warning, atlas.find("clear"), shootX, shootY, unit.x + Tmp.v1.x, unit.y + Tmp.v1.y);
 				Draw.color();
 				Drawf.light(unit.team, wx, wy, unit.hitSize * 2.25f, Color.valueOf("#0092DD"), mount.heat);
@@ -388,7 +388,7 @@ public class FSalPixShip extends PowerUnit {
 			Draw.blend(Blending.additive);
 			Draw.color(b.team.color);
 			Draw.z(120f);
-			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout * 0.1f);
+			Lines.stroke((width + Mathf.absin(Time.time, oscScl, oscMag)) * fout * 0.1f);
 			Lines.lineAngle(b.x, b.y, b.rotation(), baseLen);
 			Draw.blend();
 			Draw.color();
@@ -556,9 +556,9 @@ public class FSalPixShip extends PowerUnit {
 				Fill.circle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, b.fout() * 5);
 				Lines.lineAngle(b.x + Tmp.v1.x, b.y + Tmp.v1.y, Mathf.angle(x, y), b.fslope() * 12 + 1);
 			});
-			Lines.stroke((width + Mathf.absin(Time.time(), oscScl, oscMag)) * fout);
+			Lines.stroke((width + Mathf.absin(Time.time, oscScl, oscMag)) * fout);
 			Draw.blend(Blending.additive);
-			Drawf.laser(b.team, FSMainWeapon.laserRegions[(int) Mathf.absin(Time.time(), frameSpeed, count - 0.001f)], FSMainWeapon.laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
+			Drawf.laser(b.team, FSMainWeapon.laserRegions[(int) Mathf.absin(Time.time, frameSpeed, count - 0.001f)], FSMainWeapon.laserHit, b.x, b.y, b.x + Tmp.v1.x, b.y + Tmp.v1.y);
 			Angles.randLenVectors(b.id, 5, 1 + 75 * b.fin(), b.rotation(), 180, (x, y) -> {
 				Lines.stroke(b.fout() * 0.75f);
 				Lines.lineAngle(b.x + x, b.y + y, b.rotation(), b.fslope() * 6.25f + 4);

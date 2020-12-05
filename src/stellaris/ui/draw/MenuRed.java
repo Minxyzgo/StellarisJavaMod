@@ -191,11 +191,11 @@ public class MenuRed extends MenuRenderer{
 
             Draw.color(Pal.engine);
             Fill.circle(x + Angles.trnsx(rotation + 180, engineOffset), y + Angles.trnsy(rotation + 180, engineOffset),
-            engineSize + Mathf.absin(Time.time(), 2f, engineSize / 4f));
+            engineSize + Mathf.absin(Time.time, 2f, engineSize / 4f));
 
             Draw.color(Color.white);
             Fill.circle(x + Angles.trnsx(rotation + 180, engineOffset - 1f), y + Angles.trnsy(rotation + 180, engineOffset - 1f),
-            (engineSize + Mathf.absin(Time.time(), 2f, engineSize / 4f)) / 2f);
+            (engineSize + Mathf.absin(Time.time, 2f, engineSize / 4f)) / 2f);
             Draw.color();
 
             Draw.rect(flyerType.region, x, y, flyerRot - 90);

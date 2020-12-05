@@ -35,7 +35,7 @@ public class CommandObject {
 		    this.clzss = clzss;
 		}
 		
-		public CObject<T> with(Func<String, T> func) {
+		public CObject<T> with(Func<String,T> func) {
 			this.func = func;
 			return this;
 		}

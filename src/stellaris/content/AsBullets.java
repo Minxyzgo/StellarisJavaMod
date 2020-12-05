@@ -25,7 +25,11 @@ public class AsBullets implements ContentList {
 				width = height = 120 / 4f;
 
 //Draw.color(Color.valueOf("#7b68ee"),Color.valueOf("#e4ebff"),e.fin());
-				range = 30f;
+				lightColor = Color.valueOf("#7b68ee");
+				lightning = 12;
+				lightningCone = 360f;
+				lightningLength = 7;
+				lightningDamage = 45f;
 
 				backColor = Color.valueOf("#7b68ee");
 				frontColor = Color.valueOf("#e4ebff");

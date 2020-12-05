@@ -82,14 +82,14 @@ public class CommandTermanal {
 		input.put(
 			"system",
 		new OutputStructure("system", false).withFunc(outstructure -> {
-		    boolean initialization = System.out == stream;
-		    StringBuffer buffer = new StringBuffer();
-			if(!initialization) {
-			    buffer.append("[green]initialization\n");
-			    System.setOut(stream);
+			boolean initialization = System.out == stream;
+			StringBuffer buffer = new StringBuffer();
+			if (!initialization) {
+				buffer.append("[green]initialization\n");
+				System.setOut(stream);
 			}
 			byte[] b = out.toByteArray();
-			
+
 			for (byte bb : b) {
 				buffer.appendCodePoint(bb);
 			}
@@ -182,10 +182,20 @@ public class CommandTermanal {
 
 			for (int i = 1; i < msg.length; i++) {
 				String x = msg[i];
+				String[] msgsplit = x.split(".");
 				try {
-					if (x.split(".").length > 1) seq.add(Float.valueOf(x));
+					if (msgsplit.length > 1) seq.add(Float.valueOf(x));
 					seq.add(Integer.valueOf(x));
 				} catch (NumberFormatException nm) {
+					if (msgsplit.length > 1) {
+
+						String poi = msgsplit[0];
+						CObject<?> c = CommandObject.map.get(poi);
+						seq.add(c.func.get(msgsplit[1]));
+						continue;
+
+					}
+
 					seq.add(x);
 				}
 			}
