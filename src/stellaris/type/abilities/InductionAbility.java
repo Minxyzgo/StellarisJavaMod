@@ -24,23 +24,24 @@ public class InductionAbility extends Ability {
 	/* For Power Unit */
 	private ImageButton button;
 	private final InputProcessor inputMove;
-	private boolean touched;
+	private boolean touched, Bdisabled, Tdisabled;
 	{
 
 		inputMove = new InputProcessor() {
 			final float playerSelectRange = mobile ? 17f : 11f;
 
 			{
-				Powerc c = (Powerc)player.unit();
+				
 				ui.hudGroup.fill(t -> {
 					t.left();
 					t.marginTop(15f);
 					button = t.button(Icon.admin, () -> {
 						touched = true;
+						Powerc c = (Powerc)player.unit();
 						c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
 						Time.run(160f, () -> touched = false);
-					}).disabled(b -> c.conPower(consumePower)).get();
-					t.visible(() -> true);
+					}).disabled(b -> Bdisabled).get();
+					t.visible(() -> Tdisabled);
 
 				});
 
@@ -118,7 +119,14 @@ public class InductionAbility extends Ability {
 	public String localized() {
 	    return "[bar]Induction";
 	}
-
+	
+	@Override
+	public void update(Unit unit) {
+	    Powerc c = (Powerc)unit;
+	    Bdisabled = c.conPower(consumePower);
+	    Tdisabled = !player.dead() && player.unit().getClass() == type;
+	}
+	
 	@Override
 	public void draw(Unit unit) {
 	    
