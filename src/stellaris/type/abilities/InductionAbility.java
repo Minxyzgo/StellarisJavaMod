@@ -17,6 +17,7 @@ import mindustry.game.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.world.*;
+import stellaris.Main;
 import stellaris.type.intf.*;
 
 import static mindustry.Vars.*;
@@ -25,7 +26,7 @@ public class InductionAbility extends Ability {
 	/* For Power Unit */
 	private ImageButton button;
 	private final InputProcessor inputMove;
-	private boolean touched, Bdisabled, Tdisabled;
+	private boolean touched, Bdisabled;
 	{
 
 		inputMove = new InputProcessor() {
@@ -42,7 +43,7 @@ public class InductionAbility extends Ability {
 							c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
 							Time.run(160f, () -> touched = false);
 						}).disabled(b -> Bdisabled).get();
-						t.visible(() -> Tdisabled);
+						t.visible(() -> true);
 
 					});
 				});
@@ -118,14 +119,14 @@ public class InductionAbility extends Ability {
 
 	@Override
 	public String localized() {
-		return "[bar]Induction";
+		return "Induction";
 	}
 
 	@Override
 	public void update(Unit unit) {
 		Powerc c = (Powerc)unit;
 		Bdisabled = c.conPower(consumePower);
-		Tdisabled = !player.dead() && player.unit().getClass() == type;
+		if(Main.test) ui.showInfoToast("boolean: " + Bdisabled, Time.delta);
 	}
 
 	@Override
