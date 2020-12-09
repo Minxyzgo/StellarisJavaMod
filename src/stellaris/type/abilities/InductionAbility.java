@@ -13,6 +13,7 @@ import mindustry.core.*;
 import mindustry.entities.*;
 import mindustry.entities.abilities.*;
 import mindustry.gen.*;
+import mindustry.game.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.world.*;
@@ -31,25 +32,25 @@ public class InductionAbility extends Ability {
 			final float playerSelectRange = mobile ? 17f : 11f;
 
 			{
-				
-				ui.hudGroup.fill(t -> {
-					t.left();
-					t.marginTop(15f);
-					button = t.button(Icon.admin, () -> {
-						touched = true;
-						Powerc c = (Powerc)player.unit();
-						c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
-						Time.run(160f, () -> touched = false);
-					}).disabled(b -> Bdisabled).get();
-					t.visible(() -> Tdisabled);
+				Events.on(EventType.ClientLoadEvent.class, e -> {
+					ui.hudGroup.fill(t -> {
+						t.left();
+						t.marginTop(15f);
+						button = t.button(Icon.admin, () -> {
+							touched = true;
+							Powerc c = (Powerc)player.unit();
+							c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
+							Time.run(160f, () -> touched = false);
+						}).disabled(b -> Bdisabled).get();
+						t.visible(() -> Tdisabled);
 
+					});
 				});
-
 			}
 
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, KeyCode button) {
-			    
+
 				if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().getClass() != type) return false;
 				//	InputHandler Ihandler = getInput();
 				Tile tile = tileAt(screenX, screenY);
@@ -108,28 +109,28 @@ public class InductionAbility extends Ability {
 	public Effect spawnEffect = Fx.none;
 	public Effect disappearEffect = Fx.none;
 	public Effect orderedEffect = Fx.none;
-	
+
 	public InductionAbility(Class<? extends  Unit> type) {
-	    this.type = type;
+		this.type = type;
 	}
-	
-	InductionAbility(){}
-	
+
+	InductionAbility() {}
+
 	@Override
 	public String localized() {
-	    return "[bar]Induction";
+		return "[bar]Induction";
 	}
-	
+
 	@Override
 	public void update(Unit unit) {
-	    Powerc c = (Powerc)unit;
-	    Bdisabled = c.conPower(consumePower);
-	    Tdisabled = !player.dead() && player.unit().getClass() == type;
+		Powerc c = (Powerc)unit;
+		Bdisabled = c.conPower(consumePower);
+		Tdisabled = !player.dead() && player.unit().getClass() == type;
 	}
-	
+
 	@Override
 	public void draw(Unit unit) {
-	    
+
 		if (touched && !button.isDisabled()) {
 			InputHandler input = control.input;
 			Vec2 v = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
