@@ -1,10 +1,10 @@
 package stellaris.type.units;
 
-import mindustry.type.UnitType;
 import mindustry.content.StatusEffects;
 import mindustry.type.Weapon;
 import stellaris.Main;
 import stellaris.content.AsBullets;
+import stellaris.type.abilities.InductionAbility;
 import stellaris.type.intf.Powerc;
 import arc.graphics.Blending;
 import arc.graphics.Color;
@@ -14,7 +14,6 @@ import arc.graphics.g2d.Lines;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Angles;
 import arc.math.Mathf;
-import arc.util.Interval;
 import arc.util.Nullable;
 import arc.util.Time;
 import arc.util.Tmp;
@@ -27,14 +26,13 @@ import mindustry.entities.abilities.Ability;
 import mindustry.entities.abilities.ForceFieldAbility;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.ContinuousLaserBulletType;
-import mindustry.entities.bullet.LaserBulletType;
 import mindustry.entities.units.WeaponMount;
 import mindustry.gen.*;
 import mindustry.graphics.Drawf;
 //import stellaris.type.units.PowerUnit.PowerWeapon;
-
 import static mindustry.Vars.*;
 import static arc.Core.*;
+
 public class FSalPixShip extends PowerUnit {
 	public FSalPixShip(String name) {
 		super(name);
@@ -42,6 +40,7 @@ public class FSalPixShip extends PowerUnit {
 		abilities.add(new ForceFieldAbility(320, 100, maxShield, 550));
 		abilities.add(new LaserAbility());
 		abilities.add(new BcAbility());
+		abilities.add(new InductionAbility(FShip.class));
 	}
 
 	{
