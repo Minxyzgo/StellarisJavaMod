@@ -159,7 +159,7 @@ public class FSalPixShip extends PowerUnit {
 
 		@Override
 		public float maxPower() {
-			return 150000f;
+			return 8000;
 		}
 
 		@Override
@@ -174,7 +174,7 @@ public class FSalPixShip extends PowerUnit {
 
 		@Override
 		public boolean conPower(float value) {
-			return power >= (value * Time.toSeconds);
+			return power >= value;
 		}
 	}
 
