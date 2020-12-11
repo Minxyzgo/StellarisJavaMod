@@ -126,7 +126,7 @@ public class InductionAbility extends Ability {
 	public void update(Unit unit) {
 		Powerc c = (Powerc)unit;
 		Bdisabled = c.conPower(consumePower);
-		if(Main.test) ui.showInfoToast("boolean: 7" + Bdisabled, Time.delta);
+		if(Main.test) ui.showInfoToast("bds" + Bdisabled + " tou" + touched + " bds" + button.isDisabled() + " in" + (unit.getClass() == type), Time.delta);
 	}
 
 	@Override
