@@ -54,15 +54,15 @@ public class InductionAbility extends Ability {
 
 				if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().getClass() != type) return false;
 				//	InputHandler Ihandler = getInput();
-				Tile tile = tileAt(screenX, screenY);
+				// Tile tile = tileAt(screenX, screenY);
 				float worldx = Core.input.mouseWorld(screenX, screenY).x, worldy = Core.input.mouseWorld(screenX, screenY).y;
-				if (tapPlayer(worldx, worldy, playerSelectRange) && tapPlayer(worldx, worldy, range)) {
+				if (tapPlayer(worldx, worldy, range)) {
 					disappearEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
 					Time.run(delay, () -> {
-						player.set(tile.worldx(), tile.worldy());
+						player.set(tileX(screenX) * tilesize, tileY(screenY) * tilesize);
 						spawnEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
 					});
-					touched = false;
+					touched = true;
 					return true;
 				}
 
@@ -77,9 +77,9 @@ public class InductionAbility extends Ability {
 				return player.within(x, y, range);
 			}
 
-			Tile tileAt(float x, float y) {
+			/*Tile tileAt(float x, float y) {
 				return world.tile(tileX(x), tileY(y));
-			}
+			}*/
 
 			int tileX(float cursorX) {
 				InputHandler Ihandler = getInput();
@@ -104,7 +104,7 @@ public class InductionAbility extends Ability {
 		Core.input.addProcessor(inputMove);
 	}
 	public Class<? extends Unit> type;
-	public float range = 200f;
+	public float range = 350f;
 	public float consumePower = 700f;
 	public float delay = 64f;
 	public Effect spawnEffect = Fx.none;
@@ -140,7 +140,7 @@ public class InductionAbility extends Ability {
 			Color checkColor = checkR ? Pal.accent : Color.red;
 			Draw.color(Pal.accent);
 			Drawf.circles(px, py, player.unit().hitSize() * 1.5f + sin - 2f, Pal.accent);
-			Drawf.dashCircle(px, py, range, Pal.accent);
+			Drawf.dashCircle(px, py, range * 2, Pal.accent);
 			Draw.color(checkColor);
 			Drawf.circles(v.x, v.y, player.unit().hitSize() * 1.5f + sin - 2f, checkColor);
 			Drawf.tri(px, py, Mathf.dst(px, py, v.x, v.y), 2.75f, Angles.angle(px, py, v.x, v.y));
