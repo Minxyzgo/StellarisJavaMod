@@ -33,13 +33,13 @@ public class InductionAbility extends Ability {
 		inputPan = new GestureListener() {
 			@Override
 			public boolean pan(float x, float y, float deltaX, float deltaY) {
-			    if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().getClass() != type) return false;
-			    float panmultipler = 1.25f;
+				if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().getClass() != type) return false;
+				float panmultipler = 1.25f;
 				if (!renderer.isLanding()) {
 					//pan player
 					Core.camera.position.x += deltaX * panmultipler;
 					Core.camera.position.y += deltaY * panmultipler;
-					
+
 				}
 				return false;
 			}
@@ -74,10 +74,10 @@ public class InductionAbility extends Ability {
 				float worldx = Core.input.mouseWorld(screenX, screenY).x, worldy = Core.input.mouseWorld(screenX, screenY).y;
 				if (tapPlayer(worldx, worldy, range)) {
 					disappearEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
-					Time.run(delay, () -> {
-						player.set(tileX(screenX) * tilesize, tileY(screenY) * tilesize);
-						spawnEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
-					});
+
+					player.set(tileX(screenX) * tilesize, tileY(screenY) * tilesize);
+					spawnEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
+
 					touched = false;
 				}
 
@@ -116,14 +116,13 @@ public class InductionAbility extends Ability {
 				return World.toTile(vec.y);
 			}
 		};
-		
+
 		Core.input.addProcessor(new GestureDetector(inputPan));
 		Core.input.addProcessor(inputMove);
 	}
 	public Class<? extends Unit> type;
-	public float range = 350f;
+	public float range = 1200f;
 	public float consumePower = 700f;
-	public float delay = 64f;
 	public Effect spawnEffect = Fx.none;
 	public Effect disappearEffect = Fx.none;
 	public Effect orderedEffect = Fx.none;
@@ -160,7 +159,7 @@ public class InductionAbility extends Ability {
 			Drawf.dashCircle(px, py, range * 2, Pal.accent);
 			Draw.color(checkColor);
 			Drawf.circles(v.x, v.y, player.unit().hitSize() * 1.5f + sin - 2f, checkColor);
-			Drawf.tri(px, py, Mathf.dst(px, py, v.x, v.y), 2.75f, Angles.angle(px, py, v.x, v.y));
+			Drawf.tri(px, py, Mathf.dst(px, py, v.x, v.y), 2.75f, Angles.angle(px, py, v.x, v.y) - 90f);
 			Draw.reset();
 		}
 	}
