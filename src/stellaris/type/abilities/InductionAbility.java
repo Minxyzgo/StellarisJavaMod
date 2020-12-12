@@ -26,7 +26,7 @@ public class InductionAbility extends Ability {
 	/* For Power Unit */
 	private ImageButton button;
 	private final InputProcessor inputMove;
-	private boolean touched, Bdisabled;
+	private boolean touched;
 	{
 
 		inputMove = new InputProcessor() {
@@ -41,8 +41,8 @@ public class InductionAbility extends Ability {
 							touched = true;
 							Powerc c = (Powerc)player.unit();
 							c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
-							Time.run(160f, () -> touched = false);
-						}).disabled(b -> Bdisabled).get();
+						//Time.run(160f, () -> touched = false);
+						}).disabled(tri -> player == Nulls.player || player.dead() || (!(player.unit() instanceof Powerc) || !player.unit().abilities().contains(InductionAbility.this) || !((Powerc)player.unit()).conPower(consumePower))).get();
 						t.visible(() -> true);
 
 					});
@@ -124,9 +124,7 @@ public class InductionAbility extends Ability {
 
 	@Override
 	public void update(Unit unit) {
-		Powerc c = (Powerc)unit;
-		Bdisabled = c.conPower(consumePower);
-		if(Main.test) ui.showInfoToast("bds" + Bdisabled + " tou" + touched + " bds" + button.isDisabled() + " in" + (unit.getClass() == type), Time.delta);
+		if(Main.test) ui.showInfoToast(" tou" + touched + " bds" + button.isDisabled() + " in" + (unit.getClass() == type), Time.delta);
 	}
 
 	@Override
