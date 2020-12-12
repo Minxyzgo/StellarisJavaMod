@@ -4,6 +4,7 @@ import arc.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.input.*;
+import arc.input.GestureDetector.GestureListener;
 import arc.math.*;
 import arc.math.geom.*;
 import arc.scene.ui.*;
@@ -26,11 +27,26 @@ public class InductionAbility extends Ability {
 	/* For Power Unit */
 	private ImageButton button;
 	private final InputProcessor inputMove;
+	private final GestureListener inputPan;
 	private static boolean touched;
 	{
+		inputPan = new GestureListener() {
+			@Override
+			public boolean pan(float x, float y, float deltaX, float deltaY) {
+			    if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().getClass() != type) return false;
+			    float panmultipler = 1.25f;
+				if (!renderer.isLanding()) {
+					//pan player
+					Core.camera.position.x += deltaX * panmultipler;
+					Core.camera.position.y += deltaY * panmultipler;
+					
+				}
+				return false;
+			}
+		};
 
 		inputMove = new InputProcessor() {
-			final float playerSelectRange = mobile ? 17f : 11f;
+			//	final float playerSelectRange = mobile ? 17f : 11f;
 
 			{
 				Events.on(EventType.ClientLoadEvent.class, e -> {
@@ -41,7 +57,7 @@ public class InductionAbility extends Ability {
 							InductionAbility.touched = true;
 							Powerc c = (Powerc)player.unit();
 							c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
-						//Time.run(160f, () -> touched = false);
+							//Time.run(160f, () -> touched = false);
 						}).disabled(tri -> /*player == Nulls.player || player.dead() || (!(player.unit() instanceof Powerc) || !player.unit().abilities().contains(InductionAbility.this) || !((Powerc)player.unit()).conPower(consumePower))*/false).get();
 						t.visible(() -> true);
 
@@ -62,8 +78,7 @@ public class InductionAbility extends Ability {
 						player.set(tileX(screenX) * tilesize, tileY(screenY) * tilesize);
 						spawnEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
 					});
-					touched = true;
-					return true;
+					touched = false;
 				}
 
 				return false;
@@ -101,6 +116,8 @@ public class InductionAbility extends Ability {
 				return World.toTile(vec.y);
 			}
 		};
+		
+		Core.input.addProcessor(new GestureDetector(inputPan));
 		Core.input.addProcessor(inputMove);
 	}
 	public Class<? extends Unit> type;
@@ -124,12 +141,12 @@ public class InductionAbility extends Ability {
 
 	@Override
 	public void update(Unit unit) {
-		if(Main.test) ui.showInfoToast(" tou" + touched + " bds" + button.isDisabled() + " in" + (unit.getClass() == type), Time.delta);
+		if (Main.test) ui.showInfoToast(" tou" + touched + " bds" + button.isDisabled() + " in" + (unit.getClass() == type), Time.delta);
 	}
 
 	@Override
 	public void draw(Unit unit) {
-	    
+
 		if (touched && !button.isDisabled()) {
 			InputHandler input = control.input;
 			Vec2 v = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
