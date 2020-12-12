@@ -26,7 +26,7 @@ public class InductionAbility extends Ability {
 	/* For Power Unit */
 	private ImageButton button;
 	private final InputProcessor inputMove;
-	private boolean touched;
+	private static boolean touched;
 	{
 
 		inputMove = new InputProcessor() {
@@ -38,7 +38,7 @@ public class InductionAbility extends Ability {
 						t.left();
 						t.marginTop(15f);
 						button = t.button(Icon.admin, () -> {
-							touched = true;
+							InductionAbility.touched = true;
 							Powerc c = (Powerc)player.unit();
 							c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
 						//Time.run(160f, () -> touched = false);
@@ -62,7 +62,7 @@ public class InductionAbility extends Ability {
 						player.set(tile.worldx(), tile.worldy());
 						spawnEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
 					});
-					touched = true;
+					touched = false;
 					return true;
 				}
 
