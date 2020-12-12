@@ -42,7 +42,7 @@ public class InductionAbility extends Ability {
 							Powerc c = (Powerc)player.unit();
 							c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
 						//Time.run(160f, () -> touched = false);
-						}).disabled(tri -> player == Nulls.player || player.dead() || (!(player.unit() instanceof Powerc) || !player.unit().abilities().contains(InductionAbility.this) || !((Powerc)player.unit()).conPower(consumePower))).get();
+						}).disabled(tri -> /*player == Nulls.player || player.dead() || (!(player.unit() instanceof Powerc) || !player.unit().abilities().contains(InductionAbility.this) || !((Powerc)player.unit()).conPower(consumePower))*/false).get();
 						t.visible(() -> true);
 
 					});
@@ -129,7 +129,7 @@ public class InductionAbility extends Ability {
 
 	@Override
 	public void draw(Unit unit) {
-
+	    
 		if (touched && !button.isDisabled()) {
 			InputHandler input = control.input;
 			Vec2 v = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
