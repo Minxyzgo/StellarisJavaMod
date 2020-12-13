@@ -29,6 +29,12 @@ public class InductionAbility extends Ability {
 	private final InputProcessor inputMove;
 	private final GestureListener inputPan;
 	private static boolean touched;
+	public Class<? extends Unit> type;
+	public float range = 1200f;
+	public float consumePower = 700f;
+	public Effect spawnEffect = Fx.none;
+	public Effect disappearEffect = Fx.none;
+	public Effect orderedEffect = Fx.none;
 	{
 		inputPan = new GestureListener() {
 			@Override
@@ -48,23 +54,6 @@ public class InductionAbility extends Ability {
 		inputMove = new InputProcessor() {
 			//	final float playerSelectRange = mobile ? 17f : 11f;
 
-			{
-				Events.on(EventType.ClientLoadEvent.class, e -> {
-					ui.hudGroup.fill(t -> {
-						t.left();
-						t.marginTop(15f);
-						button = t.button(Icon.admin, () -> {
-							InductionAbility.touched = true;
-							Powerc c = (Powerc)player.unit();
-							c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
-							//Time.run(160f, () -> touched = false);
-						}).disabled(tri -> /*player == Nulls.player || player.dead() || (!(player.unit() instanceof Powerc) || !player.unit().abilities().contains(InductionAbility.this) || !((Powerc)player.unit()).conPower(consumePower))*/false).get();
-						t.visible(() -> true);
-
-					});
-				});
-			}
-
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, KeyCode button) {
 
@@ -75,7 +64,7 @@ public class InductionAbility extends Ability {
 				if (tapPlayer(worldx, worldy, range)) {
 					disappearEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
 
-					player.set(tileX(screenX) * tilesize, tileY(screenY) * tilesize);
+					player.unit().set(tileX(screenX) * tilesize, tileY(screenY) * tilesize);
 					spawnEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
 
 					touched = false;
@@ -116,16 +105,28 @@ public class InductionAbility extends Ability {
 				return World.toTile(vec.y);
 			}
 		};
+		Events.on(EventType.ClientLoadEvent.class, e -> {
 
-		Core.input.addProcessor(new GestureDetector(inputPan));
-		Core.input.addProcessor(inputMove);
+			ui.hudGroup.fill(t -> {
+				t.left();
+				t.marginTop(15f);
+				button = t.button(Icon.admin, () -> {
+					InductionAbility.touched = true;
+					Powerc c = (Powerc)player.unit();
+
+					c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
+					//c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
+					//Time.run(160f, () -> touched = false);
+				}).disabled(tri -> /*player == Nulls.player || player.dead() || (!(player.unit() instanceof Powerc) || !player.unit().abilities().contains(InductionAbility.this) || !((Powerc)player.unit()).conPower(consumePower))*/false).get();
+				t.visible(() -> true);
+
+			});
+			Core.input.addProcessor(new GestureDetector(inputPan));
+			Core.input.addProcessor(inputMove);
+		});
+
 	}
-	public Class<? extends Unit> type;
-	public float range = 1200f;
-	public float consumePower = 700f;
-	public Effect spawnEffect = Fx.none;
-	public Effect disappearEffect = Fx.none;
-	public Effect orderedEffect = Fx.none;
+
 
 	public InductionAbility(Class<? extends  Unit> type) {
 		this.type = type;
@@ -159,7 +160,8 @@ public class InductionAbility extends Ability {
 			Drawf.dashCircle(px, py, range * 2, Pal.accent);
 			Draw.color(checkColor);
 			Drawf.circles(v.x, v.y, player.unit().hitSize() * 1.5f + sin - 2f, checkColor);
-			Drawf.tri(px, py, Mathf.dst(px, py, v.x, v.y), 2.75f, Angles.angle(px, py, v.x, v.y) - 90f);
+			Lines.stroke(15f);
+			Lines.line(px, py, v.x, v.y);
 			Draw.reset();
 		}
 	}
