@@ -1,4 +1,4 @@
-package stellaris.type.abilities;
+    package stellaris.type.abilities;
 
 import arc.math.Angles;
 import arc.math.Mathf;
@@ -26,11 +26,6 @@ public class InvisibleAbility extends BasicAbilities.PowerAbility {
 	@Override
 	public void powerAct(Unit unit) {
 	    InvisibleUnit innerUnit = (InvisibleUnit)unit;
-	    if(!innerUnit.isVisible && innerUnit.timer.get(4f)) {
-	        Tmp.v1.trns(unit.rotation, unit.hitSize() * 2.5f);
-	        AsEffects.purpledst.at(unit.x + Tmp.v1.x, unit.y - Tmp.v1.y, unit.rotation);
-	        AsEffects.purpledst.at(unit.x - Tmp.v1.x, unit.y - Tmp.v1.y, unit.rotation);
-	    }
 	    
 	    if((!innerUnit.isVisible) && innerUnit.visDuction <= 0 && innerUnit.status() >= consumePower) {
 	        Fx.unitSpawn.at(unit.x, unit.y, unit.rotation, unit.type);

@@ -14,8 +14,8 @@ public class InvisibleUnit extends UnitEntity implements Powerc {
     public float visDuction;
     public float power;
 	public boolean isVisible;
-	public Interval timer = new Interval(1);
-	private float maxPower;
+	
+	private transient float maxPower;
 
 	@Override
 	public void hitbox(Rect rect) {
@@ -56,13 +56,13 @@ public class InvisibleUnit extends UnitEntity implements Powerc {
 
 	@Override
 	public float maxPower() {
-		/*abilities().forEach(a -> {
+		abilities().each(a -> {
 		    if(a instanceof PowerAbility) {
 		        PowerAbility ab = (PowerAbility)a;
 		        if(maxPower < ab.maxPower) maxPower = ab.maxPower;
 		    }
-		});NoClassDefFoundError*/
-		return 480f;
+		});
+		return maxPower;
 	}
 
 	@Override

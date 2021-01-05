@@ -34,6 +34,12 @@ import static mindustry.Vars.*;
 import static arc.Core.*;
 
 public class FSalPixShip extends PowerUnit {
+    /* 过时的 */
+    public float maxPower;
+    public float powerProduction;
+    public float maxShield;
+    public float forceConsumePower;
+    
 	public FSalPixShip(String name) {
 		super(name);
 		abilities.add(ability);
@@ -56,6 +62,7 @@ public class FSalPixShip extends PowerUnit {
 		trailLength = 70;
 		maxPower = 8000f;
 		powerProduction = 5f;
+		forceConsumePower = 2f;
 		constructor = () -> new FShip();
 
 		Weapon
@@ -126,19 +133,20 @@ public class FSalPixShip extends PowerUnit {
             return 30;
         }
         
+        /*
 		@Override
 		public void add() {
 		    super.add();
 		    Main.asUi.play(Musics.game8);
 		}
-		
+		*/
 		public void isMS(boolean bool) {
 			isMainShooting = bool;
 		}
 
 		@Override
 		public float powerc() {
-			return power / ((PowerUnit)type).maxPower;
+			return power / ((FSalPixShip)type).maxPower;
 		}
 
 		@Override

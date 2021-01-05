@@ -5,22 +5,11 @@ import mindustry.content.*;
 import mindustry.ctype.*;
 import mindustry.type.*;
 import stellaris.type.abilities.*;
-import stellaris.type.intf.Powerc;
 import stellaris.type.units.*;
 import arc.func.*;
 import arc.graphics.g2d.*;
-import arc.scene.ui.layout.*;
-import arc.util.Time;
-import arc.*;
 import arc.graphics.*;
-import arc.scene.ui.*;
-import arc.util.*;
-import mindustry.ai.types.*;
-import mindustry.entities.abilities.ForceFieldAbility;
-import mindustry.entities.bullet.BulletType;
 import mindustry.gen.*;
-import mindustry.graphics.*;
-import mindustry.ui.*;
 import mindustry.world.meta.BlockFlag;
 
 public class AsUnits implements ContentList {
@@ -99,11 +88,10 @@ public class AsUnits implements ContentList {
 			}
 		};
 
-		fhz = new UnitType("fhz") {
+		fhz = new PowerUnit("fhz", new InvisibleAbility(480f, 0.3f, 200f)) {
 			{
 				health = 750f;
 				commandLimit = 4;
-				abilities.add(new InvisibleAbility(480f, 0.3f, 200f));
 				constructor = () -> new InvisibleUnit();
 				armor = 11f;
 				speed = 2.7f;
@@ -174,44 +162,6 @@ public class AsUnits implements ContentList {
 				InvisibleUnit innerUnit = (InvisibleUnit)unit;
 				if (!innerUnit.isVisible) super.drawEngine(unit);
 			}
-
-			@Override
-			public void display(Unit unit, Table table) {
-
-				table.table(t -> {
-					t.left();
-					t.add(new Image(icon(Cicon.medium))).size(8 * 4).scaling(Scaling.fit);
-					t.labelWrap(localizedName).left().width(190f).padLeft(5);
-				}).growX().left();
-				table.row();
-
-				table.table(bars -> {
-					bars.defaults().growX().height(20f).pad(4);
-
-					bars.add(new Bar("stat.health", Pal.health, unit::healthf).blink(Color.white));
-					bars.row();
-					if (unit instanceof Powerc) {
-						Powerc pu = (Powerc)unit;
-						bars.add(new Bar("power", Pal.powerBar, pu::powerc));
-					}
-					bars.row();
-					if (Vars.state.rules.unitAmmo) {
-						bars.add(new Bar(ammoType.icon + " " + Core.bundle.get("stat.ammo"), ammoType.barColor, () -> unit.ammo / ammoCapacity));
-						bars.row();
-					}
-				}).growX();
-
-				if (unit.controller() instanceof LogicAI) {
-					table.row();
-					table.add(Blocks.microProcessor.emoji() + " " + Core.bundle.get("units.processorcontrol")).growX().left();
-					table.row();
-					table.label(() -> Iconc.settings + " " + (long)unit.flag + "").color(Color.lightGray).growX().wrap().left();
-				}
-
-				table.row();
-			}
-
 		};
-
 	}
 }

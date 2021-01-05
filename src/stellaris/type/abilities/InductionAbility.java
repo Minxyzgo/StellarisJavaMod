@@ -35,6 +35,7 @@ public class InductionAbility extends Ability {
 	public Effect spawnEffect = Fx.none;
 	public Effect disappearEffect = Fx.none;
 	public Effect orderedEffect = Fx.none;
+	
 	{
 		inputPan = new GestureListener() {
 			@Override
@@ -117,8 +118,8 @@ public class InductionAbility extends Ability {
 					c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
 					//c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
 					//Time.run(160f, () -> touched = false);
-				}).disabled(tri -> /*player == Nulls.player || player.dead() || (!(player.unit() instanceof Powerc) || !player.unit().abilities().contains(InductionAbility.this) || !((Powerc)player.unit()).conPower(consumePower))*/false).get();
-				t.visible(() -> true);
+				}).disabled(tri -> ((Powerc)player.unit()).conPower(consumePower)).get();
+				t.visible(() -> player != null && player.unit() instanceof Powerc && player.unit().abilities().contains(this));
 
 			});
 			Core.input.addProcessor(new GestureDetector(inputPan));
@@ -146,7 +147,7 @@ public class InductionAbility extends Ability {
 
 	@Override
 	public void draw(Unit unit) {
-
+	    
 		if (touched && !button.isDisabled()) {
 			InputHandler input = control.input;
 			Vec2 v = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
@@ -155,13 +156,15 @@ public class InductionAbility extends Ability {
 			boolean checkR = player.within(v.x, v.y, range);
 			float px = player.getX(), py = player.getY();
 			Color checkColor = checkR ? Pal.accent : Color.red;
+			Draw.z(Layer.light);
 			Draw.color(Pal.accent);
 			Drawf.circles(px, py, player.unit().hitSize() * 1.5f + sin - 2f, Pal.accent);
 			Drawf.dashCircle(px, py, range * 2, Pal.accent);
 			Draw.color(checkColor);
 			Drawf.circles(v.x, v.y, player.unit().hitSize() * 1.5f + sin - 2f, checkColor);
 			Lines.stroke(15f);
-			Lines.line(px, py, v.x, v.y);
+			int segs =(int)Math.floor(unit.dst(v.x, v.y) / tilesize);
+			Lines.dashLine(px, py, v.x, v.y, segs);
 			Draw.reset();
 		}
 	}
