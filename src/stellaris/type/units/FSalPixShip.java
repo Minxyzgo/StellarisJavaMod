@@ -72,7 +72,6 @@ public class FSalPixShip extends PowerUnit {
 				reload = 755;
 				shotDelay = 15;
 				shootY = 9.5f;
-				occlusion = 20f;
 				recoil = 9f;
 				shootSound = Sounds.laserbig;
 				x = 0f;
