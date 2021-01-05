@@ -118,7 +118,7 @@ public class InductionAbility extends Ability {
 					c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
 					//c.status(Math.max(c.status() - consumePower * Time.delta, 0f));
 					//Time.run(160f, () -> touched = false);
-				}).disabled(tri -> ((Powerc)player.unit()).conPower(consumePower)).get();
+				}).disabled(tri -> player.unit() instanceof Powerc && ((Powerc)player.unit()).conPower(consumePower)).get();
 				t.visible(() -> player != null && player.unit() instanceof Powerc && player.unit().abilities().contains(this));
 
 			});
