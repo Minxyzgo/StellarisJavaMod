@@ -46,11 +46,11 @@ public class FSalPixShip extends PowerUnit {
 		abilities.add(new ForceFieldAbility(320, 100, maxShield, 550));
 		abilities.add(new LaserAbility());
 		abilities.add(new BcAbility());
-		abilities.add(new InductionAbility(FShip.class));
+		abilities.add(new InductionAbility(this));
 	}
 
 	{
-	    
+	    maxShield = 150000f;
 		health = 125000;
 		flying = true;
 		speed = 0.17f;

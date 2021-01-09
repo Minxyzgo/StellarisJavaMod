@@ -17,6 +17,7 @@ import mindustry.gen.*;
 import mindustry.game.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
+import mindustry.type.UnitType;
 import mindustry.world.*;
 import stellaris.Main;
 import stellaris.type.intf.*;
@@ -29,7 +30,7 @@ public class InductionAbility extends Ability {
 	private final InputProcessor inputMove;
 	private final GestureListener inputPan;
 	private static boolean touched;
-	public Class<? extends Unit> type;
+	public UnitType type;
 	public float range = 1200f;
 	public float consumePower = 700f;
 	public Effect spawnEffect = Fx.none;
@@ -40,7 +41,7 @@ public class InductionAbility extends Ability {
 		inputPan = new GestureListener() {
 			@Override
 			public boolean pan(float x, float y, float deltaX, float deltaY) {
-				if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().getClass() != type) return false;
+				if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().type != type) return false;
 				float panmultipler = 1.25f;
 				if (!renderer.isLanding()) {
 					//pan player
@@ -58,7 +59,7 @@ public class InductionAbility extends Ability {
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, KeyCode button) {
 
-				if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().getClass() != type) return false;
+				if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().type != type) return false;
 				//	InputHandler Ihandler = getInput();
 				// Tile tile = tileAt(screenX, screenY);
 				float worldx = Core.input.mouseWorld(screenX, screenY).x, worldy = Core.input.mouseWorld(screenX, screenY).y;
@@ -129,7 +130,7 @@ public class InductionAbility extends Ability {
 	}
 
 
-	public InductionAbility(Class<? extends  Unit> type) {
+	public InductionAbility(UnitType type) {
 		this.type = type;
 	}
 
@@ -142,7 +143,7 @@ public class InductionAbility extends Ability {
 
 	@Override
 	public void update(Unit unit) {
-		if (Main.test) ui.showInfoToast(" tou" + touched + " bds" + button.isDisabled() + " in" + (unit.getClass() == type), Time.delta);
+		if (Main.test) ui.showInfoToast(" tou" + touched + " bds" + button.isDisabled() + " in" + (unit.type == type), Time.delta);
 	}
 
 	@Override
