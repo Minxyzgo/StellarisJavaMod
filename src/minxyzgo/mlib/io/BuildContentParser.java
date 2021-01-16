@@ -286,11 +286,13 @@ public class BuildContentParser extends ContentParser{
 
                     UnitReq req = parser.readValue(UnitReq.class, rec);
 
-                    if(req.block instanceof Reconstructor r){
+                    if(req.block instanceof Reconstructor){
+                        Reconstructor r = (Reconstructor)req.block;
                         if(req.previous != null){
                             r.upgrades.add(new UnitType[]{req.previous, unit});
                         }
-                    }else if(req.block instanceof UnitFactory f){
+                    }else if(req.block instanceof UnitFactory){
+                        UnitFactory f = (UnitFactory)req.block;
                         f.plans.add(new UnitPlan(unit, req.time, req.requirements));
                     }else{
                         throw new IllegalArgumentException("Missing a valid 'block' in 'requirements'");
@@ -365,6 +367,25 @@ public class BuildContentParser extends ContentParser{
 
     public Prov<Unit> unitType(JsonValue value){
         if(value == null) return UnitEntity::create;
+        String s = value.asString();
+        if(s.equals("flying")) {
+            return UnitEntity::create;
+        } else if(s.equals("mech")) {
+            return MechUnit::create;
+        } else if(s.equals("legs")) {
+            return LegsUnit::create;
+        } else if(s.equals("naval")) {
+            return UnitWaterMove::create;
+        } else if(s.equals("payload")) {
+            return PayloadUnit::create;
+        } else {
+            throw new RuntimeException("Invalid unit type: '" + value + "'. Must be 'flying/mech/legs/naval/payload'.");
+            
+            //Add mod type later
+        }
+        
+        //switch expressions are not supported in -source 8. I don't know how to fix it
+        /*
         return switch(value.asString()){
             case "flying" -> UnitEntity::create;
             case "mech" -> MechUnit::create;
@@ -373,6 +394,7 @@ public class BuildContentParser extends ContentParser{
             case "payload" -> PayloadUnit::create;
             default -> throw new RuntimeException("Invalid unit type: '" + value + "'. Must be 'flying/mech/legs/naval/payload'.");
         };
+        */
     }
 
     public String getString(JsonValue value, String key){
