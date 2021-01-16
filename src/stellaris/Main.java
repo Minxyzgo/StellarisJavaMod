@@ -4,6 +4,7 @@ import mindustry.mod.*;
 import stellaris.content.*;
 //import stellaris.content.JsonLoad;
 import stellaris.core.Ui;
+import minxyzgo.mlib.*;
 
 public class Main extends Mod{
 //	public static JsonLoad load;
@@ -12,6 +13,7 @@ public class Main extends Mod{
 	private static String ccxxxzzs = "I Saw Your Ship";
 	public static Ui asUi;
 	public static boolean test = false;
+	public static Tool tool = new Tool();
     public Main(){
 
     }
@@ -28,6 +30,7 @@ public class Main extends Mod{
     @Override
     public void init(){
         asUi = new Ui();
+        tool.init();
     }
 
 }

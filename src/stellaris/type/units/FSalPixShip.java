@@ -2,6 +2,8 @@ package stellaris.type.units;
 
 import mindustry.content.StatusEffects;
 import mindustry.type.Weapon;
+import minxyzgo.mlib.entities.*;
+import minxyzgo.mlib.input.SkillButton;
 import stellaris.Main;
 import stellaris.content.AsBullets;
 import stellaris.type.abilities.InductionAbility;
@@ -14,6 +16,7 @@ import arc.graphics.g2d.Lines;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Angles;
 import arc.math.Mathf;
+import arc.scene.ui.layout.Table;
 import arc.util.Nullable;
 import arc.util.Time;
 import arc.util.Tmp;
@@ -119,10 +122,11 @@ public class FSalPixShip extends PowerUnit {
 	
 						 
 
-	public static class FShip extends MechUnit implements Powerc {
+	public static class FShip extends MechUnit implements Powerc, Skillc {
 		public float bulletLife = -1;
 		public float power = 8000f;
 		public boolean isMainShooting = false;
+		public EntSkill ent = new EntSkill();
 		static {
 	        EntityMapping.idMap[30] = FShip::new;
         }
@@ -154,6 +158,7 @@ public class FSalPixShip extends PowerUnit {
 			write.f(bulletLife);
 			write.f(power);
 			write.bool(isMainShooting);
+			ent.write(write);
 		}
 
 		@Override
@@ -162,6 +167,7 @@ public class FSalPixShip extends PowerUnit {
 			bulletLife = read.f();
 			power = read.f();
 			isMainShooting = read.bool();
+			ent.read(read);
 		}
 
 		@Override
@@ -182,6 +188,19 @@ public class FSalPixShip extends PowerUnit {
 		@Override
 		public boolean conPower(float value) {
 			return power >= value;
+		}
+
+		@Override
+		public void build(Table parent) {
+			SkillButton button = new SkillButton(parent, this);
+            button.clearChildren();
+            button.clicked(InductionAbility::touched);
+            parent.add(button);
+		}
+
+		@Override
+		public EntSkill ent() {
+			return ent;
 		}
 	}
 

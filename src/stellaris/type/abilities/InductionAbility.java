@@ -108,7 +108,7 @@ public class InductionAbility extends Ability {
 			}
 		};
 		Events.on(EventType.ClientLoadEvent.class, e -> {
-
+		    /*
 			ui.hudGroup.fill(t -> {
 				t.left();
 				t.marginTop(15f);
@@ -123,6 +123,7 @@ public class InductionAbility extends Ability {
 				t.visible(() -> player != null && player.unit() instanceof Powerc && player.unit().abilities().contains(this));
 
 			});
+			*/
 			Core.input.addProcessor(new GestureDetector(inputPan));
 			Core.input.addProcessor(inputMove);
 		});
@@ -139,6 +140,11 @@ public class InductionAbility extends Ability {
 	@Override
 	public String localized() {
 		return "Induction";
+	}
+	
+	
+	public static void touched() {
+	    InductionAbility.touched = true;
 	}
 
 	@Override
