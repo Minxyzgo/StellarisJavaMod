@@ -1,0 +1,24 @@
+{
+    "type":"SCrafter",
+    "name":"axxess",
+    "recipes":[
+        {
+            "consumes": {
+                "power": 3.5,
+                "items": {
+			        "items": [
+				        { 
+				            "item": "sand", "amount": 3 
+				            
+				        }
+				    ]
+                }
+	        }
+        }
+    ],
+    "size": 3,
+    "health": 360,
+    "update": true,
+    "solid": true,
+    "category": "crafting"
+}

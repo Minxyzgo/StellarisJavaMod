@@ -16,13 +16,14 @@ import static mindustry.Vars.*;
 @SuppressWarnings("unchecked")
 public class Tool extends Mod {
 	public static JsonLoad jsonLoad = new JsonLoad();
-	public static boolean loadExample = true;
+	public final static boolean loadExample = true, showTerminal = true;
 	public static BuildContentParser parser;
 
 
 	@Override
 	public void init() {
 		jsonLoad.init();
+		if(showTerminal) showTerminal();
 		parser = new BuildContentParser();
 		try {
 			Field parserField = Mods.class.getDeclaredField("parser");
