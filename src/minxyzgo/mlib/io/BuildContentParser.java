@@ -239,8 +239,8 @@ public class BuildContentParser extends ContentParser{
 
                 readFields(block, value, true);
 
-                if(block.size > ConstructBlock.maxSize){
-                    throw new IllegalArgumentException("Blocks cannot be larger than " + ConstructBlock.maxSize);
+                if(block.size > 16){
+                    throw new IllegalArgumentException("Blocks cannot be larger than " + 16);
                 }
 
                 //make block visible by default if there are requirements and no visibility set
@@ -760,7 +760,7 @@ public class BuildContentParser extends ContentParser{
                     return (Class<T>)Class.forName(type + '$' + base);
                     
                 }catch(Exception ignored2){
-                    contentParsers.each(type2 -> {
+                    for(String type2 : contentParsers) {
                         try{
                         
                             return (Class<T>)Class.forName(type2 + '.' + base);
@@ -773,7 +773,7 @@ public class BuildContentParser extends ContentParser{
                             }
                         }
                         
-                    });
+                    }
                     
                 }
                 
