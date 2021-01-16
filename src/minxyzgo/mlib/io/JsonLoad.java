@@ -2,6 +2,7 @@ package minxyzgo.mlib.io;
 
 import arc.*;
 import arc.struct.*;
+import mindustry.mod.Mods.LoadedMod;
 import mindustry.ctype.*;
 import mindustry.ctype.*;
 import mindustry.ctype.*;
