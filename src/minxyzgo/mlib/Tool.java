@@ -58,8 +58,8 @@ public class Tool extends Mod {
 
 	public static void unlockBlackList() {
 
-		Class<?> clazz = Class.forName("rhino.Context");
 		try {
+		    Class<?> clazz = Class.forName("rhino.Context");
 			Method cmod = Platform.class.getDeclaredMethod("getScriptContext");
 			Object context = cmod.invoke(null);
 			Field shutter = clazz.getDeclaredField("classShutter");
