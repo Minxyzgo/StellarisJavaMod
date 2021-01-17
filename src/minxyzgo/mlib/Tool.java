@@ -33,6 +33,7 @@ public class Tool extends Mod {
 			parser.contentParsers.addAll("minxyzgo.mlib.type",
 										 "minxyzgo.mlib.type.block");
 			parserType();
+			Log.info("TOOL", "parser finish");
 		} catch (Exception e) {
 			Log.err("Error for @", e);
 		}

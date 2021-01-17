@@ -769,6 +769,7 @@ public class BuildContentParser extends ContentParser{
                             try{
                                 return (Class<T>)Class.forName(type2 + '$' + base);
                             }catch(Exception ignored4) {
+                                Log.err(ignored4);
                                 
                             }
                         }
