@@ -58,7 +58,7 @@ public class Tool extends Mod {
 
 	public static void unlockBlackList() {
 
-		Class<?> clazz = Tool.class;
+		Class<?> clazz = Class.forName("rhino.Context");
 		try {
 			Method cmod = Platform.class.getDeclaredMethod("getScriptContext");
 			Object context = cmod.invoke(null);
@@ -74,8 +74,8 @@ public class Tool extends Mod {
 	}
 
 	public static void showTerminal() {
+	    enableConsole = true;
 		onLoad(() -> {
-			enableConsole = true;
 			loadLogger();
 		});
 	}

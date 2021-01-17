@@ -1,5 +1,6 @@
 package stellaris;
 
+import arc.util.*;
 import mindustry.mod.*;
 import stellaris.content.*;
 //import stellaris.content.JsonLoad;
@@ -31,6 +32,7 @@ public class Main extends Mod{
     public void init(){
         asUi = new Ui();
         tool.init();
+        Log.info("STE", "loaded");
     }
 
 }
