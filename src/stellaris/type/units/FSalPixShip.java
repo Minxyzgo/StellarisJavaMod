@@ -47,7 +47,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
     
     public DataSkill s_1;
     
-    public DataSkill[] skills = new DataSkill[]{s_1};
+    public DataSkill[] skills;
     
 	public FSalPixShip(String name) {
 		super(name);
@@ -79,6 +79,9 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 			         return InductionAbility.type;
 		        }
             };
+            
+            
+            skills = new DataSkill[]{s_1};
 	    });
 	    
 	    maxShield = 150000f;
