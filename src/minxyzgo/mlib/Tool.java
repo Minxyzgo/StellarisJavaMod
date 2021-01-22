@@ -36,10 +36,12 @@ public class Tool extends Mod {
 
 	static {
 	    JAVA_VERSION = Float.valueOf(System.getProperty("java.specification.version"));
+	    /*
 		onLoad(() -> {
 			crecipe = andType(ContentType.class, "Recipe");
 			entAddContent();
 		});
+		*/
 	}
 
 	@Override
