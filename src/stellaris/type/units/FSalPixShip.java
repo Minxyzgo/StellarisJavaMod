@@ -2,6 +2,7 @@ package stellaris.type.units;
 
 import mindustry.content.StatusEffects;
 import mindustry.type.Weapon;
+import minxyzgo.mlib.*;
 import minxyzgo.mlib.entities.*;
 import minxyzgo.mlib.input.SkillButton;
 import minxyzgo.mlib.type.DataSkill;
@@ -44,23 +45,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
     public float maxShield;
     public float forceConsumePower;
     
-    public DataSkill s_1 = new SkillButton(){
-        {
-            changed(() -> {
-                InductionAbility.setTouched(true);
-            });
-        }
-        
-		@Override
-		public void callSkill(Player pl, Object... objects) {
-			pl.unit().set((Float)objects[0], (Float)objects[1]);
-		}
-
-		@Override
-		public String getType() {
-			return InductionAbility.type;
-		}
-    };
+    public DataSkill s_1;
     
     public DataSkill[] skills = new DataSkill[]{s_1};
     
@@ -74,6 +59,28 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 	}
 
 	{
+	    
+	    Tool.onLoad(() -> {
+	        s_1 = new SkillButton(){
+                {
+                    changed(() -> {
+                    InductionAbility.setTouched(true);
+                });
+                
+                }
+        
+		        @Override
+		        public void callSkill(Player pl, Object... objects) {
+			        pl.unit().set((Float)objects[0], (Float)objects[1]);
+	    	    }
+
+	    	    @Override
+		        public String getType() {
+			         return InductionAbility.type;
+		        }
+            };
+	    });
+	    
 	    maxShield = 150000f;
 		health = 125000;
 		flying = true;
