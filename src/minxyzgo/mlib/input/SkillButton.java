@@ -47,7 +47,7 @@ public abstract class SkillButton extends DataSkill {
         parent.add(this).update(v -> {
            // v.setChecked(Skills.dataSkill == entity.getSkill());
 
-            v.setDisabled(getEnt().reload < cooldown);
+           //v.setDisabled(getEnt().reload < cooldown);
         });
         parent.row();
     }

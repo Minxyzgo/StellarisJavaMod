@@ -63,9 +63,10 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 	    Tool.onLoad(() -> {
 	        s_1 = new SkillButton(){
                 {
-                    changed(() -> {
-                    InductionAbility.setTouched(true);
-                });
+                    clearChildren();
+                    clicked(() -> {
+                        InductionAbility.setTouched(true);
+                    });
                 
                 }
         

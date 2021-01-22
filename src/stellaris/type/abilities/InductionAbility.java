@@ -135,12 +135,13 @@ public class InductionAbility extends Ability {
 
 			});
 			*/
-			Core.input.addProcessor(new GestureDetector(inputPan));
-			Core.input.addProcessor(inputMove);
+		//	Core.input.addProcessor(new GestureDetector(inputPan));
+		//	Core.input.addProcessor(inputMove);
 		});
 
 		Events.on(UnitChangeEvent.class, e -> {
 			if (e.player == player) {
+			    if(player.unit().type == null) return;
 				player.unit().type.abilities.each(ability -> {
 					touched = false;
 					if (ability.getClass() == InductionAbility.class) {
