@@ -1,22 +1,36 @@
 package minxyzgo.mlib.type;
 
-import arc.func.*;
-import arc.input.*;
+import arc.*;
+import arc.scene.ui.*;
+import arc.scene.ui.layout.*;
 import mindustry.gen.*;
+import minxyzgo.mlib.entities.*;
+import minxyzgo.mlib.type.Skills.DataFireEvent;
+import static minxyzgo.mlib.Tool.*;
 
-public class DataSkill {
-    public final Cons2<Entityc, String[]> cons;
+public abstract class DataSkill  extends ImageButton {
     public final int id;
-    public Func<KeyCode, Boolean> listener = t -> false;
     
-    public DataSkill(Cons2<Entityc, String[]> cons) {
-        this.cons = cons;
-        this.id = Skills.pocSeq.size + 1;
-        Skills.pocSeq.add(this);
+    public abstract String getType();
+    
+    public DataSkill() {
+        id = skills.pocSeq.size;
+        skills.pocSeq.add(this);
     }
     
-    public DataSkill(Cons2<Entityc, String[]> cons, Func<KeyCode, Boolean> listener) {
-        this(cons);
-        this.listener = listener;
+    public abstract EntSkill getEnt();
+    
+    public void update() {
+        getEnt().update();
     }
+    
+    public abstract void callSkill(Player player, Object... objects);
+    
+    public void sendSkill(Object... objects) {
+        Events.fire(new DataFireEvent(this, objects));
+    };
+    
+    public void reset() {}
+    
+    public void build(Table parent) {}
 }

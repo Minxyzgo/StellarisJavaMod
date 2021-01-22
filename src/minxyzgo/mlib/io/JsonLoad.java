@@ -46,7 +46,7 @@ public class JsonLoad {
 		    	    String[] namety = cc.name.split("-");
 		    	    boolean check = namety.length > 1;
 		    	    //For modname-name-other
-			    	map[cc.getContentType().ordinal()].put(check ? namety[0] : namety[1], cc);
+			    	map[cc.getContentType().ordinal()].put(check ? namety[1] : namety[0], cc);
 		    	}
 			}
 		});

@@ -1,18 +1,23 @@
 package minxyzgo.mlib.type;
 
+import minxyzgo.mlib.*;
 import arc.*;
-import arc.graphics.g2d.*;
 import arc.struct.*;
+import arc.util.*;
 import mindustry.content.*;
 import mindustry.ctype.*;
 import mindustry.entities.*;
 import mindustry.type.*;
-import mindustry.ui.*;
 import mindustry.world.consumers.*;
 import mindustry.world.meta.*;
 
+import static mindustry.game.EventType.*;
+import static mindustry.Vars.*;
+
+
 public class Recipe extends UnlockableContent{
     private static int id = 0;
+    public boolean isJson = false;
     public float time = 60;
     public Consumers consumes = new Consumers();
     public Seq<ItemStack> itemOutput = new Seq<>();
@@ -25,18 +30,20 @@ public class Recipe extends UnlockableContent{
         super(name);
     }
     
-    public TextureRegion icon(Cicon icon){
-        if(cicons[icon.ordinal()] == null){
-            cicons[icon.ordinal()] =
-                Core.atlas.find(getContentType().name() + "-" + name + "-" + icon.name(),
-                Core.atlas.find(getContentType().name() + "-" + name + "-full",
-                Core.atlas.find(name + "-" + icon.name(),
-                Core.atlas.find(name + "-full",
-                Core.atlas.find(name,
-                Core.atlas.find(getContentType().name() + "-" + name,
-                Core.atlas.find(name + "1")))))));
-        }
-        return cicons[icon.ordinal()];
+    public Recipe(String name, boolean  isJson) {
+        super(name);
+        this.isJson = isJson;
+        if(isJson) Events.on(Tool.ToolLoadEvent.class, e -> {
+            this.isJson = false;
+            content.getBy(ContentType.error).remove(this);
+            content.handleContent(this);
+            content.handleMappableContent(this);
+        });
+    }
+    
+    @Override
+    public void init(){
+        consumes.init();
     }
     
     @Override
@@ -51,6 +58,11 @@ public class Recipe extends UnlockableContent{
             stats.add(Stat.input, con.liquid, con.amount,  false);
         }
         
+        if(consumes.has(ConsumeType.power)) {
+            ConsumePower conPower= consumes.getPower();
+            stats.add(Stat.powerUse, conPower.usage);
+        }
+        
         for (ItemStack i : itemOutput) {
             stats.add(Stat.output, i);
         }
@@ -58,7 +70,7 @@ public class Recipe extends UnlockableContent{
         if(liquidOutput != null){
             stats.add(Stat.output, liquidOutput.liquid, liquidOutput.amount, false);
         }
-        stats.add(Stat.input,"@time-usage "+time);
+        stats.add(Stat.input,"@time-usage "+(time / Time.toSeconds) + "s");
     }
     
     public static int nextId() {
@@ -67,6 +79,6 @@ public class Recipe extends UnlockableContent{
 
 	@Override
 	public ContentType getContentType() {
-		return ContentType.error;
+		return isJson ? ContentType.error : Tool.crecipe;
 	}
 }

@@ -1,6 +1,7 @@
 package stellaris.type.abilities;
 
 import arc.*;
+import arc.struct.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.input.*;
@@ -17,31 +18,37 @@ import mindustry.gen.*;
 import mindustry.game.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
-import mindustry.type.UnitType;
-import mindustry.world.*;
-import stellaris.Main;
-import stellaris.type.intf.*;
+import minxyzgo.mlib.type.*;
+import minxyzgo.mlib.*;
+
+import static mindustry.game.EventType.*;
+
 
 import static mindustry.Vars.*;
 
 public class InductionAbility extends Ability {
 	/* For Power Unit */
-	private ImageButton button;
-	private final InputProcessor inputMove;
-	private final GestureListener inputPan;
+
+	private static final InputProcessor inputMove;
+	private static final GestureListener inputPan;
+	private static GestureDetector panDetector;
 	private static boolean touched;
-	public UnitType type;
+	private static InductionAbility innerAbility;
+	
+	public final static String type = "Induction";
+
+
 	public float range = 1200f;
 	public float consumePower = 700f;
 	public Effect spawnEffect = Fx.none;
 	public Effect disappearEffect = Fx.none;
 	public Effect orderedEffect = Fx.none;
-	
-	{
+
+	static {
 		inputPan = new GestureListener() {
 			@Override
 			public boolean pan(float x, float y, float deltaX, float deltaY) {
-				if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().type != type) return false;
+				if (!touched || player.dead()) return false;
 				float panmultipler = 1.25f;
 				if (!renderer.isLanding()) {
 					//pan player
@@ -59,15 +66,19 @@ public class InductionAbility extends Ability {
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, KeyCode button) {
 
-				if (InductionAbility.this.button.isDisabled() || !touched || player.dead() || player.unit().type != type) return false;
+				if (!touched || player.dead()) return false;
 				//	InputHandler Ihandler = getInput();
 				// Tile tile = tileAt(screenX, screenY);
 				float worldx = Core.input.mouseWorld(screenX, screenY).x, worldy = Core.input.mouseWorld(screenX, screenY).y;
-				if (tapPlayer(worldx, worldy, range)) {
-					disappearEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
-
-					player.unit().set(tileX(screenX) * tilesize, tileY(screenY) * tilesize);
-					spawnEffect.at(player.getX(), player.getY(), player.unit().rotation, player);
+				if (tapPlayer(worldx, worldy, innerAbility.range)) {
+				   
+					Call.effect(innerAbility.disappearEffect, player.getX(), player.getY(), player.unit().rotation, Color.white);
+					
+					
+					DataSkill data = Tool.skills.getType(type);
+					data.sendSkill(tileX(screenX) * tilesize, tileY(screenY) * tilesize);
+					
+					Call.effect(innerAbility.spawnEffect, player.getX(), player.getY(), player.unit().rotation, Color.white);
 
 					touched = false;
 				}
@@ -108,7 +119,7 @@ public class InductionAbility extends Ability {
 			}
 		};
 		Events.on(EventType.ClientLoadEvent.class, e -> {
-		    /*
+			/*
 			ui.hudGroup.fill(t -> {
 				t.left();
 				t.marginTop(15f);
@@ -128,34 +139,48 @@ public class InductionAbility extends Ability {
 			Core.input.addProcessor(inputMove);
 		});
 
+		Events.on(UnitChangeEvent.class, e -> {
+			if (e.player == player) {
+				player.unit().type.abilities.each(ability -> {
+					touched = false;
+					if (ability.getClass() == InductionAbility.class) {
+						innerAbility = (InductionAbility)ability;
+						Core.input.addProcessor(panDetector = new GestureDetector(inputPan));
+						Core.input.addProcessor(inputMove);
+						return;
+					}
+					reset();
+				});
+			}
+		});
+		Events.on(ResetEvent.class, e -> {
+		    touched = false;
+		    reset();
+		});
 	}
 
 
-	public InductionAbility(UnitType type) {
-		this.type = type;
+	public static void reset() {
+		if (Core.input.getInputProcessors().contains(panDetector)) Core.input.removeProcessor(panDetector);
+		if (Core.input.getInputProcessors().contains(inputMove)) Core.input.removeProcessor(inputMove);
+		panDetector = null;
+		innerAbility = null;
 	}
-
-	InductionAbility() {}
 
 	@Override
 	public String localized() {
 		return "Induction";
 	}
-	
-	
-	public static void touched() {
-	    InductionAbility.touched = true;
-	}
 
-	@Override
-	public void update(Unit unit) {
-		if (Main.test) ui.showInfoToast(" tou" + touched + " bds" + button.isDisabled() + " in" + (unit.type == type), Time.delta);
+
+	public static void setTouched(boolean tou) {
+		touched = tou;
 	}
 
 	@Override
 	public void draw(Unit unit) {
-	    
-		if (touched && !button.isDisabled()) {
+
+		if (touched && innerAbility == this) {
 			InputHandler input = control.input;
 			Vec2 v = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
 
@@ -170,7 +195,7 @@ public class InductionAbility extends Ability {
 			Draw.color(checkColor);
 			Drawf.circles(v.x, v.y, player.unit().hitSize() * 1.5f + sin - 2f, checkColor);
 			Lines.stroke(15f);
-			int segs =(int)Math.floor(unit.dst(v.x, v.y) / tilesize);
+			int segs = (int)Math.floor(unit.dst(v.x, v.y) / tilesize);
 			Lines.dashLine(px, py, v.x, v.y, segs);
 			Draw.reset();
 		}

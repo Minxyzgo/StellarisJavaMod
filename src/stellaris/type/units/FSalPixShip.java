@@ -4,6 +4,7 @@ import mindustry.content.StatusEffects;
 import mindustry.type.Weapon;
 import minxyzgo.mlib.entities.*;
 import minxyzgo.mlib.input.SkillButton;
+import minxyzgo.mlib.type.DataSkill;
 import stellaris.Main;
 import stellaris.content.AsBullets;
 import stellaris.type.abilities.InductionAbility;
@@ -36,12 +37,32 @@ import mindustry.graphics.Drawf;
 import static mindustry.Vars.*;
 import static arc.Core.*;
 
-public class FSalPixShip extends PowerUnit {
+public class FSalPixShip extends PowerUnit implements Skillc {
     /* 过时的 */
     public float maxPower;
     public float powerProduction;
     public float maxShield;
     public float forceConsumePower;
+    
+    public DataSkill s_1 = new SkillButton(){
+        {
+            changed(() -> {
+                InductionAbility.setTouched(true);
+            });
+        }
+        
+		@Override
+		public void callSkill(Player pl, Object... objects) {
+			pl.unit().set((Float)objects[0], (Float)objects[1]);
+		}
+
+		@Override
+		public String getType() {
+			return InductionAbility.type;
+		}
+    };
+    
+    public DataSkill[] skills = new DataSkill[]{};
     
 	public FSalPixShip(String name) {
 		super(name);
@@ -49,7 +70,7 @@ public class FSalPixShip extends PowerUnit {
 		abilities.add(new ForceFieldAbility(320, 100, maxShield, 550));
 		abilities.add(new LaserAbility());
 		abilities.add(new BcAbility());
-		abilities.add(new InductionAbility(this));
+		abilities.add(new InductionAbility());
 	}
 
 	{
@@ -122,7 +143,7 @@ public class FSalPixShip extends PowerUnit {
 	
 						 
 
-	public static class FShip extends MechUnit implements Powerc, Skillc {
+	public static class FShip extends MechUnit implements Powerc {
 		public float bulletLife = -1;
 		public float power = 8000f;
 		public boolean isMainShooting = false;
@@ -188,19 +209,6 @@ public class FSalPixShip extends PowerUnit {
 		@Override
 		public boolean conPower(float value) {
 			return power >= value;
-		}
-
-		@Override
-		public void build(Table parent) {
-			SkillButton button = new SkillButton(parent, this);
-            button.clearChildren();
-            button.clicked(InductionAbility::touched);
-            parent.add(button);
-		}
-
-		@Override
-		public EntSkill ent() {
-			return ent;
 		}
 	}
 
@@ -624,5 +632,10 @@ public class FSalPixShip extends PowerUnit {
 			//WeaponMount mount = ab.MainShoot(ab.innerUnit);
 			//float rotation = mount.rotation - 90;
 		}
+	}
+
+	@Override
+	public DataSkill[] getSkill() {
+		
 	}
 }

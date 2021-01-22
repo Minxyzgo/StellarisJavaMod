@@ -52,8 +52,19 @@ public class BuildContentParser extends ContentParser{
     
     public ObjectSet<String> contentParsers = new ObjectSet<>();
 
-    public ObjectMap<Class<?>, FieldParser> classParsers = new ObjectMap<>(){{
-        put(Effect.class, (type, data) -> {
+    public ObjectMap<Class<?>, FieldParser> classParsers = new ObjectMap<>();
+    //reason: '<>' with anonymous inner classes is not supported in -source 
+    
+    /** Stores things that need to be parsed fully, e.g. reading fields of content.
+     * This is done to accomodate binding of content names first.*/
+    public Seq<Runnable> reads = new Seq<>();
+    public Seq<Runnable> postreads = new Seq<>();
+    public ObjectSet<Object> toBeParsed = new ObjectSet<>();
+    LoadedMod currentMod;
+    public Content currentContent;
+    
+    {
+        classParsers.put(Effect.class, (type, data) -> {
             if(data.isString()){
                 return field(Fx.class, data);
             }
@@ -63,8 +74,8 @@ public class BuildContentParser extends ContentParser{
             readFields(result, data);
             return result;
         });
-        put(Interp.class, (type, data) -> field(Interp.class, data));
-        put(Schematic.class, (type, data) -> {
+        classParsers.put(Interp.class, (type, data) -> field(Interp.class, data));
+        classParsers.put(Schematic.class, (type, data) -> {
             Object result = fieldOpt(Loadouts.class, data);
             if(result != null){
                 return result;
@@ -77,7 +88,7 @@ public class BuildContentParser extends ContentParser{
                 }
             }
         });
-        put(StatusEffect.class, (type, data) -> {
+        classParsers.put(StatusEffect.class, (type, data) -> {
             Object result = fieldOpt(StatusEffects.class, data);
             if(result != null){
                 return result;
@@ -86,8 +97,8 @@ public class BuildContentParser extends ContentParser{
             readFields(effect, data);
             return effect;
         });
-        put(Color.class, (type, data) -> Color.valueOf(data.asString()));
-        put(BulletType.class, (type, data) -> {
+        classParsers.put(Color.class, (type, data) -> Color.valueOf(data.asString()));
+        classParsers.put(BulletType.class, (type, data) -> {
             if(data.isString()){
                 return field(Bullets.class, data);
             }
@@ -97,7 +108,7 @@ public class BuildContentParser extends ContentParser{
             readFields(result, data);
             return result;
         });
-        put(Sound.class, (type, data) -> {
+        classParsers.put(Sound.class, (type, data) -> {
             if(fieldOpt(Sounds.class, data) != null) return fieldOpt(Sounds.class, data);
             if(Vars.headless) return new Sound();
 
@@ -105,33 +116,26 @@ public class BuildContentParser extends ContentParser{
             String path = Vars.tree.get(name + ".ogg").exists() ? name + ".ogg" : name + ".mp3";
 
             if(sounds.containsKey(path)) return ((SoundParameter)sounds.get(path).params).sound;
-            var sound = new Sound();
+            Sound sound = new Sound();
             AssetDescriptor<?> desc = Core.assets.load(path, Sound.class, new SoundParameter(sound));
             desc.errored = Throwable::printStackTrace;
             sounds.put(path, desc);
             return sound;
         });
-        put(Objectives.Objective.class, (type, data) -> {
+        classParsers.put(Objectives.Objective.class, (type, data) -> {
             Class<? extends Objectives.Objective> oc = data.has("type") ? resolve(data.getString("type"), "mindustry.game.Objectives") : SectorComplete.class;
             data.remove("type");
             Objectives.Objective obj = make(oc);
             readFields(obj, data);
             return obj;
         });
-        put(Weapon.class, (type, data) -> {
+        classParsers.put(Weapon.class, (type, data) -> {
             Weapon weapon = new Weapon();
             readFields(weapon, data);
             weapon.name = currentMod.name + "-" + weapon.name;
             return weapon;
         });
-    }};
-    /** Stores things that need to be parsed fully, e.g. reading fields of content.
-     * This is done to accomodate binding of content names first.*/
-    public Seq<Runnable> reads = new Seq<>();
-    public Seq<Runnable> postreads = new Seq<>();
-    public ObjectSet<Object> toBeParsed = new ObjectSet<>();
-    LoadedMod currentMod;
-    public Content currentContent;
+    }
 
     public Json parser = new Json(){
         @Override
@@ -140,7 +144,8 @@ public class BuildContentParser extends ContentParser{
             if(t != null) checkNullFields(t);
             return t;
         }
-
+        
+        
         public <T> T internalRead(Class<T> type, Class elementType, JsonValue jsonData, Class keyType){
             if(type != null){
                 if(classParsers.containsKey(type)){
@@ -257,7 +262,7 @@ public class BuildContentParser extends ContentParser{
             UnitType unit;
             if(locate(ContentType.unit, name) == null){
                 unit = new UnitType(mod + "-" + name);
-                var typeVal = value.get("type");
+                JsonValue typeVal = value.get("type");
 
                 if(typeVal != null && !typeVal.isString()){
                     throw new RuntimeException("Unit '" + name + "' has an incorrect type. Types must be strings.");

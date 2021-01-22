@@ -13,7 +13,8 @@ import minxyzgo.mlib.entities.*;
 import minxyzgo.mlib.type.*;
 import minxyzgo.mlib.type.Skills.DataFireEvent;
 
-public class SkillButton extends ImageButton {
+public abstract class SkillButton extends DataSkill {
+    public EntSkill ent = new EntSkill();
     public final ImageButton.ImageButtonStyle imageStyle = new ImageButton.ImageButtonStyle() {{
         down = Styles.flatDown;
         up = Styles.black;
@@ -23,12 +24,11 @@ public class SkillButton extends ImageButton {
         this.disabled = SkillButton.this.disabled;
         checked = Styles.flatDown;
     }};
-    public Skillc entity;
     public float cooldown = 21.5f;
     public final TextureRegionDrawable disabled = new TextureRegionDrawable() {
         @Override
         public void draw(float x, float y, float width, float height) {
-            float cooldownProgress = entity.ent().reload / cooldown;
+            float cooldownProgress = getEnt().reload / cooldown;
             float cooldownProgressNega = (1 - cooldownProgress);
             Draw.color(Tmp.c1.set(Color.HSVtoRGB(0, 0, 0, 0.3f)).toFloatBits());
             Draw.rect(region, x + width / 2.0f, y + height - height * cooldownProgressNega / 2f, width, height * cooldownProgressNega);
@@ -37,18 +37,17 @@ public class SkillButton extends ImageButton {
         }
     };
     
-    {
-        changed(() -> {
-            Events.<DataFireEvent>fire(new DataFireEvent(entity.getSkill(), ((Entityc)entity).id()));
-        });
+    @Override
+    public EntSkill getEnt() {
+        return ent;
     }
     
-    public SkillButton(Table parent, Skillc entity) {
-        this.entity = entity;
+    @Override
+    public void build(Table parent) {
         parent.add(this).update(v -> {
-            v.setChecked(Skills.dataSkill == entity.getSkill());
+           // v.setChecked(Skills.dataSkill == entity.getSkill());
 
-            v.setDisabled(entity.ent().reload < cooldown);
+            v.setDisabled(getEnt().reload < cooldown);
         });
         parent.row();
     }
