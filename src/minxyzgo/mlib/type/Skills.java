@@ -85,7 +85,7 @@ public class Skills implements ApplicationListener {
         });
     }
     
-    
+    @SuppressWarnings("unchecked")
     private void readPoc(String base) {
         String[] str = base.split(",");
         DataSkill skill = pocSeq.get(Integer.valueOf(str[0]));

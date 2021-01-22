@@ -62,7 +62,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 		}
     };
     
-    public DataSkill[] skills = new DataSkill[]{};
+    public DataSkill[] skills = new DataSkill[]{s_1};
     
 	public FSalPixShip(String name) {
 		super(name);
@@ -636,6 +636,6 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 
 	@Override
 	public DataSkill[] getSkill() {
-		
+		return skills;
 	}
 }
