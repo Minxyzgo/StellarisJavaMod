@@ -20,6 +20,7 @@ import mindustry.graphics.*;
 import mindustry.input.*;
 import minxyzgo.mlib.type.*;
 import minxyzgo.mlib.*;
+import minxyzgo.mlib.input.*;
 
 import static mindustry.game.EventType.*;
 
@@ -32,9 +33,9 @@ public class InductionAbility extends Ability {
 	private static final InputProcessor inputMove;
 	private static final GestureListener inputPan;
 	private static GestureDetector panDetector;
-	private static boolean touched;
-	private static InductionAbility innerAbility;
-	
+	private volatile static boolean touched;
+	private volatile static InductionAbility innerAbility;
+
 	public final static String type = "Induction";
 
 
@@ -71,13 +72,13 @@ public class InductionAbility extends Ability {
 				// Tile tile = tileAt(screenX, screenY);
 				float worldx = Core.input.mouseWorld(screenX, screenY).x, worldy = Core.input.mouseWorld(screenX, screenY).y;
 				if (tapPlayer(worldx, worldy, innerAbility.range)) {
-				   
+
 					Call.effect(innerAbility.disappearEffect, player.getX(), player.getY(), player.unit().rotation, Color.white);
-					
-					
+
+
 					DataSkill data = Tool.skills.getType(type);
 					data.sendSkill(tileX(screenX) * tilesize, tileY(screenY) * tilesize);
-					
+
 					Call.effect(innerAbility.spawnEffect, player.getX(), player.getY(), player.unit().rotation, Color.white);
 
 					touched = false;
@@ -135,13 +136,13 @@ public class InductionAbility extends Ability {
 
 			});
 			*/
-		//	Core.input.addProcessor(new GestureDetector(inputPan));
-		//	Core.input.addProcessor(inputMove);
+			//	Core.input.addProcessor(new GestureDetector(inputPan));
+			//	Core.input.addProcessor(inputMove);
 		});
 
 		Events.on(UnitChangeEvent.class, e -> {
 			if (e.player == player) {
-			    if(player.unit().type == null) return;
+				if (player.unit().type == null) return;
 				player.unit().type.abilities.each(ability -> {
 					touched = false;
 					if (ability.getClass() == InductionAbility.class) {
@@ -155,8 +156,8 @@ public class InductionAbility extends Ability {
 			}
 		});
 		Events.on(ResetEvent.class, e -> {
-		    touched = false;
-		    reset();
+			touched = false;
+			reset();
 		});
 	}
 
@@ -181,7 +182,7 @@ public class InductionAbility extends Ability {
 	@Override
 	public void draw(Unit unit) {
 
-		if (touched && innerAbility == this) {
+		if (touched /*&& innerAbility == this*/) {
 			InputHandler input = control.input;
 			Vec2 v = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
 
@@ -199,6 +200,26 @@ public class InductionAbility extends Ability {
 			int segs = (int)Math.floor(unit.dst(v.x, v.y) / tilesize);
 			Lines.dashLine(px, py, v.x, v.y, segs);
 			Draw.reset();
+		}
+	}
+
+	public static class InductionSkill extends SkillButton {
+		{
+			clearChildren();
+			clicked(() -> {
+				InductionAbility.setTouched(true);
+			});
+
+		}
+
+		@Override
+		public void callSkill(Player pl, Object... objects) {
+			pl.unit().set((Integer)objects[0], (Integer)objects[1]);
+		}
+
+		@Override
+		public String getType() {
+			return InductionAbility.type;
 		}
 	}
 }
