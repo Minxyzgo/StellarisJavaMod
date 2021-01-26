@@ -7,29 +7,30 @@ import arc.util.Tmp;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.entities.Units;
+import mindustry.entities.abilities.Ability;
 import mindustry.gen.Teamc;
 import mindustry.gen.Unit;
 import stellaris.Main;
 import stellaris.content.AsEffects;
 import stellaris.type.units.InvisibleUnit;
+import stellaris.type.units.PowerUnit;
 
-public class InvisibleAbility extends BasicAbilities.PowerAbility {
+public class InvisibleAbility extends Ability {
     public int mainWeaponIndex = 0;
     public float reloadInvisible = 5 * 60;
     public boolean isUnVisibleShoot = true;
     public float unVisibleRange = 30;
     public boolean canDetection = true;
-	public InvisibleAbility(float maxPower, float powerProduction, float consumePower) {
-		super(maxPower, powerProduction, consumePower);
-	}
+	
 	
 	@Override
-	public void powerAct(Unit unit) {
+	public void update(Unit unit) {
 	    InvisibleUnit innerUnit = (InvisibleUnit)unit;
+	    PowerUnit type = (PowerUnit)unit.type;
 	    
-	    if((!innerUnit.isVisible) && innerUnit.visDuction <= 0 && innerUnit.status() >= consumePower) {
+	    if((!innerUnit.isVisible) && innerUnit.visDuction <= 0 && innerUnit.status() >= type.consumePower) {
 	        Fx.unitSpawn.at(unit.x, unit.y, unit.rotation, unit.type);
-	        innerUnit.status(Math.max(innerUnit.status() - consumePower * Time.delta, 0f));
+	        innerUnit.status(Math.max(innerUnit.status() - type.consumePower * Time.delta, 0f));
 	        innerUnit.isVisible = true;
 	    }
 	    
@@ -47,11 +48,6 @@ public class InvisibleAbility extends BasicAbilities.PowerAbility {
 	    
 	    if(!innerUnit.isVisible) innerUnit.visDuction = Math.max(innerUnit.visDuction - Time.delta, 0);
 	   // if(Main.test) Vars.ui.showInfoToast("isV:" + innerUnit.isVisible + " vd:" + innerUnit.visDuction, Time.delta);
-	}
-	
-	@Override
-	public boolean con(Unit unit) {
-	    return false;
 	}
 	
 	@Override

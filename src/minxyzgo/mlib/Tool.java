@@ -12,6 +12,7 @@ import arc.util.serialization.*;
 import mindustry.ctype.*;
 import mindustry.core.*;
 import mindustry.game.*;
+import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustry.type.*;
 import minxyzgo.mlib.content.*;
@@ -22,6 +23,7 @@ import static mindustry.Vars.*;
 
 @SuppressWarnings("unchecked")
 public class Tool extends Mod {
+    private static int nextClassId;
 	public static JsonLoad jsonLoad = new JsonLoad();
 	public static Skills skills = new Skills();
 	public final static boolean loadExample = true, showTerminal = true;
@@ -46,6 +48,7 @@ public class Tool extends Mod {
 
 	@Override
 	public void loadContent() {
+	    nextClassId = EntityMapping.idMap.length;
 		Events.fire(new ToolLoadEvent());
 		onLoad(jsonLoad::init);
 		if (showTerminal) showTerminal();
@@ -65,6 +68,16 @@ public class Tool extends Mod {
 		}
 
 		if (loadExample) new Examples().load();
+	}
+	
+	public static synchronized int nextClassId(Prov<? extends Unit> type) {
+	    return nextClassId(type, "");
+	}
+	
+	public static synchronized int nextClassId(Prov<? extends Unit> type, String name) {
+	    EntityMapping.idMap[nextClassId] = type;
+	    if(!name.equals("")) EntityMapping.nameMap.put(name, type);
+	    return nextClassId++;
 	}
 
 	public static void parserType() {
@@ -211,7 +224,7 @@ public class Tool extends Mod {
 			idMapField.setAccessible(true);
 
 			ObjectMap<String, MappableContent>[] nameMap = Arrays.copyOf((ObjectMap<String, MappableContent>[])nameMapField.get(content), ContentType.all.length);
-			Seq<MappableContent>[] contentMap = Arrays.copyOf((Seq<MappableContent>[])idMapField.get(content), ContentType.all.length);
+			Seq<Content>[] contentMap = Arrays.copyOf((Seq<Content>[])idMapField.get(content), ContentType.all.length);
 
 			for (ContentType type : ContentType.all) {
 				int ordinal = type.ordinal();

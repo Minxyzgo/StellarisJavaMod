@@ -119,7 +119,7 @@ public class InductionAbility extends Ability {
 				return World.toTile(vec.y);
 			}
 		};
-		Events.on(EventType.ClientLoadEvent.class, e -> {
+		//Events.on(EventType.ClientLoadEvent.class, e -> {
 			/*
 			ui.hudGroup.fill(t -> {
 				t.left();
@@ -138,7 +138,7 @@ public class InductionAbility extends Ability {
 			*/
 			//	Core.input.addProcessor(new GestureDetector(inputPan));
 			//	Core.input.addProcessor(inputMove);
-		});
+		//});
 
 		Events.on(UnitChangeEvent.class, e -> {
 			if (e.player == player) {

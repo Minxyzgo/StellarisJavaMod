@@ -18,10 +18,12 @@ public class AsUnits implements ContentList {
 	public void load() {
 		fship = new FSalPixShip("fs") {
 			{
-				Weapon ls = new Weapon(FSalPixShip.smallLaserName) {
+				PowerWeapon ls = new PowerWeapon(FSalPixShip.smallLaserName) {
 					{
+					    consumePower = 5f;
 						x = 21;
 						y = 24;
+						continuous = true;
 						bullet = AsBullets.smallLaser;
 						reload = 18f;
 						rotate = true;
@@ -55,8 +57,10 @@ public class AsUnits implements ContentList {
 				28   丨  26-
 				39   丨  26-
 				88   丨  26*/
-				Weapon bc = new Weapon(FSalPixShip.bcWeapon) {
+				PowerWeapon bc = new PowerWeapon(FSalPixShip.bcWeapon) {
 					{
+					    typeId = "smallLaser";
+					    consumePower = 25f;
 						shots = 3;
 						reload = 35f;
 						shootCone = 25f;
@@ -71,7 +75,7 @@ public class AsUnits implements ContentList {
 					}
 				};
 				Cons2<Float, Float> bw = (x, y) -> {
-					Weapon wn = bc.copy();
+					PowerWeapon wn = bc.copy();
 					wn.x = x;
 					wn.y = y;
 					weapons.add(wn);
@@ -88,11 +92,13 @@ public class AsUnits implements ContentList {
 			}
 		};
 
-		fhz = new PowerUnit("fhz", new InvisibleAbility(480f, 0.3f, 200f)) {
+		fhz = new PowerUnit("fhz") {
 			{
+			    abilities.add(new InvisibleAbility());
+			    maxPower = 480f;
 				health = 750f;
 				commandLimit = 4;
-				constructor = () -> new InvisibleUnit();
+				constructor = InvisibleUnit::new;
 				armor = 11f;
 				speed = 2.7f;
 				rotateSpeed = 4f;
@@ -108,7 +114,7 @@ public class AsUnits implements ContentList {
 				targetFlag = BlockFlag.battery;
 
 				weapons.add(
-				new Weapon() {
+				new PowerWeapon() {
 					{
 						x = y = 0f;
 						mirror = false;

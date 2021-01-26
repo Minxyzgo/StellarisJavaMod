@@ -1,21 +1,19 @@
 package stellaris.type.units;
 
 
+import minxyzgo.mlib.Tool;
+
 import arc.math.geom.Rect;
-import arc.util.Interval;
 import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import mindustry.gen.*;
-import stellaris.type.abilities.BasicAbilities.PowerAbility;
 import stellaris.type.intf.Powerc;
+import stellaris.type.units.PowerUnit.BasePowerEntityUnit;
 
-public class InvisibleUnit extends UnitEntity implements Powerc {
+public class InvisibleUnit extends BasePowerEntityUnit implements Powerc {
+    private static int classId = Tool.nextClassId(InvisibleUnit::new);
     public float visDuction;
-    public float power;
 	public boolean isVisible;
-	
-	private transient float maxPower;
 
 	@Override
 	public void hitbox(Rect rect) {
@@ -26,13 +24,9 @@ public class InvisibleUnit extends UnitEntity implements Powerc {
 		}
 	}
 	
-	static {
-	    EntityMapping.idMap[29] = InvisibleUnit::new;
-	}
-	
 	@Override
 	public int classId() {
-	    return 29;
+	    return classId;
 	}
 	
 	@Override
@@ -47,36 +41,5 @@ public class InvisibleUnit extends UnitEntity implements Powerc {
 		super.read(read);
 		power = read.f();
 		isVisible = read.bool();
-	}
-
-	@Override
-	public float powerc() {
-		return power / maxPower();
-	}
-
-	@Override
-	public float maxPower() {
-		abilities().each(a -> {
-		    if(a instanceof PowerAbility) {
-		        PowerAbility ab = (PowerAbility)a;
-		        if(maxPower < ab.maxPower) maxPower = ab.maxPower;
-		    }
-		});
-		return maxPower;
-	}
-
-	@Override
-	public float status() {
-		return power;
-	}
-
-	@Override
-	public void status(float value) {
-		power = value;
-	}
-
-	@Override
-	public boolean conPower(float value) {
-		return power >= (value * Time.toSeconds);
 	}
 }

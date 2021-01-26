@@ -53,6 +53,11 @@ public class BuildContentParser extends ContentParser{
     public ObjectSet<String> contentParsers = new ObjectSet<>();
 
     public ObjectMap<Class<?>, FieldParser> classParsers = new ObjectMap<>();
+    public ObjectMap<Class, internalReadParser> hjsonParser = new ObjectMap<>();
+    
+    public ObjectMap<String, Prov<Unit>> unitTypeMap = new ObjectMap<>();
+    
+    public ObjectSet<readParserStack> readClassParsers = new ObjectSet<>();
     //reason: '<>' with anonymous inner classes is not supported in -source 
     
     /** Stores things that need to be parsed fully, e.g. reading fields of content.
@@ -136,6 +141,10 @@ public class BuildContentParser extends ContentParser{
             return weapon;
         });
     }
+    
+    public void addReadClassParser(Class type, String key, ObjectParser parser) {
+        readClassParsers.add(new readParserStack(type, key, parser));
+    }
 
     public Json parser = new Json(){
         @Override
@@ -176,6 +185,10 @@ public class BuildContentParser extends ContentParser{
                 //try to load DrawBlock by instantiating it
                 if(type == DrawBlock.class && jsonData.isString()){
                     return Reflect.make("mindustry.world.draw." + Strings.capitalize(jsonData.asString()));
+                }
+                
+                if(hjsonParser.containsKey(type)) {
+                    return (T)hjsonParser.get(type).parser(type, elementType, jsonData, keyType);
                 }
 
                 if(Content.class.isAssignableFrom(type)){
@@ -261,7 +274,19 @@ public class BuildContentParser extends ContentParser{
 
             UnitType unit;
             if(locate(ContentType.unit, name) == null){
-                unit = new UnitType(mod + "-" + name);
+                if(value.has("unitType")) {
+                    try {
+                        unit = (UnitType)make(resolve(getString(value, "unitType")), mod + "-" + name);
+                        
+                    } catch(IllegalArgumentException e) {
+                        Log.err(e);
+                        unit = new UnitType(mod + "-" + name);
+                    }
+                    
+                } else {
+                    unit = new UnitType(mod + "-" + name);
+                }
+                
                 JsonValue typeVal = value.get("type");
 
                 if(typeVal != null && !typeVal.isString()){
@@ -344,6 +369,8 @@ public class BuildContentParser extends ContentParser{
         //ContentType.sector, parser(ContentType.sector, SectorPreset::new)
     );
     
+    
+    
     public void readConsumes(Block block, JsonValue value) {
         readConsumes(block.consumes, block.name, "consumes", value);
     }
@@ -383,10 +410,10 @@ public class BuildContentParser extends ContentParser{
             return UnitWaterMove::create;
         } else if(s.equals("payload")) {
             return PayloadUnit::create;
+        } else if(!unitTypeMap.isEmpty() && unitTypeMap.containsKey(s)) {
+            return unitTypeMap.get(s);
         } else {
             throw new RuntimeException("Invalid unit type: '" + value + "'. Must be 'flying/mech/legs/naval/payload'.");
-            
-            //Add mod type later
         }
         
         //switch expressions are not supported in -source 8. I don't know how to fix it
@@ -671,8 +698,17 @@ public class BuildContentParser extends ContentParser{
         Class type = object.getClass();
         ObjectMap<String, FieldMetadata> fields = parser.getFields(type);
         for(JsonValue child = jsonMap.child; child != null; child = child.next){
-            FieldMetadata metadata = fields.get(child.name().replace(" ", "_"));
-            if(metadata == null){
+            String key = child.name().replace(" ", "_");
+            FieldMetadata metadata = fields.get(key);
+            boolean check = true;
+            reader: for(readParserStack parserStack : readClassParsers) {
+                if(parserStack.type == type && parserStack.key.equals(key)) {
+                    parserStack.parser.parse(parser, object, child);
+                    check = false;
+                    return reader;
+                }
+            }
+            if(metadata == null && check){
                 if(ignoreUnknownFields){
                     Log.warn("@: Ignoring unknown field: " + child.name + " (" + type.getName() + ")", object);
                     continue;
@@ -684,7 +720,7 @@ public class BuildContentParser extends ContentParser{
             }
             Field field = metadata.field;
             try{
-                field.set(object, parser.readValue(field.getType(), metadata.elementType, child, metadata.keyType));
+                if(check) field.set(object, parser.readValue(field.getType(), metadata.elementType, child, metadata.keyType));
             }catch(IllegalAccessException ex){
                 throw new SerializationException("Error accessing field: " + field.getName() + " (" + type.getName() + ")", ex);
             }catch(SerializationException ex){
@@ -792,9 +828,29 @@ public class BuildContentParser extends ContentParser{
     public interface FieldParser{
         Object parse(Class<?> type, JsonValue value) throws Exception;
     }
+    
+    public interface ObjectParser{
+        void parse(Json parser, Object object, JsonValue value);
+    }
+    
+    public interface internalReadParser<T> {
+        T parser(Class<T> type, Class elementType, JsonValue jsonData, Class keyType);
+    }
 
     public interface TypeParser<T extends Content>{
         T parse(String mod, String name, JsonValue value) throws Exception;
+    }
+    
+    public class readParserStack {
+        public Class type;
+        public String key;
+        public ObjectParser parser;
+        
+        readParserStack(Class type, String key, ObjectParser parser) {
+            this.type = type;
+            this.key = key;
+            this.parser = parser;
+        }
     }
 
 }
