@@ -19,6 +19,8 @@ import minxyzgo.mlib.entities.*;
  * {@link Events#<T>fire(Class<T>, Cons<T>)}
  * @author Minxyzgo
  */
+ 
+@SuppressWarnings("unchecked")
 public class Skills implements ApplicationListener {
     public static final String TYPE_SKILL = "TYPE_SKILL";
     public final Seq<DataSkill> pocSeq = new Seq<>(255);
@@ -85,7 +87,6 @@ public class Skills implements ApplicationListener {
         });
     }
     
-    @SuppressWarnings("unchecked")
     private void readPoc(String base) {
         String[] str = base.split(",");
         DataSkill skill = pocSeq.get(Integer.valueOf(str[0]));
