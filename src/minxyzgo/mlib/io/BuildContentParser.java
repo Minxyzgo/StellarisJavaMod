@@ -272,20 +272,8 @@ public class BuildContentParser extends ContentParser{
         ContentType.unit, (TypeParser<UnitType>)(mod, name, value) -> {
             readBundle(ContentType.unit, name, value);
 
-            UnitType unit;
+            final UnitType unit = value.has("unitType") ? (UnitType)make(resolve(getString(value, "unitType")), mod + "-" + name) : locate(ContentType.unit, name) == null ? new UnitType(mod + "-" + name) : locate(ContentType.unit, name);
             if(locate(ContentType.unit, name) == null){
-                if(value.has("unitType")) {
-                    try {
-                        unit = (UnitType)make(resolve(getString(value, "unitType")), mod + "-" + name);
-                        
-                    } catch(IllegalArgumentException e) {
-                        Log.err(e);
-                        unit = new UnitType(mod + "-" + name);
-                    }
-                    
-                } else {
-                    unit = new UnitType(mod + "-" + name);
-                }
                 
                 JsonValue typeVal = value.get("type");
 
@@ -294,8 +282,6 @@ public class BuildContentParser extends ContentParser{
                 }
 
                 unit.constructor = unitType(typeVal);
-            }else{
-                unit = locate(ContentType.unit, name);
             }
 
             currentContent = unit;
