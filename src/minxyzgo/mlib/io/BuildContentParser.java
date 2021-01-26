@@ -705,7 +705,7 @@ public class BuildContentParser extends ContentParser{
                 if(parserStack.type == type && parserStack.key.equals(key)) {
                     parserStack.parser.parse(parser, object, child);
                     check = false;
-                    return reader;
+                    break reader;
                 }
             }
             if(metadata == null && check){
