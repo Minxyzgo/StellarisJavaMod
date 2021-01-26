@@ -23,7 +23,7 @@ import static mindustry.Vars.*;
 
 @SuppressWarnings("unchecked")
 public class Tool extends Mod {
-    private static int nextClassId;
+    private static int nextClassId = 28;
 	public static JsonLoad jsonLoad = new JsonLoad();
 	public static Skills skills = new Skills();
 	public final static boolean loadExample = true, showTerminal = true;
@@ -48,7 +48,6 @@ public class Tool extends Mod {
 
 	@Override
 	public void loadContent() {
-	    nextClassId = EntityMapping.idMap.length;
 		Events.fire(new ToolLoadEvent());
 		onLoad(jsonLoad::init);
 		if (showTerminal) showTerminal();
