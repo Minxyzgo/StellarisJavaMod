@@ -231,7 +231,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 			trail.length = type.trailLength;
 
 			float scale = elevation();
-			float offset = type.engineOffset / 2f + type.engineOffset / 2f * scale;
+			float offset = 64f / 2f + 64f / 2f * scale;
 
 			float cx = x + Angles.trnsx(rotation + 180, offset), cy = y + Angles.trnsy(rotation + 180, offset);
 			trail.update(cx, cy);

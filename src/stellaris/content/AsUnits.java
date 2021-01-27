@@ -42,7 +42,7 @@ public class AsUnits implements ContentList {
 				ls3.y = 87;
 				ls4.x = 26;
 				ls4.y = -64;
-
+				
 				weapons.add(ls);
 				weapons.add(ls2);
 				weapons.add(ls3);

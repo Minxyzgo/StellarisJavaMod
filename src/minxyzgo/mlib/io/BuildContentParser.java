@@ -272,7 +272,7 @@ public class BuildContentParser extends ContentParser{
         ContentType.unit, (TypeParser<UnitType>)(mod, name, value) -> {
             readBundle(ContentType.unit, name, value);
 
-            final UnitType unit = value.has("unitType") ? (UnitType)make(resolve(getString(value, "unitType")), mod + "-" + name) : locate(ContentType.unit, name) == null ? new UnitType(mod + "-" + name) : locate(ContentType.unit, name);
+            final UnitType unit = locate(ContentType.unit, name) == null ? value.has("unitType") ? (UnitType)make(resolve(getString(value, "unitType")), mod + "-" + name) : new UnitType(mod + "-" + name) : locate(ContentType.unit, name);
             if(locate(ContentType.unit, name) == null){
                 
                 JsonValue typeVal = value.get("type");

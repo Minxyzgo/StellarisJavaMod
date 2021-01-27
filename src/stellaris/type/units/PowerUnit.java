@@ -33,7 +33,8 @@ public abstract class PowerUnit extends UnitType {
 
 	public @Nullable PowerAbility Pability;
 	public ObjectMap<String, MountWeaponAct> weaponacts = new ObjectMap<>();
-	public Seq<PowerWeapon> weapons = new Seq<>();
+	public Seq<PowerWeapon> powerWeapons = new Seq<>();
+	/* for Json */
 
 	public boolean outputPower = true;
 	public ForceFieldAbility sability;
@@ -141,7 +142,17 @@ public abstract class PowerUnit extends UnitType {
 
 		table.row();
 	}
-
+	
+	@Override
+	public void init() {
+	    for(PowerWeapon w : powerWeapons) {
+	        weapons.add((Weapon)w);
+	    }
+	    
+	    if(sability != null && !abilities.contains(sability)) abilities.add(sability);
+	    super.init();
+	}
+	
 	@Override
 	public void setStats() {
 		Unit inst = constructor.get();
@@ -153,7 +164,7 @@ public abstract class PowerUnit extends UnitType {
 		stats.add(Stat.commandLimit, commandLimit);
 
 		if (abilities.any()) {
-			ObjectSet<String> unique = new ObjectSet<>();
+			var unique = new ObjectSet<String>();
 
 			for (Ability a : abilities) {
 				if (unique.add(a.localized())) {
@@ -187,7 +198,7 @@ public abstract class PowerUnit extends UnitType {
 		}
 
 		if (weapons.any()) {
-			stats.add(Stat.weapons, new PowerWeaponListValue(this, weapons));
+			stats.add(Stat.weapons, new PowerWeaponListValue(this, powerWeapons));
 		}
 	}
 
@@ -228,7 +239,7 @@ public abstract class PowerUnit extends UnitType {
 
 					sep(w, "[lightgray]" + Stat.reload.localized() + ": " + (weapon.mirror ? "2x " : "") + "[white]" + Strings.autoFixed(60f / weapon.reload * weapon.shots, 1));
 
-					AmmoListValue<UnitType> bullet = new AmmoListValue<>(OrderedMap.of(unit, weapon.bullet));
+					var bullet = new AmmoListValue<UnitType>(OrderedMap.of(unit, weapon.bullet));
 					bullet.display(w);
 				}).padTop(-9).left();
 				table.row();

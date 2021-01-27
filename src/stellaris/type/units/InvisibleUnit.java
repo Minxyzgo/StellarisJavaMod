@@ -4,7 +4,6 @@ package stellaris.type.units;
 import minxyzgo.mlib.Tool;
 
 import arc.math.geom.Rect;
-import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import stellaris.type.intf.Powerc;
@@ -32,14 +31,12 @@ public class InvisibleUnit extends BasePowerEntityUnit implements Powerc {
 	@Override
 	public void write(Writes write) {
 		super.write(write);
-		write.f(power);
 		write.bool(isVisible);
 	}
 
 	@Override
 	public void read(Reads read) {
 		super.read(read);
-		power = read.f();
 		isVisible = read.bool();
 	}
 }
