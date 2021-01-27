@@ -164,7 +164,7 @@ public abstract class PowerUnit extends UnitType {
 		stats.add(Stat.commandLimit, commandLimit);
 
 		if (abilities.any()) {
-			var unique = new ObjectSet<String>();
+			ObjectSet<String> unique = new ObjectSet<>();
 
 			for (Ability a : abilities) {
 				if (unique.add(a.localized())) {
@@ -239,7 +239,7 @@ public abstract class PowerUnit extends UnitType {
 
 					sep(w, "[lightgray]" + Stat.reload.localized() + ": " + (weapon.mirror ? "2x " : "") + "[white]" + Strings.autoFixed(60f / weapon.reload * weapon.shots, 1));
 
-					var bullet = new AmmoListValue<UnitType>(OrderedMap.of(unit, weapon.bullet));
+					AmmoListValue<UnitType> bullet = new AmmoListValue<>(OrderedMap.of(unit, weapon.bullet));
 					bullet.display(w);
 				}).padTop(-9).left();
 				table.row();
