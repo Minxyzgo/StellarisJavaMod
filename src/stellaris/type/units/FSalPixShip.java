@@ -168,10 +168,9 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 		*/
 		weaponacts.put("mainWeapon", (mount, weapon, unit) -> {
 			Bullet b = mount.bullet;
-			if(b == null) return false;
-			float baseTime = b.type.lifetime;
 			FShip innerUnit = (FShip)unit;
-			if (mount.bullet.isAdded() && mount.bullet.time < mount.bullet.lifetime && mount.bullet.type == weapon.bullet) {
+			if (b != null && mount.bullet.isAdded() && mount.bullet.time < mount.bullet.lifetime && mount.bullet.type == weapon.bullet) {
+			    float baseTime = b.type.lifetime;
 				float[] shootxy = UnitMathf.getShootXY(unit, mount);
 				if (b.timer(4, 5)) mainShootEffect.at(shootxy[0], shootxy[1], unit.team.color);
 				innerUnit.power = Math.max(innerUnit.power - (mainConsunePower / baseTime * Time.delta), 0f);

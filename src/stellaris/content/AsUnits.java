@@ -20,6 +20,7 @@ public class AsUnits implements ContentList {
 			{
 				PowerWeapon ls = new PowerWeapon(FSalPixShip.smallLaserName) {
 					{
+					    typeId = "smallLaser";
 					    consumePower = 5f;
 						x = 21;
 						y = 24;
@@ -59,7 +60,6 @@ public class AsUnits implements ContentList {
 				88   丨  26*/
 				PowerWeapon bc = new PowerWeapon(FSalPixShip.bcWeapon) {
 					{
-					    typeId = "smallLaser";
 					    consumePower = 25f;
 						shots = 3;
 						reload = 35f;
