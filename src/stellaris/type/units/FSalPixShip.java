@@ -91,10 +91,10 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 		accel = 0.12f;
 		rotateSpeed = 0.23f;
 		armor = 85f;
-		trailLength = 150;
+		trailLength = 120;
 		trailX = 35f;
 		trailY = -71f;
-		trailScl = 12f;
+		trailScl = 4f;
 		destructibleWreck = false;
 		targetFlag = BlockFlag.turret;
 		maxPower = 8000f;
@@ -168,9 +168,10 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 		*/
 		weaponacts.put("mainWeapon", (mount, weapon, unit) -> {
 			Bullet b = mount.bullet;
+			if(b == null) return false;
 			float baseTime = b.type.lifetime;
 			FShip innerUnit = (FShip)unit;
-			if (b != null && mount.bullet.isAdded() && mount.bullet.time < mount.bullet.lifetime && mount.bullet.type == weapon.bullet) {
+			if (mount.bullet.isAdded() && mount.bullet.time < mount.bullet.lifetime && mount.bullet.type == weapon.bullet) {
 				float[] shootxy = UnitMathf.getShootXY(unit, mount);
 				if (b.timer(4, 5)) mainShootEffect.at(shootxy[0], shootxy[1], unit.team.color);
 				innerUnit.power = Math.max(innerUnit.power - (mainConsunePower / baseTime * Time.delta), 0f);
@@ -182,13 +183,18 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 		weaponacts.put("smallLaser", (mount, weapon, unit) -> {
 			Bullet b = mount.bullet;
 			FShip innerUnit = (FShip)unit;
-			if (mount.shoot && b != null) {
+			if (mount.bullet.isAdded() && mount.shoot && b != null) {
 				innerUnit.power = Math.max(innerUnit.power - (consumePower / Time.toSeconds * Time.delta), 0f);
 				mount.reload = weapon.reload;
 				b.data = mount;
 				b.time(0f);
 				mount.heat = 1f;
 			}
+			
+			if(!mount.shoot) {
+			    mount.bullet = null;
+			}
+			
 			return false;
 		});
 
@@ -205,6 +211,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 				Draw.color();
 				Draw.blend(Blending.additive);
 				Draw.color(unit.team.color);
+				Draw.z(110);
 				Tmp.v1.trns(unit.rotation, ((FSLaserBullet)mainWeapon.bullet).length * 1.1f);
 				Draw.alpha(mount.reload * ts * (1f - s + Mathf.absin(Time.time, 3f, s)));
 				float[] shootxy = UnitMathf.getShootXY(unit, mount);
@@ -215,6 +222,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 				Draw.color();
 				Draw.alpha(Mathf.absin(1.75f, count));
 				Draw.rect(FSMainWeapon.lightRegions[(int)(mount.reload / frameSpeed) % 6], shootxy[2], shootxy[3], shootxy[4]);
+				Draw.reset();
 			}
 		}
 	}

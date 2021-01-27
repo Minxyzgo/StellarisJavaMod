@@ -198,15 +198,15 @@ public abstract class PowerUnit extends UnitType {
 		}
 
 		if (weapons.any()) {
-			stats.add(Stat.weapons, new PowerWeaponListValue(this, powerWeapons));
+			stats.add(Stat.weapons, new PowerWeaponListValue(this, weapons));
 		}
 	}
 
 	public static class PowerWeaponListValue implements StatValue {
-		private final Seq<PowerWeapon> weapons;
+		private final Seq<Weapon> weapons;
 		private final UnitType unit;
 
-		public PowerWeaponListValue(UnitType unit, Seq<PowerWeapon> weapons) {
+		public PowerWeaponListValue(UnitType unit, Seq<Weapon> weapons) {
 			this.weapons = weapons;
 			this.unit = unit;
 		}
@@ -214,9 +214,7 @@ public abstract class PowerUnit extends UnitType {
 		@Override
 		public void display(Table table) {
 			table.row();
-			for (int i = 0; i < weapons.size; i ++) {
-				PowerWeapon weapon = weapons.get(i);
-
+			for (Weapon weapon : weapons) {
 				if (weapon.flipSprite) {
 					//flipped weapons are not given stats
 					continue;
@@ -233,8 +231,9 @@ public abstract class PowerUnit extends UnitType {
 						sep(w, "[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)weapon.inaccuracy + " " + StatUnit.degrees.localized());
 					}
 
-					if (weapon.consumePower != 0) {
-						sep(w, "[lightgray]" + Stat.powerUse.localized() + ": " + weapon.consumePower);
+					if (weapon instanceof PowerWeapon) {
+					    PowerWeapon pweapon = (PowerWeapon)weapon;
+						sep(w, "[lightgray]" + Stat.powerUse.localized() + ": " + pweapon.consumePower);
 					}
 
 					sep(w, "[lightgray]" + Stat.reload.localized() + ": " + (weapon.mirror ? "2x " : "") + "[white]" + Strings.autoFixed(60f / weapon.reload * weapon.shots, 1));
