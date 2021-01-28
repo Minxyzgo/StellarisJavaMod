@@ -311,7 +311,6 @@ public class FSAircraftCarrier extends PowerUnit {
 				} else {
 					entity.changeType(type.getSuitableType(false));
 				}
-
 			}
 		}
 	}
@@ -322,3 +321,4 @@ public class FSAircraftCarrier extends PowerUnit {
 		public float spawnTime = 25f;
 	}
 }
+
