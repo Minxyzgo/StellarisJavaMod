@@ -13,7 +13,7 @@ import mindustry.gen.*;
 import mindustry.world.meta.BlockFlag;
 
 public class AsUnits implements ContentList {
-	public static UnitType fship, fhz;
+	public static UnitType fship, fhz, faz;
 	@Override
 	public void load() {
 		fship = new FSalPixShip("fs") {
@@ -169,5 +169,7 @@ public class AsUnits implements ContentList {
 				if (!innerUnit.isVisible) super.drawEngine(unit);
 			}
 		};
+		
+		faz = new FSAircraftCarrier("faz");
 	}
 }

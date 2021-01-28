@@ -281,7 +281,7 @@ public class BuildContentParser extends ContentParser{
                     throw new RuntimeException("Unit '" + name + "' has an incorrect type. Types must be strings.");
                 }
 
-                unit.constructor = unitType(typeVal);
+                if(typeVal != null && unit.constructor == null) unit.constructor = unitType(typeVal);
             }
 
             currentContent = unit;

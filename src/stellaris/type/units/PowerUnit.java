@@ -27,7 +27,7 @@ import static mindustry.Vars.*;
 import stellaris.type.abilities.BasicAbilities.PowerAbility;
 import stellaris.type.intf.Powerc;
 
-public abstract class PowerUnit extends UnitType {
+public class PowerUnit extends UnitType {
 	private static int classId = Tool.nextClassId(BasePowerMechUnit::new);
 	private static int classId_2 = Tool.nextClassId(BasePowerEntityUnit::new);
 
@@ -42,10 +42,13 @@ public abstract class PowerUnit extends UnitType {
 	public float maxPower = 100f;
 	public float powerProduction = 1f;
 	public float consumePower = 0f;
+	
+	{
+	    constructor = BasePowerEntityUnit::new;
+	}
 
 	public PowerUnit(String name) {
 		super(name);
-		constructor = BasePowerEntityUnit::new;
 	}
 
 	@Override
@@ -125,8 +128,8 @@ public abstract class PowerUnit extends UnitType {
 					bars.row();
 				}
 			});
-
 			bars.row();
+			tableBar(unit, bars);
 			if (state.rules.unitAmmo) {
 				bars.add(new Bar(ammoType.icon + " " + Core.bundle.get("stat.ammo"), ammoType.barColor, () -> unit.ammo / ammoCapacity));
 				bars.row();
@@ -141,6 +144,10 @@ public abstract class PowerUnit extends UnitType {
 		}
 
 		table.row();
+	}
+	
+	public void tableBar(Unit unit, Table bars) {
+	    
 	}
 	
 	@Override
