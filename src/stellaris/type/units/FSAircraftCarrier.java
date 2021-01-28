@@ -82,6 +82,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	{
 	    lowAltitude = true;
 	    range = 200f;
+	    maxRange = 400f;
 		health = 95000;
 		flying = true;
 		speed = 0.11f;
@@ -89,10 +90,10 @@ public class FSAircraftCarrier extends PowerUnit {
 		hitSize = 145f;
 		accel = 0.08f;
 		rotateSpeed = 0.14f;
-		armor = 85f;
+		armor = 45f;
 		destructibleWreck = false;
 		targetFlag = BlockFlag.core;
-		maxPower = 8000f;
+		maxPower = 10000f;
 		powerProduction = 5f;
 		faceTarget = true;
 		rotateShooting = true;
