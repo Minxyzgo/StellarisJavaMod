@@ -11,7 +11,7 @@ import arc.util.io.*;
 import mindustry.*;
 import mindustry.ai.types.*;
 import mindustry.entities.*;
-import mindustry.entities.units.*;
+import mindustry.entities.units;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.io.*;
@@ -281,10 +281,6 @@ public class FSAircraftCarrier extends PowerUnit {
 		@Override
         public void updateMovement() {
             if(target != null && command() == UnitCommand.attack){
-                moveTo(target, unit.range() * 0.8f);
-                unit.lookAt(target);
-                
-            } else {
                 attack(120f);
             }
         }
@@ -312,6 +308,7 @@ public class FSAircraftCarrier extends PowerUnit {
 				} else {
 					entity.changeType(type.getSuitableType(false));
 				}
+
 			}
 		}
 	}
@@ -322,4 +319,3 @@ public class FSAircraftCarrier extends PowerUnit {
 		public float spawnTime = 25f;
 	}
 }
-
