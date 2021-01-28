@@ -11,6 +11,7 @@ import arc.util.io.*;
 import mindustry.*;
 import mindustry.ai.types.*;
 import mindustry.entities.*;
+import mindustry.entities.units.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.io.*;
