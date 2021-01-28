@@ -81,6 +81,7 @@ public class FSAircraftCarrier extends PowerUnit {
 
 	{
 	    lowAltitude = true;
+	    range = 200f;
 		health = 95000;
 		flying = true;
 		speed = 0.11f;
