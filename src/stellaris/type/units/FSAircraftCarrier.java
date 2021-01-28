@@ -22,6 +22,7 @@ import stellaris.content.*;
 import static mindustry.game.EventType.*;
 public class FSAircraftCarrier extends PowerUnit {
 	private static int classId = Tool.nextClassId(FSAircraftCarrierEntity::new);
+	private static int classId_2 = Tool.nextClassId(FSAircraftCarrierEntity::new);
 	public static Effect fsUnitSpirit = new Effect(14f, e -> {
 		Unit to = (Unit)e.data();
 		Draw.color(Color.valueOf("44A9EB"), Color.white, e.fin());
@@ -94,6 +95,7 @@ public class FSAircraftCarrier extends PowerUnit {
 		faceTarget = true;
 		rotateShooting = true;
 		drawShields = false;
+		constructor = FSAircraftCarrierEntity::new;
 		defaultController = FSACAIController::new;
 		spawnUnit.add(new PowerUnitSeq(){{
 		    type = (PowerUnit) AsUnits.fship;
@@ -232,7 +234,12 @@ public class FSAircraftCarrier extends PowerUnit {
 				if (e.unit.id == owner.id) killed();
 			});
 		}
-
+		
+		@Override
+		public int classId() {
+			return classId_2;
+		}
+		
 		@Override
 		public void remove() {
 			if (isFtoCommand) owner.unitRemoved();
