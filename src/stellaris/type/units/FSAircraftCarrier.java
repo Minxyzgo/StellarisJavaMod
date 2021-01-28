@@ -113,6 +113,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	public void tableBar(Unit unit, Table bars) {
 		FSAircraftCarrierEntity fsUnit = (FSAircraftCarrierEntity)unit;
 		bars.add(new Bar("build", Pal.accent, fsUnit::unitBuildc));
+		bars.row();
 		bars.add(new Bar("amount", Color.valueOf("44A9EB"), fsUnit::unitAmountc));
 	}
 
@@ -274,8 +275,19 @@ public class FSAircraftCarrier extends PowerUnit {
 
 	public static class FSACAIController extends FlyingAI {
 		public int timerChange = 3;
-		public float changeTime = 800f;
-
+		public float changeTime = 60f;
+		
+		@Override
+        public void updateMovement() {
+            if(target != null && command() == UnitCommand.attack){
+                moveTo(target, unit.range() * 0.8f);
+                unit.lookAt(target);
+                
+            } else {
+                attack(120f);
+            }
+        }
+        
 		@Override
 		protected void updateTargeting() {
 			FSAircraftCarrierEntity entity = (FSAircraftCarrierEntity)unit;
