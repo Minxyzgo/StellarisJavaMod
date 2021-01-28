@@ -126,7 +126,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	}
 
 	public static class FSAircraftCarrierEntity extends BasePowerEntityUnit {
-		public int index = -1;
+		public int index = 0;
 		public int spawnAmount = 0;
 		public static float spawnTimer = 0;
 		
@@ -192,6 +192,12 @@ public class FSAircraftCarrier extends PowerUnit {
 			}
 			resetUnit();
 		}
+		
+		@Override
+		public void add() {
+		    super.add();
+		    changeType(index);
+		}
 
 
 		@Override
@@ -238,6 +244,19 @@ public class FSAircraftCarrier extends PowerUnit {
 				if (e.unit.id == owner.id) killed();
 			});
 		}
+		
+		@Override
+		public void add() {
+            if (added) {
+                return;
+            }
+            Groups.all.add(this);
+            Groups.unit.add(this);
+            Groups.sync.add(this);
+            Groups.draw.add(this);
+            updateLastPosition();
+            added = true;
+        }
 		
 		@Override
 		public int classId() {
