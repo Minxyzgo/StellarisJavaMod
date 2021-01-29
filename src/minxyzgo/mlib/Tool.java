@@ -44,6 +44,8 @@ public class Tool extends Mod {
 			entAddContent();
 		});
 		*/
+		//test
+		andType(Category.class, "Air");
 	}
 
 	@Override

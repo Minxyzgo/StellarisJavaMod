@@ -50,7 +50,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 	public float mainConsunePower = 2000f;
 	public static String smallLaserName = content.transformName("smallLaserTurret"),
 						 bcWeapon = content.transformName("BcWeapon");
-	public static Effect mainShootEffect = new  Effect(25, e -> {
+	public static Effect mainShootEffect = new Effect(25, e -> {
 		Draw.color(Color.white, e.color, e.fin());
 
 		Lines.stroke(e.fin() * 3f);
@@ -172,7 +172,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 			if (b != null && mount.bullet.isAdded() && mount.bullet.time < mount.bullet.lifetime && mount.bullet.type == weapon.bullet) {
 			    float baseTime = b.type.lifetime;
 				float[] shootxy = UnitMathf.getShootXY(unit, mount);
-				if (b.timer(4, 5)) mainShootEffect.at(shootxy[0], shootxy[1], unit.team.color);
+				if (b.timer(4, 5)) mainShootEffect.at(shootxy[0], shootxy[1], shootxy[4], unit.team.color);
 				innerUnit.power = Math.max(innerUnit.power - (mainConsunePower / baseTime * Time.delta), 0f);
 				mount.heat = 1f;
 			}
@@ -206,7 +206,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 		float ts = 0.6f;
 		for (WeaponMount mount : unit.mounts) {
 			if (mount.weapon != mainWeapon) continue;
-			if (mount.bullet == null) {
+			if (mount.bullet == null || !mount.bullet.isAdded()) {
 				Draw.color();
 				Draw.blend(Blending.additive);
 				Draw.color(unit.team.color);

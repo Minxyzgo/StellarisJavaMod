@@ -10,6 +10,8 @@ import arc.util.*;
 import arc.util.io.*;
 import mindustry.*;
 import mindustry.ai.types.*;
+import mindustry.core.*;
+import mindustry.content.*;
 import mindustry.entities.*;
 import mindustry.entities.units.*;
 import mindustry.gen.*;
@@ -23,55 +25,48 @@ import stellaris.content.*;
 import static mindustry.game.EventType.*;
 public class FSAircraftCarrier extends PowerUnit {
 	private static int classId = Tool.nextClassId(FSAircraftCarrierEntity::new);
-	private static int classId_2 = Tool.nextClassId(FSAircraftCarrierEntity::new);
-	public static Effect fsUnitSpirit = new Effect(14f, e -> {
+	private static int classId_2 = Tool.nextClassId(FSACEntity::new);
+	public static Effect fsUnitSpirit = new Effect(50f, e -> {
 		Unit to = (Unit)e.data();
 		Draw.color(Color.valueOf("44A9EB"), Color.white, e.fin());
-		Tmp.v1.set(e.x, e.y).interpolate(Tmp.v2.set(to), e.fin() * 2, Interp.pow2In).add(Tmp.v2.sub(e.x, e.y).nor().rotate90(1).scl(Mathf.randomSeedRange(e.id, 1f) * e.fslope() * 10f));
+		Tmp.v1.set(e.x, e.y).interpolate(Tmp.v2.set(to), e.fin() * 0.875f, Interp.pow2In).add(Tmp.v2.sub(e.x, e.y).nor().rotate90(1).scl(Mathf.randomSeedRange(e.id, 1f) * e.fslope() * 10f));
 		float x = Tmp.v1.x, y = Tmp.v1.y;
 		float size = 2.5f * e.fin();
+		TextureRegion region = to.type.icon(Cicon.full);
+		Draw.alpha(e.fin() * Mathf.absin(Time.time, 4f, 1.5f));
+		Draw.rect(region, e.x, e.y,
+				  region.width * Draw.scl * scl, region.height * Draw.scl * scl, to.rotation() - 90f);
 		Lines.stroke(size);
-		float len = Mathf.dst(x, y, to.x, to.y);
-		Lines.lineAngle(x, y, to.rotation - 90f, len, false);
-		Drawf.tri(e.x + x, e.y + y, Lines.getStroke() * 1.22f, size / 0.5f * 2f + size / 2f, to.rotation() - 90f);
-		Fill.circle(x, y, 1f * size / 0.5f * e.fout());
-		Lines.circle(x, y, 1.5f * size);
-		Fill.circle(x, y, e.fout() * 10f + 2);
-		Lines.stroke(e.fout() * 1.4f);
+		Lines.line(x, y, to.x, to.y, false);
+		Drawf.tri(to.x, to.y, Lines.getStroke() * 1.25f, size * 1.875f + size / 1.25f, to.rotation() - 90f);
+		Fill.circle(x, y, 15 * 0.75f * e.fout());
 		Lines.circle(x, y, e.fin() * 60f);
-		Lines.stroke(e.fin() * 12f);
-		Angles.randLenVectors(e.id, 2, 1 + 40f * e.fin(), e.rotation, 25, (x2, y2) -> {
+		Lines.stroke(e.fin() * 15f);
+		Angles.randLenVectors(e.id, 2, 1 + 40f * e.fin(), e.rotation, 360f, (x2, y2) -> {
 			Lines.lineAngle(x + x2, y + y2, Mathf.angle(x2, y2), e.fslope() * 12f + 1);
 		});
 	}),
-	fsunitSpawn = new Effect(15f, e -> {
+	fsunitSpawn = new Effect(55f, e -> {
 		Unit data = (Unit)e.data();
 		Draw.alpha(e.fin() * Mathf.absin(Time.time, 4f, 1.5f));
-
 		float scl = 1f + e.fout() * 2f;
-
-		TextureRegion region = data.type.icon(Cicon.full);
-
-		Draw.rect(region, e.x, e.y,
-				  region.width * Draw.scl * scl, region.height * Draw.scl * scl, 180f);
 		Draw.color(Color.valueOf("44A9EB"), Color.white, e.fin());
-		Fill.circle(e.x, e.y, data.hitSize() * e.fout() * 0.5f);
-		Lines.stroke(data.hitSize() * 0.5f * e.fout());
+		Lines.stroke(data.hitSize() * 0.125f * e.fout());
 		Lines.circle(e.x, e.y, e.fin() * 52);
 		for (int i : Mathf.signs) {
-			Drawf.tri(e.x, e.y, data.hitSize() * 0.5f * e.fout(), 17f, e.rotation + 360f * i);
+			Drawf.tri(e.x, e.y, data.hitSize() * 0.125f * e.fout(), 11f, e.rotation + 360f * i);
 		}
 		Angles.randLenVectors(e.id, 45, 65 * e.fin(), e.rotation, 360f, (x, y) -> {
 			Lines.stroke(e.fout() * 2);
-			Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 12 + 1);
+			Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 8 + 1);
 		});
-	}),
-	spawnWave = new Effect(34, e -> {
+	});
+	/*spawnWave = new Effect(34, e -> {
 		float size = (Float)e.data;
 		Draw.color(e.color);
 		Lines.stroke(size + e.fout() * 2f);
 		Lines.circle(e.x, e.y, e.finpow() * e.rotation);
-	});
+	});*/
 	public Seq<PowerUnitSeq> spawnUnit = new Seq<>();
 	public float spawnX, spawnY;
 
@@ -86,7 +81,7 @@ public class FSAircraftCarrier extends PowerUnit {
 		health = 95000;
 		flying = true;
 		speed = 0.11f;
-		drag = -0.02f;
+		drag = 0.02f;
 		hitSize = 145f;
 		accel = 0.08f;
 		rotateSpeed = 0.14f;
@@ -126,7 +121,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	}
 
 	public static class FSAircraftCarrierEntity extends BasePowerEntityUnit {
-		public int index = 0;
+		public int index = 1;
 		public int spawnAmount = 0;
 		public static float spawnTimer = 0;
 		
@@ -147,7 +142,7 @@ public class FSAircraftCarrier extends PowerUnit {
 			if (index != -1 && spawnAmount < spawnUnit.get(index).maxSpawn) {
 				PowerUnitSeq pseq = spawnUnit.get(index);
 				PowerUnit ptype = spawnUnit.get(index).type;
-				spawnTimer += Time.delta * Vars.state.rules.unitBuildSpeedMultiplier * realSpeed();
+				spawnTimer += Time.delta * Vars.state.rules.unitBuildSpeedMultiplier;
 				if (spawnTimer >= pseq.spawnTime && spawnAmount < pseq.maxSpawn) {
 					float spawnX = fstype.spawnX, spawnY = fstype.spawnY;
 					float xf = x + Angles.trnsx(rotation, spawnY, spawnX), yf = y + Angles.trnsy(rotation, spawnY, spawnX);
@@ -156,13 +151,12 @@ public class FSAircraftCarrier extends PowerUnit {
 
 					Tmp.v2.trns(rotation - 180f, 45f);
 					fsUnitSpirit.at(xf + Tmp.v2.x, yf + Tmp.v2.y, 0, unit);
-					Time.run(14f, () -> {
+					Time.run(45f, () -> {
 						unit.add();
 					});
 
 					spawnAmount++;
 					spawnTimer = 0f;
-					Events.fire(new UnitCreateEvent(unit));
 				}
 			}
 		}
@@ -173,7 +167,7 @@ public class FSAircraftCarrier extends PowerUnit {
 			Seq<PowerUnitSeq> spawnUnit = fstype.spawnUnit;
 			Events.fire(new ACTypeChangeEvent(id));
 			PowerUnitSeq useq = spawnUnit.get(index);
-			spawnWave.at(x, y, 0f, Color.valueOf("44A9EB"), bounds());
+			//spawnWave.at(x, y, 0f, Color.valueOf("44A9EB"), bounds());
 			for (int i = 0; i < useq.maxSpawn; i++) {
 			    int in = i;
 				Time.run(in * 3f, () -> {
@@ -181,14 +175,16 @@ public class FSAircraftCarrier extends PowerUnit {
 					Unit unit = useq.type.create(team);
 					unit.set(xf, yf);
 					fsunitSpawn.at(x, y, 0, unit);
+					Fx.unitDespawn.at(xf, yf, 0, unit);
 					Time.run(in * 11f, () -> {
-						Tmp.v2.trns(rotation - 180f, 45f);
+						Tmp.v2.trns(rotation - 180f, 145f);
 						fsUnitSpirit.at(xf + Tmp.v2.x, yf + Tmp.v2.y, 0, unit);
-						Time.run(in * 24f, () -> {
+						Time.run(in * 45f, () -> {
 							unit.add();
 						});
 					});
 				});
+				spawnAmount++;
 			}
 			resetUnit();
 		}
@@ -319,11 +315,19 @@ public class FSAircraftCarrier extends PowerUnit {
 			if (invalid(target)) {
 				target = null;
 			}
+			
+			boolean check = timer.get(timerChange, changeTime);
+			boolean check_2 = target == null || lastTarget == target;
+			if(check) {
+			    Vars.ui.showInfoToast("timer: true", 50f);
+			} else {
+			    Vars.ui.showInfoToast("check targrt: " + check_2, Time.delta);
+			}
 
-			if (target == null || lastTarget == target) return;
+			if (check_2) return;
 			target = lastTarget;
 
-			if (timer.get(timerChange, changeTime)) {
+			if (check) {
 				if (target instanceof Unit && ((Unit)target).isFlying()) {
 					entity.changeType(type.getSuitableType(true));
 				} else {
