@@ -30,6 +30,7 @@ public class FSAircraftCarrier extends PowerUnit {
 		Unit to = (Unit)e.data();
 		Draw.color(Color.valueOf("44A9EB"), Color.white, e.fin());
 		Tmp.v1.set(e.x, e.y).interpolate(Tmp.v2.set(to), e.fin() * 0.875f, Interp.pow2In).add(Tmp.v2.sub(e.x, e.y).nor().rotate90(1).scl(Mathf.randomSeedRange(e.id, 1f) * e.fslope() * 10f));
+		float scl = 1f + e.fout() * 2f;
 		float x = Tmp.v1.x, y = Tmp.v1.y;
 		float size = 2.5f * e.fin();
 		TextureRegion region = to.type.icon(Cicon.full);
@@ -49,7 +50,6 @@ public class FSAircraftCarrier extends PowerUnit {
 	fsunitSpawn = new Effect(55f, e -> {
 		Unit data = (Unit)e.data();
 		Draw.alpha(e.fin() * Mathf.absin(Time.time, 4f, 1.5f));
-		float scl = 1f + e.fout() * 2f;
 		Draw.color(Color.valueOf("44A9EB"), Color.white, e.fin());
 		Lines.stroke(data.hitSize() * 0.125f * e.fout());
 		Lines.circle(e.x, e.y, e.fin() * 52);
@@ -231,8 +231,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	public static class FSACEntity extends BasePowerEntityUnit {
 		public boolean isFtoCommand = true;
 		public FSAircraftCarrierEntity owner;
-		public FSACEntity(FSAircraftCarrierEntity owner) {
-			this.owner = owner;
+		{
 			Events.on(ACTypeChangeEvent.class, e -> {
 				if (e.id == owner.id) isFtoCommand = false;
 			});
