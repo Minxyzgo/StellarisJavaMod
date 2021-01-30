@@ -55,7 +55,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	public static SpawnerBulletType spawner = new SpawnerBulletType() {{
 	    shootEffect = smokeEffect = trailEffect = Fx.none;
 	    lightColor = Color.valueOf("44A9EB");
-	    despawnEffect = fsunitSpawn;
+	    despawnEffect = Fx.none;
 	}};
 
 	public FSAircraftCarrier(String name) {
@@ -210,7 +210,7 @@ public class FSAircraftCarrier extends PowerUnit {
 			PowerUnitSeq useq = spawnUnit.get(index);
 			//spawnWave.at(x, y, 0f, Color.valueOf("44A9EB"), bounds());
 			for (int i = 0; i < useq.maxSpawn; i++) {
-				Time.run(i * 3f, () -> {
+				Time.run(i * 10f, () -> {
 					float xf = x + Mathf.range(bounds()), yf = y + Mathf.range(bounds());
 					spawner.create(this, team, xf, yf, rotation, 120f, 1f, 1f, useq.type);
 				});
@@ -365,6 +365,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	    @Override
 	    public void despawned(Bullet b) {
 	        super.despawned(b);
+	        fsunitSpawn.at(b.x, b.y, 0, b.data());
 	        ((Unit)b.data()).add();
 	    }
 	    
