@@ -353,6 +353,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	    public void update(Bullet b) {
 	        super.update(b);
 	        Unit to = (Unit)b.data();
+	        if(to == null) return;
 	        int scl = (int)(Math.sqrt(to.hitSize()) + b.fout() * 2f);
 	        if (Mathf.chance(Time.delta * 1.2)) {
                 for (int i = 0; i < Mathf.random(4); i++) {
@@ -370,6 +371,7 @@ public class FSAircraftCarrier extends PowerUnit {
 		@Override
 		public void draw(Bullet b) {
 			Unit to = (Unit)b.data();
+			if(to == null) return;
 			Draw.color(Color.valueOf("44A9EB"), Color.white, b.fin());
 			float scl = 1f + b.fout() * 2f;
 			float x = b.x, y = b.y;
