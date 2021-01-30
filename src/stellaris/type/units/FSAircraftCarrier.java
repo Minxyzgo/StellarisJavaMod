@@ -35,7 +35,7 @@ public class FSAircraftCarrier extends PowerUnit {
 		float size = 2.5f * e.fin();
 		TextureRegion region = to.type.icon(Cicon.full);
 		Draw.alpha(e.fin() * Mathf.absin(Time.time, 4f, 1.5f));
-		Draw.rect(region, e.x, e.y,
+		Draw.rect(region, x, y,
 				  region.width * Draw.scl * scl, region.height * Draw.scl * scl, to.rotation() - 90f);
 		Lines.stroke(size);
 		Lines.line(x, y, to.x, to.y, false);
@@ -163,6 +163,7 @@ public class FSAircraftCarrier extends PowerUnit {
 
 		public void changeType(int index) {
 			this.index = index;
+			resetUnit();
 			FSAircraftCarrier fstype = (FSAircraftCarrier)type;
 			Seq<PowerUnitSeq> spawnUnit = fstype.spawnUnit;
 			Events.fire(new ACTypeChangeEvent(id));
@@ -174,6 +175,7 @@ public class FSAircraftCarrier extends PowerUnit {
 					float xf = x + Mathf.range(bounds()), yf = y + Mathf.range(bounds());
 					Unit unit = useq.type.create(team);
 					unit.set(xf, yf);
+					unit.rotation(rotation);
 					fsunitSpawn.at(x, y, 0, unit);
 					Fx.unitDespawn.at(xf, yf, 0, unit);
 					Time.run(in * 11f, () -> {
@@ -186,7 +188,6 @@ public class FSAircraftCarrier extends PowerUnit {
 				});
 				spawnAmount++;
 			}
-			resetUnit();
 		}
 		
 		@Override
@@ -316,7 +317,7 @@ public class FSAircraftCarrier extends PowerUnit {
 			}
 			
 			boolean check = timer.get(timerChange, changeTime);
-			boolean check_2 = target == null || lastTarget == target;
+			boolean check_2 = lastTarget == null || lastTarget == target;
 			if(check) {
 			    Vars.ui.showInfoToast("timer: true", 50f);
 			} else {
