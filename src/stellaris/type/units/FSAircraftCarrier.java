@@ -253,7 +253,7 @@ public class FSAircraftCarrier extends PowerUnit {
 			Seq<PowerUnitSeq> spawnUnit = fstype.spawnUnit;
 			PowerUnitSeq useq = spawnUnit.get(index);
 			//spawnWave.at(x, y, 0f, Color.valueOf("44A9EB"), bounds());
-			for (int i = 0; i < useq.maxSpawn && (useq.type instanceof FSACUnitType || Units.canCreate(team, ptype)); i++) {
+			for (int i = 0; i < useq.maxSpawn && (useq.type instanceof FSACUnitType || Units.canCreate(team, useq.type)); i++) {
 				Time.run(i * 10f, () -> {
 					float xf = x + Mathf.range(bounds()), yf = y + Mathf.range(bounds());
 					spawner.create(this, team, xf, yf, rotation, 120f, 1f, 1f, useq.type);
