@@ -81,6 +81,10 @@ public class FSAircraftCarrier extends PowerUnit {
 		targetFlag = BlockFlag.core;
 		maxPower = 10000f;
 		powerProduction = 5f;
+		trailLength = 120;
+		trailX = 25f;
+		trailY = -64f;
+		trailScl = 5.5f;
 		faceTarget = true;
 		rotateShooting = true;
 		drawShields = false;
@@ -128,14 +132,16 @@ public class FSAircraftCarrier extends PowerUnit {
     @Override
     public void drawWeapons(Unit unit) {
         Draw.draw(Draw.z(), () -> {
+            Color c = Color.valueOf("8ADAFF");
+            c.lerp(Color.white, Mathf.clamp(Time.delta * 0.04f));
             Shaders.build.region = Core.atlas.find(name + "-heat");
             Shaders.build.progress = 1f;
-            Shaders.build.color.set(Color.valueOf("44A9EB"));
-            Shaders.build.color.a = 1f;
+            Shaders.build.color.set(c);
+            Shaders.build.color.a = Mathf.absin(Time.time, 3f, 0.3f);
             Shaders.build.time = -Time.time / 20f;
 
             Draw.shader(Shaders.build);
-            Draw.rect(Core.atlas.find(name + "-heat"), unit.x, unit.y, unit.rotation);
+            Draw.rect(Core.atlas.find(name + "-heat"), unit.x, unit.y, unit.rotation - 90f);
             Draw.shader();
 
             Draw.reset();
