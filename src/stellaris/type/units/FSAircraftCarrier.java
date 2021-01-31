@@ -121,6 +121,23 @@ public class FSAircraftCarrier extends PowerUnit {
 	public boolean hasWeapons(){
         return true;
     }
+    
+    @Override
+    public void drawWeapons(Unit unit) {
+        Draw.draw(Draw.z(), () -> {
+            Shaders.build.region = Core.atlas.find(name + "-heat");
+            Shaders.build.progress = 1f;
+            Shaders.build.color.set(Color.valueOf("44A9EB"));
+            Shaders.build.color.a = 1f;
+            Shaders.build.time = -Time.time / 20f;
+
+            Draw.shader(Shaders.build);
+            Draw.rect(Core.atlas.find(name + "-heat"), unit.x, unit.y, rotation);
+            Draw.shader();
+
+            Draw.reset();
+        });
+    }
 
 	@Override
 	public void tableBar(Unit unit, Table bars) {
@@ -136,6 +153,8 @@ public class FSAircraftCarrier extends PowerUnit {
 	}
 
 	public static class FSAircraftCarrierEntity extends BasePowerEntityUnit {
+	    private transient Trail[] trails = new Trail[6];
+	    private transient Color trailColor = Color.valueOf("44A9EB").cpy().mul(1.2f);
 		public int index = 1;
 		public ObjectSet<Unit> spawnUnits = new ObjectSet<>();
 		public static float spawnTimer = 0;
@@ -150,10 +169,12 @@ public class FSAircraftCarrier extends PowerUnit {
 		}
 
 		public float unitAmountc() {
-			if (index == -1) return 0;
-			return spawnAmount() / ((FSAircraftCarrier)type).spawnUnit.get(index).maxSpawn;
+			//if (index == -1) return 0;
+			//return spawnAmount() / ((FSAircraftCarrier)type).spawnUnit.get(index).maxSpawn;
+			return 1f;
 		}
-
+		
+		@Override
 		public void update() {
 			super.update();
 			FSAircraftCarrier fstype = (FSAircraftCarrier)type;
@@ -165,6 +186,14 @@ public class FSAircraftCarrier extends PowerUnit {
 			for(Unit u : spawnUnits) {
 			    if(u.dead) spawnUnits.remove(u);
 			}
+			
+			for(int i = 0; i < trails.length; i++){
+                Trail t = trails[i];
+                int sign = i % 2 == 0 ? -1 : 1;
+                float cx = Angles.trnsx(rotation - 90, type.trailX * sign * i, type.trailY) + x, cy = Angles.trnsy(rotation - 90, type.trailX * sign * i, type.trailY) + y;
+                t.update(cx, cy);
+            }
+			
 			if (spawnAmount() < pseq.maxSpawn) {
 				spawnTimer += Time.delta * Vars.state.rules.unitBuildSpeedMultiplier;
 				if (spawnTimer >= pseq.spawnTime && (ptype instanceof FSACUnitType || Units.canCreate(team, ptype))) {
@@ -174,6 +203,15 @@ public class FSAircraftCarrier extends PowerUnit {
 					spawnTimer = 0f;
 				}
 			}
+		}
+		
+		@Override
+		public void draw() {
+		    super.draw();
+		    for(Trail t : trails) {
+		        trailColor.lerp(Color.white, Mathf.clamp(Time.delta * 0.04f));
+		        t.draw(trailColor, type.trailScl);
+		    }
 		}
 		
 		@Override
@@ -188,14 +226,13 @@ public class FSAircraftCarrier extends PowerUnit {
                     units.add(u);
                 }
             });
-
-            if(units.isEmpty()) return;
-
             //sort by hitbox size, then by distance
             for(Unit u2 : spawnUnits) {
                 if(!units.contains(u2)) units.add(u2);
             }
             
+            if(units.isEmpty()) return;
+
             units.sort(Structs.comps(Structs.comparingFloat(u -> -u.hitSize), Structs.comparingFloat(u -> u.dst2(this))));
             units.truncate(type.commandLimit);
 
@@ -221,6 +258,11 @@ public class FSAircraftCarrier extends PowerUnit {
 		public void add() {
 			super.add();
 			changeType(index);
+			Arrays.fill(trails, new Trail(type.trailLength));
+			
+			for(Trail t : trails) {
+		        t.clear();
+		    }
 		}
 
 
@@ -323,8 +365,8 @@ public class FSAircraftCarrier extends PowerUnit {
 	        hitSize = 4;
 	        drawSize = 60f;
 	        drag = 0.02f;
-	        speed = 6f;
-	        lifetime = 40f;
+	        speed = 5f;
+	        lifetime = 70f;
 	        hittable = false;
             absorbable = false;
 	        collidesTiles = false;
@@ -338,7 +380,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	        super.init(b);
 	        if(b.data instanceof UnitType) {
 	            Unit unit = ((UnitType)b.data).create(b.team);
-				unit.set(b.vel.x, b.vel.y);
+				unit.set(b.x + b.vel.x, b.y + b.vel.y);
 				unit.rotation(b.rotation());
 				((FSAircraftCarrierEntity)b.owner).spawnUnits.add(unit);
 				if(unit instanceof FSACEntity) {
@@ -390,6 +432,7 @@ public class FSAircraftCarrier extends PowerUnit {
 			Angles.randLenVectors(b.id, 2, 1 + 40f * b.fin(), b.rotation(), 360f, (x2, y2) -> {
 				Lines.lineAngle(x + x2, y + y2, Mathf.angle(x2, y2), b.fslope() * 12f + 1);
 			});
+			Draw.reset();
 		}
 	}
 	
@@ -441,7 +484,6 @@ public class FSAircraftCarrier extends PowerUnit {
 				} else {
 					entity.changeType(type.getSuitableType(false));
 				}
-
 			}
 		}
 	}
