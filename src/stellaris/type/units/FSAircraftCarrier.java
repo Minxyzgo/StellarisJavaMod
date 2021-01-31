@@ -188,7 +188,7 @@ public class FSAircraftCarrier extends PowerUnit {
 			super.update();
 			FSAircraftCarrier fstype = (FSAircraftCarrier)type;
 			Seq<PowerUnitSeq> spawnUnit = fstype.spawnUnit;
-			Vars.ui.showInfoToast("amount: " + spawnAmount() + " timer: " + spawnTimer, Time.delta);
+		//	Vars.ui.showInfoToast("amount: " + spawnAmount() + " timer: " + spawnTimer, Time.delta);
 			PowerUnitSeq pseq = spawnUnit.get(index);
 			PowerUnit ptype = spawnUnit.get(index).type;
 			spawnUnits.each(u -> {
@@ -198,7 +198,7 @@ public class FSAircraftCarrier extends PowerUnit {
 			for(int i = 0; i < trails.length; i++){
                 Trail t = trails[i];
                 int sign = i % 2 == 0 ? -1 : 1;
-                float cx = Angles.trnsx(rotation - 90, type.trailX * sign * i, type.trailY) + x, cy = Angles.trnsy(rotation - 90, type.trailX * sign * i, type.trailY) + y;
+                float cx = Angles.trnsx(rotation + 180, type.trailX * sign * i, type.trailY) + x, cy = Angles.trnsy(rotation + 180, type.trailX * sign * i, type.trailY) + y;
                 t.update(cx, cy);
             }
 			
@@ -215,11 +215,10 @@ public class FSAircraftCarrier extends PowerUnit {
 		
 		@Override
 		public void draw() {
-		    super.draw();
 		    for(Trail t : trails) {
-		        trailColor.lerp(Color.white, Mathf.clamp(Time.delta * 0.04f));
 		        t.draw(trailColor, type.trailScl);
 		    }
+		    super.draw();
 		}
 		
 		@Override
@@ -254,7 +253,7 @@ public class FSAircraftCarrier extends PowerUnit {
 			Seq<PowerUnitSeq> spawnUnit = fstype.spawnUnit;
 			PowerUnitSeq useq = spawnUnit.get(index);
 			//spawnWave.at(x, y, 0f, Color.valueOf("44A9EB"), bounds());
-			for (int i = 0; i < useq.maxSpawn; i++) {
+			for (int i = 0; i < useq.maxSpawn && (useq.type instanceof FSACUnitType || Units.canCreate(team, ptype)); i++) {
 				Time.run(i * 10f, () -> {
 					float xf = x + Mathf.range(bounds()), yf = y + Mathf.range(bounds());
 					spawner.create(this, team, xf, yf, rotation, 120f, 1f, 1f, useq.type);
@@ -386,7 +385,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	    public void init(Bullet b) {
 	        super.init(b);
 	        if(b.data instanceof UnitType) {
-	            float xf = b.x + b.vel.x, yf = b.y + b.vel.y;
+	            float xf = b.x + Angles.trnsx(b.rotation(), b.vel.x*lifetime), yf = b.y + Angles.trnsy(b.rotation(), b.vel.y*lifetime);
 	            Unit unit = ((UnitType)b.data).create(b.team);
 				unit.set(xf, yf);
 				unit.rotation(b.rotation());
