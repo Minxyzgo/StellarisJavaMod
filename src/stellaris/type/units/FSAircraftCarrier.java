@@ -10,6 +10,9 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import arc.util.io.*;
+
+import java.util.*;
+
 import mindustry.*;
 import mindustry.ai.formations.*;
 import mindustry.ai.types.*;
@@ -132,7 +135,7 @@ public class FSAircraftCarrier extends PowerUnit {
             Shaders.build.time = -Time.time / 20f;
 
             Draw.shader(Shaders.build);
-            Draw.rect(Core.atlas.find(name + "-heat"), unit.x, unit.y, rotation);
+            Draw.rect(Core.atlas.find(name + "-heat"), unit.x, unit.y, unit.rotation);
             Draw.shader();
 
             Draw.reset();
