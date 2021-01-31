@@ -173,14 +173,14 @@ public class FSAircraftCarrier extends PowerUnit {
 		}
 
 		public float unitBuildc() {
-			if (index == -1) return 0;
+			//if (index == -1) return 0;
 			return spawnTimer / ((FSAircraftCarrier)type).spawnUnit.get(index).spawnTime;
 		}
 
 		public float unitAmountc() {
 			//if (index == -1) return 0;
-			//return spawnAmount() / ((FSAircraftCarrier)type).spawnUnit.get(index).maxSpawn;
-			return 1f;
+			return spawnAmount() / ((FSAircraftCarrier)type).spawnUnit.get(index).maxSpawn;
+			
 		}
 		
 		@Override
@@ -189,12 +189,11 @@ public class FSAircraftCarrier extends PowerUnit {
 			FSAircraftCarrier fstype = (FSAircraftCarrier)type;
 			Seq<PowerUnitSeq> spawnUnit = fstype.spawnUnit;
 			Vars.ui.showInfoToast("amount: " + spawnAmount() + " timer: " + spawnTimer, Time.delta);
-			if(index == -1) return;
 			PowerUnitSeq pseq = spawnUnit.get(index);
 			PowerUnit ptype = spawnUnit.get(index).type;
-			for(Unit u : spawnUnits) {
+			spawnUnits.each(u -> {
 			    if(u.dead) spawnUnits.remove(u);
-			}
+			});
 			
 			for(int i = 0; i < trails.length; i++){
                 Trail t = trails[i];
@@ -282,7 +281,6 @@ public class FSAircraftCarrier extends PowerUnit {
 
 		public void resetUnit() {
 			spawnTimer = 0f;
-			index = -1;
 			for(Unit u : spawnUnits) {
 			    if(u instanceof FSACEntity) {
 			        ((FSACEntity)u).isFtoCommand = false;
@@ -388,9 +386,11 @@ public class FSAircraftCarrier extends PowerUnit {
 	    public void init(Bullet b) {
 	        super.init(b);
 	        if(b.data instanceof UnitType) {
+	            float xf = b.x + b.vel.x, yf = b.y + b.vel.y;
 	            Unit unit = ((UnitType)b.data).create(b.team);
-				unit.set(b.x + b.vel.x, b.y + b.vel.y);
+				unit.set(xf, yf);
 				unit.rotation(b.rotation());
+				Fx.unitDespawn.at(xf, yf, 0, unit);
 				((FSAircraftCarrierEntity)b.owner).spawnUnits.add(unit);
 				if(unit instanceof FSACEntity) {
 				   ((FSACEntity)unit).owner = (FSAircraftCarrierEntity)b.owner;
