@@ -6,6 +6,7 @@ import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
 import arc.math.geom.*;
+import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
@@ -27,9 +28,12 @@ import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.world.meta.*;
 import minxyzgo.mlib.*;
+import minxyzgo.mlib.entities.*;
+import minxyzgo.mlib.input.*;
+import minxyzgo.mlib.type.DataSkill;
 import stellaris.content.*;
 
-public class FSAircraftCarrier extends PowerUnit {
+public class FSAircraftCarrier extends PowerUnit implements Skillc {
 	private static int classId = Tool.nextClassId(FSAircraftCarrierEntity::new);
 	private static int classId_2 = Tool.nextClassId(FSACEntity::new);
 	public static Effect
@@ -54,7 +58,9 @@ public class FSAircraftCarrier extends PowerUnit {
 		Lines.circle(e.x, e.y, e.finpow() * e.rotation);
 	});*/
 	public Seq<PowerUnitSeq> spawnUnit = new Seq<>();
-	public float spawnX, spawnY;
+	public DataSkill[] skills;
+	public float spawnX = 12f, spawnY = 32f;
+	
 	public static SpawnerBulletType spawner = new SpawnerBulletType() {{
 	    shootEffect = smokeEffect = trailEffect = Fx.none;
 	    lightColor = Color.valueOf("44A9EB");
@@ -90,11 +96,15 @@ public class FSAircraftCarrier extends PowerUnit {
 		drawShields = false;
 		constructor = FSAircraftCarrierEntity::new;
 		defaultController = FSACAIController::new;
+		engineSize = 8f;
+		
+		
 		spawnUnit.add(new PowerUnitSeq() {
 			{
 				type = (PowerUnit) AsUnits.fship;
 				maxSpawn = 1;
 				spawnTime = 200f;
+				skillRegion = "AcType-0";
 			}
 		});
 		spawnUnit.add(new PowerUnitSeq() {
@@ -102,8 +112,10 @@ public class FSAircraftCarrier extends PowerUnit {
 				type = (PowerUnit) AsUnits.fhz;
 				maxSpawn = 5;
 				spawnTime = 100f;
+				skillRegion = "AcType-1";
 			}
 		});
+		
 		powerWeapons.add(new PowerWeapon() {{
 		    typeId = "spawner";
 		    xRand = 360f;
@@ -122,6 +134,21 @@ public class FSAircraftCarrier extends PowerUnit {
 			mount.reload = weapon.reload;
 			return false;
 		});
+	}
+	
+	@Override
+	public void init() {
+	    super.init();
+	    skills = new DataSkill[spawnUnit.size];
+	    for(int i = 0; i < spawnUnit.size; i++) {
+	        PowerUnitSeq pseq = spawnUnit.get(i);
+	        skills[i] = SpawnerSkill.create(pseq.spawnTime, pseq.skillRegion, i);
+	    }
+	}
+	
+	@Override
+	public DataSkill[] getSkill() {
+		return skills;
 	}
 	
 	@Override
@@ -198,7 +225,9 @@ public class FSAircraftCarrier extends PowerUnit {
 			for(int i = 0; i < trails.length; i++){
                 Trail t = trails[i];
                 int sign = i % 2 == 0 ? -1 : 1;
-                float cx = Angles.trnsx(rotation + 180, type.trailX * sign * i, type.trailY) + x, cy = Angles.trnsy(rotation + 180, type.trailX * sign * i, type.trailY) + y;
+                float scale = elevation();
+			    float offset = 72f / 2f + 72f / 2f * scale;
+                float cx = Angles.trnsx(rotation + 180, offset * sign * i) + x, cy = Angles.trnsy(rotation + 180, offset * sign * i) + y;
                 t.update(cx, cy);
             }
 			
@@ -216,7 +245,7 @@ public class FSAircraftCarrier extends PowerUnit {
 		@Override
 		public void draw() {
 		    for(Trail t : trails) {
-		        t.draw(trailColor, type.trailScl);
+		        t.draw(trailColor, (type.engineSize + Mathf.absin(Time.time, 2f, type.engineSize / 4f) * elevation) * type.trailScl);
 		    }
 		    super.draw();
 		}
@@ -385,7 +414,7 @@ public class FSAircraftCarrier extends PowerUnit {
 	    public void init(Bullet b) {
 	        super.init(b);
 	        if(b.data instanceof UnitType) {
-	            float xf = b.x + Angles.trnsx(b.rotation(), b.vel.x*lifetime), yf = b.y + Angles.trnsy(b.rotation(), b.vel.y*lifetime);
+	            float xf = b.x + Angles.trnsx(b.rotation(), b.vel.x*lifetime*0.75f), yf = b.y + Angles.trnsy(b.rotation(), b.vel.y*lifetime*0.75f);
 	            Unit unit = ((UnitType)b.data).create(b.team);
 				unit.set(xf, yf);
 				unit.rotation(b.rotation());
@@ -495,10 +524,47 @@ public class FSAircraftCarrier extends PowerUnit {
 			}
 		}
 	}
+	
+	public static class SpawnerSkill extends SkillButtonStack.SkillButton {
+	    
+	    private int index;
+	    
+	    {
+			clearChildren();
+			clicked(() -> {
+				sendSkill(index);
+			});
+	    }
+	    
+	    public SpawnerSkill(SkillButtonStack owner, TextureRegion region, ImageButton.ImageButtonStyle imageStyle, int index) {
+            super(owner, region, imageStyle);
+            this.index = index;
+        }
+        
+        public static SpawnerSkill create(float cooldown, String region, int index) {
+            SkillButtonStack stack = new SkillButtonStack(Core.atlas.find(Vars.content.transformName(region)), cooldown) {{
+			    button = new SpawnerSkill(this, region, new SkillButtonStack.SkillStyle(), index);
+			}};
+			
+            return (SpawnerSkill)stack.button;
+        }
+        
+        @Override
+		public void callSkill(Player pl, Object... objects) {
+			((FSAircraftCarrierEntity)pl.unit()).changeType((Integer)objects[0]);
+		}
+        
+	    @Override
+		public String getType() {
+			return "Spawner$" + id;
+		}
+		
+	}
 
 	public class PowerUnitSeq {
-		public PowerUnit type;
+		public @Nullable PowerUnit type;
 		public int maxSpawn = 5;
 		public float spawnTime = 25f;
+		public String skillRegion = "";
 	}
 }

@@ -6,11 +6,13 @@ import static mindustry.game.EventType.*;
 import java.util.StringJoiner;
 
 import arc.*;
+import arc.graphics.g2d.*;
 import arc.input.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.gen.*;
+import mindustry.graphics.*;
 import minxyzgo.mlib.entities.*;
 
  /**
@@ -23,6 +25,7 @@ import minxyzgo.mlib.entities.*;
 @SuppressWarnings("unchecked")
 public class Skills implements ApplicationListener {
     public static final String TYPE_SKILL = "TYPE_SKILL";
+    public float dataCooldown;
     public final Seq<DataSkill> pocSeq = new Seq<>(255);
     public Table baseGroup;
     
@@ -76,6 +79,13 @@ public class Skills implements ApplicationListener {
         if(dataSkills != null && dataSkills.length > 0) {
             for(DataSkill data : dataSkills) {
                 data.update();
+                
+                Draw.reset();
+                Draw.sort(true);
+                Draw.draw(Layer.effect, data::drawEnt);
+                Draw.sort(false);
+                Draw.reset();
+                Draw.flush();
             }
         }
     }
@@ -95,6 +105,8 @@ public class Skills implements ApplicationListener {
         System.arraycopy(str, 2, copystr, 0, str.length - 2);
         //The configuration will be output again as an array
         if(net.server()) Call.clientPacketReliable(TYPE_SKILL, base);
+        dataCooldown = skill.cooldown;
+        pocSeq.each(DataSkill::reset);
         skill.callSkill(entPlayer, copystr);
     }
     

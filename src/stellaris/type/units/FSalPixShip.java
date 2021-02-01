@@ -4,9 +4,11 @@ import mindustry.content.StatusEffects;
 import mindustry.world.meta.BlockFlag;
 import minxyzgo.mlib.*;
 import minxyzgo.mlib.entities.*;
+import minxyzgo.mlib.input.SkillButtonStack;
 import minxyzgo.mlib.math.UnitMathf;
 import minxyzgo.mlib.type.DataSkill;
 import stellaris.type.abilities.InductionAbility;
+import arc.*;
 import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
@@ -35,7 +37,7 @@ import static arc.Core.*;
 
 public class FSalPixShip extends PowerUnit implements Skillc {
 	private static int classId = Tool.nextClassId(FShip::new);
-	public DataSkill s_1;
+	
 	public FSMainWeapon mainWeapon;
 
 	public DataSkill[] skills;
@@ -48,6 +50,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 	public static final int count = 8;
 	public static final float frameSpeed = 3f;
 	public float mainConsunePower = 2000f;
+	public SkillButtonStack owner;
 	public static String smallLaserName = content.transformName("smallLaserTurret"),
 						 bcWeapon = content.transformName("BcWeapon");
 	public static Effect mainShootEffect = new Effect(25, e -> {
@@ -76,10 +79,12 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 	{
 
 		Tool.onLoad(() -> {
-			s_1 = new InductionAbility.InductionSkill();
+			
+			owner = new SkillButtonStack(Core.atlas.find(content.transformName("jumpSkill")), 50f) {{
+			    button = new InductionAbility.InductionSkill(this, region, new SkillButtonStack.SkillStyle());
+			}};
 
-
-			skills = new DataSkill[]{s_1};
+			skills = new DataSkill[]{owner.button};
 		});
 
 		lowAltitude = true;

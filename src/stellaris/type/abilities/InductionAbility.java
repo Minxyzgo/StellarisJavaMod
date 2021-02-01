@@ -1,7 +1,6 @@
 package stellaris.type.abilities;
 
 import arc.*;
-import arc.struct.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.input.*;
@@ -15,12 +14,14 @@ import mindustry.core.*;
 import mindustry.entities.*;
 import mindustry.entities.abilities.*;
 import mindustry.gen.*;
-import mindustry.game.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
 import minxyzgo.mlib.type.*;
 import minxyzgo.mlib.*;
 import minxyzgo.mlib.input.*;
+
+import stellaris.type.intf.*;
+import stellaris.type.units.*;
 
 import static mindustry.game.EventType.*;
 
@@ -179,42 +180,48 @@ public class InductionAbility extends Ability {
 		touched = tou;
 	}
 
-	@Override
-	public void draw(Unit unit) {
-
-		if (touched /*&& innerAbility == this*/) {
-			InputHandler input = control.input;
-			Vec2 v = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
-
-			float sin = Mathf.absin(Time.time, 5f, 1f);
-			boolean checkR = player.within(v.x, v.y, range);
-			float px = player.getX(), py = player.getY();
-			Color checkColor = checkR ? Pal.accent : Color.red;
-			Draw.z(Layer.light);
-			Draw.color(Pal.accent);
-			Drawf.circles(px, py, player.unit().hitSize() * 1.5f + sin - 2f, Pal.accent);
-			Drawf.dashCircle(px, py, range * 2, Pal.accent);
-			Draw.color(checkColor);
-			Drawf.circles(v.x, v.y, player.unit().hitSize() * 1.5f + sin - 2f, checkColor);
-			Lines.stroke(15f);
-			int segs = (int)Math.floor(unit.dst(v.x, v.y) / tilesize);
-			Lines.dashLine(px, py, v.x, v.y, segs);
-			Draw.reset();
-		}
-	}
-
-	public static class InductionSkill extends SkillButton {
+	public static class InductionSkill extends SkillButtonStack.SkillButton {
 		{
 			clearChildren();
 			clicked(() -> {
 				InductionAbility.setTouched(true);
 			});
+			disabledBoolp = () -> !(((Powerc)player.unit()).conPower(innerAbility.consumePower / Time.toSeconds));
 
+		}
+		
+		
+		public InductionSkill(SkillButtonStack owner, TextureRegion region, ImageButton.ImageButtonStyle imageStyle) {
+            super(owner, region, imageStyle);
+        }
+		
+		@Override
+		public void drawEnt() {
+		    if (touched /*&& innerAbility == this*/) {
+			    InputHandler input = control.input;
+		    	Vec2 v = Core.input.mouseWorld(input.getMouseX(), input.getMouseY());
+
+		    	float sin = Mathf.absin(Time.time, 5f, 1f);
+		    	boolean checkR = player.within(v.x, v.y, innerAbility.range);
+		    	float px = player.getX(), py = player.getY();
+		    	Color checkColor = checkR ? Pal.accent : Color.red;
+		    	Draw.z(Layer.light);
+		    	Draw.color(Pal.accent);
+		    	Drawf.circles(px, py, player.unit().hitSize() * 1.5f + sin - 2f, Pal.accent);
+		    	Drawf.dashCircle(px, py, innerAbility.range * 2, Pal.accent);
+		    	Draw.color(checkColor);
+		    	Drawf.circles(v.x, v.y, player.unit().hitSize() * 1.5f + sin - 2f, checkColor);
+		    	Lines.stroke(15f);
+		    	int segs = (int)Math.floor(player.unit().dst(v.x, v.y) / tilesize);
+		    	Lines.dashLine(px, py, v.x, v.y, segs);
+		    	Draw.reset();
+	    	}
 		}
 
 		@Override
 		public void callSkill(Player pl, Object... objects) {
 			pl.unit().set((Integer)objects[0], (Integer)objects[1]);
+			((Powerc)pl.unit()).trigger(((PowerUnit)pl.unit().type).consumePower);
 		}
 
 		@Override

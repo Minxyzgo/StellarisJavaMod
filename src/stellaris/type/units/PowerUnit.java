@@ -31,12 +31,12 @@ public class PowerUnit extends UnitType {
 	private static int classId = Tool.nextClassId(BasePowerMechUnit::new);
 	private static int classId_2 = Tool.nextClassId(BasePowerEntityUnit::new);
 
-	public @Nullable PowerAbility Pability;
+	//public @Nullable PowerAbility Pability;
 	public ObjectMap<String, MountWeaponAct> weaponacts = new ObjectMap<>();
 	public Seq<PowerWeapon> powerWeapons = new Seq<>();
 	/* for Json */
 
-	public boolean outputPower = true;
+	//public boolean outputPower = true;
 	public ForceFieldAbility sability;
 	public float conShieldPower;
 	public float maxPower = 100f;

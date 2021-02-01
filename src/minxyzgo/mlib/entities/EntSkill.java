@@ -1,5 +1,6 @@
 package minxyzgo.mlib.entities;
 
+import arc.util.*;
 import arc.util.io.*;
 
 public class EntSkill {
