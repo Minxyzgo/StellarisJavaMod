@@ -189,8 +189,9 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 	}
 
 	public static class FSAircraftCarrierEntity extends BasePowerEntityUnit {
-	    private transient Trail[] trails = new Trail[6];
-	    private transient Color trailColor = Color.valueOf("44A9EB").cpy().mul(1.2f);
+	 //   private transient Trail[] trails = new Trail[6];
+	 //  private transient Color trailColor = Color.valueOf("44A9EB").cpy().mul(1.2f);
+	    private transient volatile boolean changing = false;
 		public int index = 1;
 		public ObjectSet<Unit> spawnUnits = new ObjectSet<>();
 		public static float spawnTimer = 0;
@@ -221,7 +222,7 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 			spawnUnits.each(u -> {
 			    if(u.dead) spawnUnits.remove(u);
 			});
-			
+			/*
 			for(int i = 0; i < trails.length; i++){
                 Trail t = trails[i];
                 int sign = i % 2 == 0 ? -1 : 1;
@@ -230,9 +231,9 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
                 float cx = Angles.trnsx(rotation + 180, offset * sign * i) + x, cy = Angles.trnsy(rotation + 180, offset * sign * i) + y;
                 t.update(cx, cy);
             }
-			
+			*/
 			if (spawnAmount() < pseq.maxSpawn) {
-				spawnTimer += Time.delta * Vars.state.rules.unitBuildSpeedMultiplier;
+				spawnTimer = Math.min(spawnTimer + Time.delta * Vars.state.rules.unitBuildSpeedMultiplier, pseq.spawnTime);
 				if (spawnTimer >= pseq.spawnTime && (ptype instanceof FSACUnitType || Units.canCreate(team, ptype))) {
 					float spawnX = fstype.spawnX, spawnY = fstype.spawnY;
 					float xf = x + Angles.trnsx(rotation, spawnY, spawnX), yf = y + Angles.trnsy(rotation, spawnY, spawnX);
@@ -242,13 +243,18 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 			}
 		}
 		
+		
+		public boolean canBuild() {
+		    return spawnAmount() < ((FSAircraftCarrier)type).spawnUnit.get(index).maxSpawn;
+		}
+		/*
 		@Override
 		public void draw() {
 		    for(Trail t : trails) {
 		        t.draw(trailColor, (type.engineSize + Mathf.absin(Time.time, 2f, type.engineSize / 4f) * elevation) * type.trailScl);
 		    }
 		    super.draw();
-		}
+		}*/
 		
 		@Override
 		public void commandNearby(FormationPattern pattern, Boolf<Unit> include) {
@@ -282,23 +288,34 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 			Seq<PowerUnitSeq> spawnUnit = fstype.spawnUnit;
 			PowerUnitSeq useq = spawnUnit.get(index);
 			//spawnWave.at(x, y, 0f, Color.valueOf("44A9EB"), bounds());
-			for (int i = 0; i < useq.maxSpawn && (useq.type instanceof FSACUnitType || Units.canCreate(team, useq.type)); i++) {
-				Time.run(i * 10f, () -> {
-					float xf = x + Mathf.range(bounds()), yf = y + Mathf.range(bounds());
-					spawner.create(this, team, xf, yf, rotation, 120f, 1f, 1f, useq.type);
-				});
-			}
+			boolean check = changing;
+			int i = 0;
+			boolean canCreate = i < useq.maxSpawn && (useq.type instanceof FSACUnitType || Units.canCreate(team, useq.type));
+			do {
+			    changing = true;
+			    if(canCreate) {
+		        	Time.run(i * 10f, () -> {
+			         	float xf = x + Mathf.range(bounds()), yf = y + Mathf.range(bounds());
+			    	    spawner.create(this, team, xf, yf, rotation, 120f, 1f, 1f, useq.type);
+		     	    });
+			    } else {
+			        Time.run(i * 10f, () -> {
+			            changing = false;
+			        });
+			    }
+		    	i++;
+			} while(!check && canCreate);
 		}
 
 		@Override
 		public void add() {
 			super.add();
 			changeType(index);
-			Arrays.fill(trails, new Trail(type.trailLength));
+			/*Arrays.fill(trails, new Trail(type.trailLength));
 			
 			for(Trail t : trails) {
 		        t.clear();
-		    }
+		    }*/
 		}
 
 
@@ -414,12 +431,13 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 	    public void init(Bullet b) {
 	        super.init(b);
 	        if(b.data instanceof UnitType) {
+	            FSAircraftCarrierEntity owner = (FSAircraftCarrierEntity)b.owner;
 	            float xf = b.x + Angles.trnsx(b.rotation(), b.vel.x*lifetime*0.75f), yf = b.y + Angles.trnsy(b.rotation(), b.vel.y*lifetime*0.75f);
 	            Unit unit = ((UnitType)b.data).create(b.team);
 				unit.set(xf, yf);
 				unit.rotation(b.rotation());
 				Fx.unitDespawn.at(xf, yf, 0, unit);
-				((FSAircraftCarrierEntity)b.owner).spawnUnits.add(unit);
+				owner.spawnUnits.add(unit);
 				if(unit instanceof FSACEntity) {
 				   ((FSACEntity)unit).owner = (FSAircraftCarrierEntity)b.owner;
 				}
@@ -530,8 +548,8 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 	    private int index;
 	    
 	    {
-			clearChildren();
-			clicked(() -> {
+			disabledBoolp = () -> !(((FSAircraftCarrierEntity)Vars.player.unit()).canBuild());
+			changed(() -> {
 				sendSkill(index);
 			});
 	    }

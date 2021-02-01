@@ -182,8 +182,7 @@ public class InductionAbility extends Ability {
 
 	public static class InductionSkill extends SkillButtonStack.SkillButton {
 		{
-			clearChildren();
-			clicked(() -> {
+			changed(() -> {
 				InductionAbility.setTouched(true);
 			});
 			disabledBoolp = () -> !(((Powerc)player.unit()).conPower(innerAbility.consumePower / Time.toSeconds));

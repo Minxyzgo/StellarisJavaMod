@@ -81,6 +81,7 @@ public class Skills implements ApplicationListener {
                 data.update();
                 
                 Draw.reset();
+                Draw.proj(Core.camera);
                 Draw.sort(true);
                 Draw.draw(Layer.effect, data::drawEnt);
                 Draw.sort(false);
