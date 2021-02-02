@@ -81,7 +81,7 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 
 		Tool.onLoad(() -> {
 			
-			owner = new SkillButtonStack(, 50f) {{
+			owner = new SkillButtonStack(skillRegion, 50f) {{
 			    button = new InductionAbility.InductionSkill(this, region, new SkillButtonStack.SkillStyle());
 			}};
 
