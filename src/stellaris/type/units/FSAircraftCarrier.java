@@ -30,7 +30,7 @@ import mindustry.world.meta.*;
 import minxyzgo.mlib.*;
 import minxyzgo.mlib.entities.*;
 import minxyzgo.mlib.input.*;
-import minxyzgo.mlib.type.DataSkill;
+import minxyzgo.mlib.type.*;
 import stellaris.content.*;
 
 public class FSAircraftCarrier extends PowerUnit implements Skillc {
@@ -290,7 +290,7 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 			//spawnWave.at(x, y, 0f, Color.valueOf("44A9EB"), bounds());
 			boolean check = changing;
 			int i = 0;
-			boolean canCreate = i < useq.maxSpawn && (useq.type instanceof FSACUnitType || Units.canCreate(team, useq.type));
+			boolean canCreate = true;
 			do {
 			    changing = true;
 			    if(canCreate) {
@@ -303,6 +303,7 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 			            changing = false;
 			        });
 			    }
+			    canCreate = i < useq.maxSpawn && (useq.type instanceof FSACUnitType || Units.canCreate(team, useq.type));
 		    	i++;
 			} while(!check && canCreate);
 		}
