@@ -262,8 +262,8 @@ public class Tool extends Mod {
 	
 	public static void showAllAtlas() {
 	    onLoad(() -> {
-	        for(String name : Core.atlas.getRegionMap.keys())
-	            Log.i(name);
+	        for(String name : Core.atlas.getRegionMap().keys())
+	            Log.info(name);
 	    });
 	}
 /*
