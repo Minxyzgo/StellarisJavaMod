@@ -34,7 +34,7 @@ public class Main extends Mod{
 		new AsBullets().load();
 		new AsBlocks().load();
 		new AsUnits().load();
-		archeology = new Archeology();
+		
 		tool.loadContent();
 		Tool.parser.contentParsers.addAll("stellaris.type.units",
 			 "stellaris.type.abilities",
@@ -49,6 +49,8 @@ public class Main extends Mod{
 			parser.readFields(recipe, data);
 			return recipe;
 		});*/
+		
+		archeology = new Archeology();
     }
     
     @Override

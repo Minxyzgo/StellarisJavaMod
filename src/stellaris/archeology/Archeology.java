@@ -137,8 +137,10 @@ public class Archeology {
 	}
 
 	public void invalidate() {
+	    infoTable.invalidate();
+		toolTable.invalidate();
+		imageTable.invalidate();
 		dialog.cont.invalidate();
-		infoTable.invalidate();
 	}
 
 	public void fireEvent(ArcheologyEvent event, Building ent) {
@@ -321,6 +323,7 @@ public class Archeology {
 			});
 			table.row();
 			toolTable = table;
+			newArListenerButton(Core.bundle.get("continue"));
 		}).size(width, height / 4f);
 	}
 
