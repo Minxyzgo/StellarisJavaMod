@@ -1,24 +1,30 @@
 package stellaris;
 
 import arc.util.*;
+
 import mindustry.mod.*;
 import mindustry.type.*;
-import stellaris.content.*;
-//import stellaris.content.JsonLoad;
-import stellaris.core.Ui;
-import stellaris.type.units.PowerUnit;
+
 import minxyzgo.mlib.*;
 
-public class Main extends Mod{
-//	public static JsonLoad load;
+import stellaris.archeology.*;
+import stellaris.core.*;
+import stellaris.content.*;
 
+public class Main extends Mod{
+    public static final String modName = "stellaris";
 	public static int POINT = 150;
 	private static String ccxxxzzs = "I Saw Your Ship";
 	public static Ui asUi;
 	public static boolean test = false;
 	public static Tool tool = new Tool();
+	public static Archeology archeology;
     public Main(){
 
+    }
+    
+    public static String transform(String name) {
+        return modName + "-" + name;
     }
     
 
@@ -28,6 +34,7 @@ public class Main extends Mod{
 		new AsBullets().load();
 		new AsBlocks().load();
 		new AsUnits().load();
+		archeology = new Archeology();
 		tool.loadContent();
 		Tool.parser.contentParsers.addAll("stellaris.type.units",
 			 "stellaris.type.abilities",

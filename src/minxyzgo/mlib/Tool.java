@@ -52,6 +52,7 @@ public class Tool extends Mod {
 	@Override
 	public void loadContent() {
 		Events.fire(new ToolLoadEvent());
+		showAllAtlas();
 		onLoad(jsonLoad::init);
 		if (showTerminal) showTerminal();
 		parser = new BuildContentParser();
@@ -257,6 +258,13 @@ public class Tool extends Mod {
 		} catch (Exception e) {
 			Log.err(e);
 		}
+	}
+	
+	public static void showAllAtlas() {
+	    onLoad(() -> {
+	        for(String name : Core.atlas.getRegionMap.keys())
+	            Log.i(name);
+	    });
 	}
 /*
 	private static void initialize(Cons<MappableContent> callable, ObjectSet<MappableContent> contentMap) {

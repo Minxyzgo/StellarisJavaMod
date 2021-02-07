@@ -113,15 +113,17 @@ public class Ui {
 		ui.hudGroup.fill(t -> {
 			t.right();
 			t.marginTop(15f);
-
-			t.button(Icon.admin, this::unitSpawnDialog);
+			BaseDialog dialog = unitSpawnDialog();
+			t.button(Icon.admin, dialog::show).update(b -> dialog.invalidate());
+			t.row();
+			t.button(Icon.crafting, () -> Main.archeology.showDialog()).update(b -> Main.archeology.update( player.team().data().core()));
 			t.visible(() -> Main.test && !Vars.net.active());
 		});
 
 
 	}
 
-	public void unitSpawnDialog() {
+	public BaseDialog unitSpawnDialog() {
 		BaseDialog dialog = new BaseDialog("SetUnitType @author Yuria");
 		dialog.cont.add("[" + (spawnTeam == null ? Team.derelict.color.toString() : spawnTeam.toString()) + "]<<-Spawns: " + spawnNum + " ->>").row();
 		Player player = Vars.player;
@@ -176,7 +178,8 @@ public class Ui {
 		}).right().padTop(3);
 		dialog.cont.row();
 		dialog.addCloseButton();
-		dialog.show();
+		
+		return dialog;
 	}
 
 	public void showLogDialog() {

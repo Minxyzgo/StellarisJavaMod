@@ -207,7 +207,9 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 
 		public float unitAmountc() {
 			//if (index == -1) return 0;
-			return spawnAmount() / ((FSAircraftCarrier)type).spawnUnit.get(index).maxSpawn;
+			float a = spawnAmount() / ((FSAircraftCarrier)type).spawnUnit.get(index).maxSpawn;
+			Vars.ui.showInfoToast("amount: " + a, Time.delta);
+			return a;
 			
 		}
 		
@@ -280,8 +282,8 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 
             command(formation, units);
 		}
-
-		public void changeType(int index) {
+		
+		public synchronized void changeType(int index) {
 			this.index = index;
 			resetUnit();
 			FSAircraftCarrier fstype = (FSAircraftCarrier)type;
@@ -292,8 +294,9 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 			int i = 0;
 			boolean canCreate = true;
 			do {
-			    changing = true;
+			    canCreate = i < useq.maxSpawn && (useq.type instanceof FSACUnitType || Units.canCreate(team, useq.type));
 			    if(canCreate) {
+			        changing = true;
 		        	Time.run(i * 10f, () -> {
 			         	float xf = x + Mathf.range(bounds()), yf = y + Mathf.range(bounds());
 			    	    spawner.create(this, team, xf, yf, rotation, 120f, 1f, 1f, useq.type);
@@ -303,7 +306,7 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 			            changing = false;
 			        });
 			    }
-			    canCreate = i < useq.maxSpawn && (useq.type instanceof FSACUnitType || Units.canCreate(team, useq.type));
+			    
 		    	i++;
 			} while(!check && canCreate);
 		}

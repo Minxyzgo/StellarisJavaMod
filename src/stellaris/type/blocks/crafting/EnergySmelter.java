@@ -34,6 +34,7 @@ public class EnergySmelter extends GenericSmelter {
             }
             
             ConsumeItems cu = new ConsumeItems(ilist.toArray(ItemStack.class)) {
+                @Override
                 public void build(Building tile, Table table) {
                     MultiReqImage image = new MultiReqImage();
                     ilist.each(i -> i.item.unlockedNow(), stack -> {

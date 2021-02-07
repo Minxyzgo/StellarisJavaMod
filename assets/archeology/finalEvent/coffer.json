@@ -1,0 +1,8 @@
+{
+    "name":"Coffer"
+    "info":"Though it has get through wars and thieves during it's 10000year history, It's really fortunate that it's treasure is completly untouched. Our specialists has bring it back without any lost. ",
+    "rewardItem":[
+        {"item":"copper","amount":1}
+        ]
+    "region":"end1"
+}

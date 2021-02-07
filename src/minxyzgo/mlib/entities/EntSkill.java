@@ -4,7 +4,7 @@ import arc.util.*;
 import arc.util.io.*;
 
 public class EntSkill {
-    public float reload;
+    public float reload = 0;
     
     public void update() {
         
