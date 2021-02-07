@@ -19,9 +19,7 @@ import mindustry.audio.SoundControl;
 import mindustry.content.Fx;
 import mindustry.game.Team;
 import mindustry.game.EventType.*;
-import mindustry.gen.Icon;
-import mindustry.gen.Player;
-import mindustry.gen.Unit;
+import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
 import mindustry.ui.Cicon;
@@ -116,7 +114,10 @@ public class Ui {
 			BaseDialog dialog = unitSpawnDialog();
 			t.button(Icon.admin, dialog::show).update(b -> dialog.invalidate());
 			t.row();
-			t.button(Icon.crafting, () -> Main.archeology.showDialog()).update(b -> Main.archeology.update( player.team().data().core()));
+			t.button(Icon.crafting, () -> Main.archeology.showDialog()).update(b -> {
+			    Building ent = player.team().data().core();
+			    if(ent != null) Main.archeology.update(ent);
+			});
 			t.visible(() -> Main.test && !Vars.net.active());
 		});
 
