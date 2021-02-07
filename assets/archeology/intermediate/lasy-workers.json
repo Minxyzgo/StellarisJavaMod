@@ -1,7 +1,8 @@
 {
-    "name":"Lasy workers"
+    "name":"Lasy-workers"
     "info":"Some one is loafing on his job! --STOP!!I will put my shoes on your face! "
     "chance":0.5
+    "requirements":[]
     "rewardItem":[]
     "schedule":1
     "gain":false

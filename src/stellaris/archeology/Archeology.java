@@ -305,12 +305,12 @@ public class Archeology {
 	private void initDialog() {
 		dialog = new BaseDialog("Archeology");
 		int width = Core.graphics.getWidth(), height = Core.graphics.getHeight();
-		dialog.addCloseButton();
+		Log.info("width: " + width + " height: " + height);
+		ArcheologyData data = getData(Vars.player.team());
+		dialog.cont.add(
+		    new Bar("progress", Pal.accent, () -> data.progress / (5f * Time.toMinutes))
+		);
 		dialog.cont.row();
-		dialog.cont.pane(table -> {
-		    ArcheologyData data = getData(Vars.player.team());
-		    table.add(new Bar("progress", Pal.accent, () -> data.progress / (5f * Time.toMinutes)));
-		});
 		dialog.cont.pane(table -> {
 			table.left();
 			infoTable = table;
@@ -325,6 +325,7 @@ public class Archeology {
 			toolTable = table;
 			newArListenerButton(Core.bundle.get("continue"));
 		}).size(width, height / 4f);
+		dialog.addCloseButton();
 	}
 
 	private void parse(LoadedMod mod, String name, String json, Fi file, ArcheologyType type) {

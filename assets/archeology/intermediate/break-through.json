@@ -1,8 +1,9 @@
 {
-    "name":"break through"
+    "name":"break-through"
     "info":"We have successfully hack in a point. Victory is within sight"
     "chance":0.5
     "rewardItem":[]
+    "requirements":[]
     "schedule":1
     "gain":true
     "buttonName":"good job! "
