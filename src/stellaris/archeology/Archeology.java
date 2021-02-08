@@ -195,9 +195,7 @@ public class Archeology {
 	}
 
 	public void print(String info, boolean gain) {
-		infoTable.add(info).left().pad(3).padLeft(6).padRight(6).color(gain ? Color.blue : Color.red);
-		infoTable.row();
-		invalidate();
+		print(info, gain ? Color.blue : Color.red);
 	}
 	
 	public void print(String info, Color color) {
@@ -256,7 +254,7 @@ public class Archeology {
 			}
 			if(check) data.crafting = true;
 		});
-		toolTable.add(button);
+		toolTable.add(button).size(80f);
 		invalidate();
 	}
 
@@ -307,24 +305,26 @@ public class Archeology {
 		int width = Core.graphics.getWidth(), height = Core.graphics.getHeight();
 		Log.info("width: " + width + " height: " + height);
 		ArcheologyData data = getData(Vars.player.team());
-		dialog.cont.add(
-		    new Bar("progress", Pal.accent, () -> data.progress / (5f * Time.toMinutes))
-		);
 		dialog.cont.row();
 		dialog.cont.pane(table -> {
 			table.left();
 			infoTable = table;
-		}).top().size(width, height / 3f);
+		}).size(width, height / 3f);
+		dialog.cont.row();
+		dialog.cont.add(
+		    new Bar("progress", Pal.accent, () -> data.progress / (5f * Time.toMinutes))
+		).row();
 		dialog.cont.row();
 		dialog.cont.pane(table -> {
-			table.left();
 			table.table(t -> {
+			    t.left();
 				imageTable = t;
 			});
+			table.right();
 			table.row();
 			toolTable = table;
 			newArListenerButton(Core.bundle.get("continue"));
-		}).size(width, height / 4f);
+		}).left().padTop(3);
 		dialog.addCloseButton();
 	}
 
