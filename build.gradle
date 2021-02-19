@@ -1,31 +1,42 @@
-apply plugin: "java"
-
 version '1.0'
 
-//targetCompatibility = 8
-sourceCompatibility = 14
 
-sourceSets.main.java.srcDirs = ["src"]
 
-repositories{
-    mavenCentral()
-    maven{ url 'https://www.jitpack.io' }
-}
+buildscript{
+    repositories{
+        maven{url 'http://maven.aliyun.com/nexus/content/groups/public/'}
 
-ext{
-    //the build number that this mod is made for
-    mindustryVersion = 'v122'
-    //version of SDK you will be using
-    sdkVersion = '30'
-    sdkRoot = System.getenv("ANDROID_HOME")
+    }
 
-    doExec = { cmd ->
-        def proc = cmd.execute(null, new File("$buildDir/libs"))
-        proc.waitForProcessOutput(System.out, System.err)
+    ext{
+        kotlinVersion = "1.4.21"
+        //the build number that this mod is made for
+        mindustryVersion = 'v123'
+        //version of SDK you will be using
+        sdkVersion = '30'
+        sdkRoot = System.getenv("ANDROID_HOME")
+
+        doExec = { cmd ->
+            def proc = cmd.execute(null, new File("$buildDir/libs"))
+            proc.waitForProcessOutput(System.out, System.err)
+        }
+    }
+
+    dependencies{
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
-//java 8 backwards compatibility flag
+
+//apply from: "src/"
+apply plugin: "kotlin"
+apply plugin: "java"
+
+targetCompatibility = 8
+
+sourceSets.main.java.srcDirs = ["src"]
+sourceSets.main.kotlin.srcDirs = ["src"]
+
 allprojects{
     tasks.withType(JavaCompile){
         if(JavaVersion.current() != JavaVersion.VERSION_1_8){
@@ -38,9 +49,16 @@ allprojects{
     }
 }
 
+repositories{
+    mavenCentral()
+    maven{ url 'https://www.jitpack.io' }
+}
+
 dependencies{
     compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
     compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.4.21"
 }
 
 task jarAndroid{

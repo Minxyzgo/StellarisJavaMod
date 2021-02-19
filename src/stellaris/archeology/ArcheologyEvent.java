@@ -4,6 +4,8 @@ import arc.*;
 import arc.util.*;
 import mindustry.type.*;
 
+import java.util.*;
+
 public class ArcheologyEvent {
     public static final int
         /* 该方块的坐标 */
@@ -12,8 +14,7 @@ public class ArcheologyEvent {
         SPAWNER_POC = -2,
         /* 最近核心坐标 */
         CORE_POC = -3;
-    
-    
+
     /* 事件的名称 */
     public String name = "";
     /* 事件是否是正面事件 */
@@ -31,8 +32,6 @@ public class ArcheologyEvent {
     public String region;
     /* 该事件所消耗的资源 */
     @Nullable
-    @TypeCheck(type = ArcheologyType.intermediate)
-    @TypeCheck(type = ArcheologyType.begin)
     public ItemStack[] requirements;
 
     @Nullable
@@ -53,9 +52,10 @@ public class ArcheologyEvent {
 
     public String buttonName = Core.bundle.get("continue");
     /* 该事件触发时 继续按钮的名称 */
-    
+
+    @Nullable
     @TypeCheck(type = ArcheologyType.begin)
-    public String finalEventName = "";
+    public String finalEventName;
     /* 应当执行的最终事件#名称 */
     
     public String localized() {
@@ -63,7 +63,19 @@ public class ArcheologyEvent {
     }
     
     public String info() {
-        return localized() + "\n" + Core.bundle.get("ArcheologyEvent" + "." + name + "." + "info", info);
+        StringJoiner joiner = new StringJoiner("\n");
+        joiner.add(getColor() + localized());
+        joiner.add(Core.bundle.get("ArcheologyEvent" + "." + name + "." + "info", info));
+        if(rewardItem != null)
+            for(ItemStack stack : rewardItem)
+                joiner.add("[green]You get " + stack.amount + " " + stack.item.localizedName);
+        if (rewardUnit != null)
+            joiner.add(getColor() + rewardUnit.amount + " " + rewardUnit.type.localizedName + " generated");
+        return  joiner.toString();
+    }
+
+    public String getColor() {
+        return gain ? "[green]" : "[red]";
     }
     
     public void init() {

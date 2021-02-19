@@ -1,13 +1,7 @@
 package minxyzgo.mlib.type;
 
-import static mindustry.Vars.*;
-import static mindustry.game.EventType.*;
-
-import java.util.StringJoiner;
-
 import arc.*;
 import arc.graphics.g2d.*;
-import arc.input.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
@@ -15,10 +9,15 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import minxyzgo.mlib.entities.*;
 
+import java.util.*;
+
+import static mindustry.Vars.*;
+import static mindustry.game.EventType.*;
+
  /**
  * Skills players can operate
  * You can change the skill with
- * {@link Events#<T>fire(Class<T>, Cons<T>)}
+ * {@link Events#<?>fire(Class<T>, Cons<T>)}
  * @author Minxyzgo
  */
  
@@ -108,7 +107,7 @@ public class Skills implements ApplicationListener {
         if(net.server()) Call.clientPacketReliable(TYPE_SKILL, base);
         dataCooldown = skill.cooldown;
         pocSeq.each(DataSkill::reset);
-        skill.callSkill(entPlayer, copystr);
+        skill.callSkill(entPlayer, (Object[])copystr);
     }
     
     private void writePoc(DataFireEvent event) {

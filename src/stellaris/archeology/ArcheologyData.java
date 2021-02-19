@@ -1,5 +1,6 @@
 package stellaris.archeology;
 
+import arc.struct.*;
 import arc.util.*;
 import mindustry.gen.*;
 
@@ -10,6 +11,8 @@ public class ArcheologyData {
     public float progress = 0;
     public boolean crafting = false;
     public boolean finish = false;
+    
+    public Seq<ArcheologyEvent> totalEvents = new Seq<>();
     
     public @Nullable ArcheologyEvent beginEvent;
     public @Nullable Building build;

@@ -1,23 +1,20 @@
 package minxyzgo.mlib;
 
-import java.lang.reflect.*;
-import java.util.*;
-
-
 import arc.*;
 import arc.func.*;
 import arc.struct.*;
 import arc.util.*;
-import arc.util.serialization.*;
-import mindustry.ctype.*;
 import mindustry.core.*;
+import mindustry.ctype.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
-import mindustry.type.*;
 import minxyzgo.mlib.content.*;
 import minxyzgo.mlib.io.*;
 import minxyzgo.mlib.type.*;
+
+import java.lang.reflect.*;
+import java.util.*;
 
 import static mindustry.Vars.*;
 
@@ -52,7 +49,7 @@ public class Tool extends Mod {
 	@Override
 	public void loadContent() {
 		Events.fire(new ToolLoadEvent());
-		showAllAtlas();
+//		showAllAtlas();
 		onLoad(jsonLoad::init);
 		if (showTerminal) showTerminal();
 		parser = new BuildContentParser();

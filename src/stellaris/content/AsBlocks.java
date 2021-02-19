@@ -1,24 +1,19 @@
 package stellaris.content;
 
-import arc.graphics.Color;
+import arc.graphics.*;
 import mindustry.content.*;
-import mindustry.ctype.ContentList;
-import mindustry.ctype.ContentType;
-import mindustry.gen.Building;
-import mindustry.type.Category;
-import mindustry.type.ItemStack;
-import mindustry.world.Block;
-import mindustry.world.draw.DrawAnimation;
+import mindustry.ctype.*;
+import mindustry.type.*;
 import mindustry.world.blocks.production.*;
-import mindustry.world.draw.DrawWeave;
-import stellaris.type.blocks.crafting.EnergySmelter;
-import stellaris.type.draw.DrawHeatAnimation;
-
+import stellaris.archeology.*;
+import stellaris.type.blocks.crafting.*;
+import stellaris.type.draw.*;
 
 
 public class AsBlocks implements ContentList {
 
 	public static GenericCrafter MatterEnergyTransformator, energyPackager, neutronMetalForge, civilianFactory, autoFarm;
+	public static ArcheologyBlock archeologyBlock;
 
 
 	@Override
@@ -94,10 +89,20 @@ public class AsBlocks implements ContentList {
 				consumes.liquid(Liquids.water, 0.16f);
 				outputItem = new ItemStack(AsItems.food, 3);
 				craftTime = 90f;
-				requirements(Category.crafting, ItemStack.with(Items.titanium, 150, Items.lead, 150, Items.copper, 200, Items.plastanium, 50));
+				requirements(Category.crafting, ItemStack.with(
+						Items.titanium, 150,
+						Items.lead, 150,
+						Items.copper, 200,
+						Items.plastanium, 50));
 				hasPower = true;
 				itemCapacity = 50;
 			}
 		};
+
+		archeologyBlock = new ArcheologyBlock("archeology") {{
+			size = 3;
+			health = 1250;
+			requirements(Category.crafting, ItemStack.with());
+		}};
 	}
 }

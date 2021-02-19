@@ -386,9 +386,7 @@ public class PowerUnit extends UnitType {
 		
 		@Override
 		public PowerWeapon copy() {
-		   PowerWeapon out = new PowerWeapon();
-            JsonIO.json().copyFields(this, out);
-            return out;
+		   return (PowerWeapon)super.copy();
 		}
 	}
 }

@@ -2,53 +2,45 @@ package stellaris.archeology;
 
 import arc.*;
 import arc.files.*;
-import arc.graphics.*;
 import arc.math.*;
 import arc.struct.*;
-import arc.scene.ui.*;
-import arc.scene.ui.layout.*;
-import arc.scene.utils.*;
 import arc.util.*;
 import arc.util.serialization.*;
 import arc.util.serialization.Jval.*;
-
-import java.lang.reflect.*;
-import java.util.*;
-
 import mindustry.*;
-import mindustry.gen.*;
-import mindustry.graphics.*;
 import mindustry.game.*;
+import mindustry.gen.*;
 import mindustry.mod.Mods.*;
 import mindustry.type.*;
-import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.world.*;
 import minxyzgo.mlib.*;
-
 import stellaris.*;
 import stellaris.archeology.ArcheologyEvent.*;
 
+import java.lang.reflect.*;
+
+import static arc.util.Log.*;
 import static stellaris.archeology.ArcheologyEvent.*;
 
 @SuppressWarnings("unchecked")
 public class Archeology {
-	private static final int max = 10;
-	private ArcheologyData[] map = new ArcheologyData[256];
-	private Seq<ArcheologyEvent>[] events = new Seq[ArcheologyType.values().length];
+	public static final int max = 10;
+	public ArcheologyData[] map = new ArcheologyData[256];
+	public final Seq<ArcheologyEvent>[] events = new Seq[ArcheologyType.values().length];
+
 	private boolean loaded = false;
 	private BaseDialog dialog;
-	private Table infoTable, toolTable, imageTable;
-	private TextButton conButton;
-	private ArcheologyEvent lastEvent;
+//	private Table infoTable, toolTable, imageTable;
+//	private TextButton conButton;
 
 	{
 		Time.mark();
 		loadEvent();
-		Log.info("load archeology. time: @", Time.elapsed());
+		info("load archeology. time: @", Time.elapsed());
 		Tool.onLoad(() -> {
-			initDialog();
 			for (Seq<ArcheologyEvent> seq : events) {
+				seq.each(ArcheologyEvent::init);
 				seq.each(this::reflectEvent);
 			}
 		});
@@ -58,6 +50,7 @@ public class Archeology {
 	}
 
 	public void reflectEvent(ArcheologyEvent event) {
+		info(event.name + " " + event.type.localized());
 		try {
 			for (Field field : ArcheologyEvent.class.getFields()) {
 				if (!field.isAnnotationPresent(TypeChecks.class)) {
@@ -98,50 +91,13 @@ public class Archeology {
 		Log.err(error);
 	}
 
-	public void update(Building ent) {
-		ArcheologyData data = getData(ent.team);
-		data.build = ent;
-		if(data.beginEvent == null) return;
-		boolean consume = true;
-		for (ItemStack stack : lastEvent.requirements) {
-			consume = ent.items.has(stack.item, stack.amount);
-			if (!consume || data.finish) break;
-		}
-		conButton.setDisabled(!consume || data.finish);
-		if (data.crafting && !data.finish) {
-			data.progress += Time.delta;
-			if (data.progress >= 5f * Time.toMinutes) {
-				lastEvent = nextEvent();
-				fireEvent(lastEvent, ent);
-				data.schedule += lastEvent.schedule;
-				data.crafting = false;
-				data.progress = 0;
-				data.events += 1;
-			}
-		}
-		
-		if(data.events >= max || data.schedule >= data.beginEvent.difficulty && !data.finish) {
-		    if(data.schedule >= data.beginEvent.difficulty) {
-		        fireFinalEvent(ent.team, ent);
-		    } else {
-		        print("what f**k", false);
-		        newArListenerButton("holy shit!");
-		    }
-		    
-		    data.finish = true;
-		}
-	}
-	
-	public void showDialog() {
-	    dialog.show();
-	}
-
-	public void invalidate() {
-	    infoTable.invalidate();
-		toolTable.invalidate();
-		imageTable.invalidate();
-		dialog.cont.invalidate();
-	}
+//	public void update(Building ent) {
+//
+//	}
+//
+//	public void showDialog() {
+//	    dialog.show();
+//	}
 
 	public void fireEvent(ArcheologyEvent event, Building ent) {
 		if (event.rewardItem != null) {
@@ -149,8 +105,6 @@ public class Archeology {
 				for (int i = stack.amount; i > 0 && ent.items.get(stack.item) < ent.getMaximumAccepted(stack.item); i--) {
 					ent.handleStack(stack.item, stack.amount, ent);
 				}
-				
-				print("You get " + stack.amount + " " + stack.item.localizedName, Color.green);
 			}
 		}
 
@@ -176,11 +130,7 @@ public class Archeology {
 					break;
 				}
 			}
-			
-			print(req.amount + " " + req.type.localizedName + " generated", req.hostile);
 		}
-		
-		newArListenerButton(event.buttonName);
 	}
 	
 	public void forLoopType(ReqUnit req, Team team, float x, float y) {
@@ -189,30 +139,35 @@ public class Archeology {
 	    }
 	}
 
-	public void image(String region) {
-		imageTable.image(Core.atlas.find(Main.transform(region)));
-		invalidate();
-	}
-
-	public void print(String info, boolean gain) {
-		print(info, gain ? Color.blue : Color.red);
-	}
-	
-	public void print(String info, Color color) {
-	    String[] str = info.split("\\n");
-	    for(String st : str) 
-		    infoTable.add(st).left().pad(3).padLeft(6).padRight(6).color(color);
-		infoTable.row();
-		invalidate();
-	}
+//	public void image(String region) {
+//		imageTable.image(Core.atlas.find(Main.transform(region)));
+//		invalidate();
+//	}
+//
+//	public void print(String info, boolean gain) {
+//		print(info, gain ? Color.blue : Color.red);
+//	}
+//
+//	public void print(String info, Color color) {
+//	    String[] str = info.split("\\n");
+//	    for(String st : str)
+//		    infoTable.add(st).left().pad(3).padLeft(6).padRight(6).color(color);
+//		infoTable.row();
+//		invalidate();
+//	}
 
 	public ArcheologyEvent newBeginEvent(Building ent) {
 		Seq<ArcheologyEvent> seq = events[ArcheologyType.begin.ordinal()];
-		ArcheologyEvent event = seq.get(Mathf.random(seq.size - 1));
-		fireEvent(event, ent);
-		print(event.info(), event.gain);
-		image(event.region);
-		newArListenerButton(event.buttonName);
+		ArcheologyData data = getData(ent.team);
+		ArcheologyEvent event;
+		if(data.beginEvent == null) {
+			event = seq.get(Mathf.random(seq.size - 1));
+			fireEvent(event, ent);
+			data.totalEvents.add(event);
+			data.beginEvent = event;
+		} else {
+			event = data.beginEvent;
+		}
 		return event;
 	}
 	
@@ -223,60 +178,30 @@ public class Archeology {
 		for(ArcheologyEvent e : seq) {
 		    if(e.name.equals(data.beginEvent.finalEventName)) event = e;
 		}
-		
-		if(event == null) throw new IllegalArgumentException("No finalEvent name like " + data.beginEvent.finalEventName);
+		if(event == null) throw new IllegalArgumentException("No finalEvent name equals " + data.beginEvent.finalEventName);
+		data.totalEvents.add(event);
 		fireEvent(event, ent);
-		print(event.info(), event.gain);
-		image(event.region);
-		newArListenerButton(event.buttonName);
 	}
 
-	public void newArListenerButton(String text) {
-		if (conButton != null) {
-			toolTable.removeChild(conButton);
-			conButton = null;
-		}
 
-		TextButton button = Elem.newButton(text, () -> {
-			ArcheologyData data = getData(Vars.player.team());
-			Building ent = data.build;
-			boolean check = true;
-			if(data.beginEvent == null) {
-			    Team team = Vars.player.team();
-			    data.beginEvent = newBeginEvent(ent == null ? team.data().core() : ent);
-			    data.events += 1;
-			    check = false;
-			}
-			if (lastEvent != null && ent != null) {
-				for (ItemStack stack : lastEvent.requirements) {
-					ent.items.remove(stack.item, stack.amount);
-				}
-			}
-			if(check) data.crafting = true;
-		});
-		toolTable.add(button).size(80f);
-		invalidate();
-	}
 
 	public ArcheologyData getData(Team team) {
 		if (map[team.id] == null) map[team.id] = new ArcheologyData();
 		return map[team.id];
 	}
 
-	public ArcheologyEvent nextEvent() {
+	public ArcheologyEvent nextEvent(Team team) {
 		ArcheologyEvent event = null;
 		Seq<ArcheologyEvent> seq = events[ArcheologyType.intermediate.ordinal()];
-		for (ArcheologyEvent e : seq) {
-			if (Mathf.chance(e.chance)) {
-				event = e;
-				break;
+		while(event == null) {
+			for (ArcheologyEvent e : seq) {
+				if (Mathf.chance(e.chance)) {
+					event = e;
+					break;
+				}
 			}
 		}
-
-		if (event == null) event = seq.get(Mathf.random(seq.size - 1));
-		image(event.region);
-		print(event.info(), event.gain);
-		newArListenerButton(event.buttonName);
+		getData(team).totalEvents.add(event);
 		return event;
 	}
 
@@ -285,11 +210,12 @@ public class Archeology {
 			throw new IllegalAccessError("could't load ArcheologyEvent again.");
 		}
 
-		Arrays.fill(events, new Seq<>());
+		for(int i = 0; i < ArcheologyType.values().length; i++)
+			events[i] = new Seq<>();
 		LoadedMod mod = Vars.mods.locateMod(Main.modName);
 		Fi archeologyRoot = mod.root.child("archeology");
 		for (ArcheologyType type : ArcheologyType.values()) {
-			Fi folder = archeologyRoot.child(type.toString());
+			Fi folder = archeologyRoot.child(type.toString().toLowerCase());
 			if (folder.exists()) {
 				for (Fi file : folder.findAll(f -> f.extension().equals("json") || f.extension().equals("hjson"))) {
 					parse(mod, file.nameWithoutExtension(), file.readString("UTF-8"), file, type);
@@ -300,33 +226,33 @@ public class Archeology {
 		loaded = true;
 	}
 
-	private void initDialog() {
-		dialog = new BaseDialog("Archeology");
-		int width = Core.graphics.getWidth(), height = Core.graphics.getHeight();
-		Log.info("width: " + width + " height: " + height);
-		ArcheologyData data = getData(Vars.player.team());
-		dialog.cont.row();
-		dialog.cont.pane(table -> {
-			table.left();
-			infoTable = table;
-		}).size(width, height / 3f);
-		dialog.cont.row();
-		dialog.cont.add(
-		    new Bar("progress", Pal.accent, () -> data.progress / (5f * Time.toMinutes))
-		).row();
-		dialog.cont.row();
-		dialog.cont.pane(table -> {
-			table.table(t -> {
-			    t.left();
-				imageTable = t;
-			});
-			table.right();
-			table.row();
-			toolTable = table;
-			newArListenerButton(Core.bundle.get("continue"));
-		}).left().padTop(3);
-		dialog.addCloseButton();
-	}
+//	private void initDialog() {
+//		dialog = new BaseDialog("Archeology");
+//		int width = Core.graphics.getWidth(), height = Core.graphics.getHeight();
+//		Log.info("width: " + width + " height: " + height);
+//		ArcheologyData data = getData(Vars.player.team());
+//		dialog.cont.row();
+//		dialog.cont.pane(table -> {
+//			table.left();
+//			infoTable = table;
+//		}).size(width, height / 3f);
+//		dialog.cont.row();
+//		dialog.cont.add(
+//		    new Bar("progress", Pal.accent, () -> data.progress / (5f * Time.toMinutes))
+//		).row();
+//		dialog.cont.row();
+//		dialog.cont.pane(table -> {
+//			table.table(t -> {
+//			    t.left();
+//				imageTable = t;
+//			});
+//			table.right();
+//			table.row();
+//			toolTable = table;
+//			newArListenerButton(Core.bundle.get("continue"));
+//		}).left().padTop(3);
+//		dialog.addCloseButton();
+//	}
 
 	private void parse(LoadedMod mod, String name, String json, Fi file, ArcheologyType type) {
 		try {

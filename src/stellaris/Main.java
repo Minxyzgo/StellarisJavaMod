@@ -1,15 +1,11 @@
 package stellaris;
 
 import arc.util.*;
-
 import mindustry.mod.*;
-import mindustry.type.*;
-
 import minxyzgo.mlib.*;
-
 import stellaris.archeology.*;
-import stellaris.core.*;
 import stellaris.content.*;
+import stellaris.core.*;
 
 public class Main extends Mod{
     public static final String modName = "stellaris";
@@ -38,7 +34,9 @@ public class Main extends Mod{
 		tool.loadContent();
 		Tool.parser.contentParsers.addAll("stellaris.type.units",
 			 "stellaris.type.abilities",
-			 "stellaris.type.draw");
+			 "stellaris.type.draw",
+                "stellaris.archeology"
+        );
 		/*Tool.parser.classParsers.put(.class, (type, data) -> {
 			Recipe recipe = new Recipe("Recipe" + "$" + Recipe.nextId(), true);
 			if (data.has("consumes") && data.get("consumes").isObject()) {

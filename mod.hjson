@@ -3,6 +3,6 @@ displayName: "Stellaris:Eve Before Light-speed"
 author: "星空"
 main: "stellaris.Main"
 description: "alpha"
-version: 0.1
-minGameVersion: 109
+version: 0.2
+minGameVersion: 121.4
 

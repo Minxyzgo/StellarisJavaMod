@@ -1,38 +1,31 @@
 package stellaris.core;
 
-import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-
 import arc.*;
-import arc.audio.Music;
-import arc.math.Mathf;
-import arc.scene.ui.Slider;
-import arc.scene.ui.TextField;
-import arc.scene.style.TextureRegionDrawable;
-import arc.scene.ui.layout.Table;
-import arc.util.Log;
-import arc.util.Time;
-import mindustry.Vars;
-import mindustry.audio.SoundControl;
-import mindustry.content.Fx;
-import mindustry.game.Team;
+import arc.audio.*;
+import arc.math.*;
+import arc.scene.style.*;
+import arc.scene.ui.*;
+import arc.scene.ui.layout.*;
+import arc.util.*;
+import mindustry.*;
+import mindustry.audio.*;
+import mindustry.content.*;
 import mindustry.game.EventType.*;
+import mindustry.game.*;
 import mindustry.gen.*;
-import mindustry.graphics.Pal;
-import mindustry.type.UnitType;
-import mindustry.ui.Cicon;
-import mindustry.ui.MobileButton;
-import mindustry.ui.Styles;
-import mindustry.ui.dialogs.BaseDialog;
-import mindustry.ui.fragments.MenuFragment;
-import stellaris.Main;
-import stellaris.ui.draw.MenuRed;
-//import stellaris.ui.frg.MenuFrg;
+import mindustry.type.*;
+import mindustry.ui.*;
+import mindustry.ui.dialogs.*;
+import mindustry.ui.fragments.*;
+import stellaris.*;
+import stellaris.ui.draw.*;
 
+import java.io.*;
+import java.lang.reflect.*;
 
 import static mindustry.Vars.*;
+
+//import stellaris.ui.frg.MenuFrg;
 
 public class Ui {
 	public MobileButton ste;
@@ -106,22 +99,6 @@ public class Ui {
 			t.add(ste);
 			t.visible = true;
 		});
-
-
-		ui.hudGroup.fill(t -> {
-			t.right();
-			t.marginTop(15f);
-			BaseDialog dialog = unitSpawnDialog();
-			t.button(Icon.admin, dialog::show).update(b -> dialog.invalidate());
-			t.row();
-			t.button(Icon.crafting, () -> Main.archeology.showDialog()).update(b -> {
-			    Building ent = player.team().data().core();
-			    if(ent != null) Main.archeology.update(ent);
-			});
-			t.visible(() -> Main.test && !Vars.net.active());
-		});
-
-
 	}
 
 	public BaseDialog unitSpawnDialog() {
