@@ -368,9 +368,16 @@ public class BuildContentParser{
             try {
                 Class<Unit> ucls = resolve(type);
                 Method met = ucls.getDeclaredMethod("create");
-                return () -> (Unit)met.invoke(null);
+                return () -> { 
+                    try {
+                        (Unit)met.invoke(null);
+                    } catch(Exception e) {
+                        Log.err(e);
+                    }
+                }
             } catch(Exception e) {
                 Log.err(e);
+                return UnitEntity::create;
             }
         } else {
             throw new RuntimeException("Invalid unit type: '" + value + "'.");
