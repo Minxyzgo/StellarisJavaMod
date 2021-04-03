@@ -273,7 +273,8 @@ public class BuildContentParser{
                         if(req.previous != null){
                             r.upgrades.add(new UnitType[]{req.previous, unit});
                         }
-                    }else if(req.block instanceof UnitFactory f){
+                    }else if(req.block instanceof UnitFactory){
+                        UnitFactory f = (UnitFactory)req.block;
                         f.plans.add(new UnitPlan(unit, req.time, req.requirements));
                     }else{
                         throw new IllegalArgumentException("Missing a valid 'block' in 'requirements'");
@@ -356,9 +357,9 @@ public class BuildContentParser{
             return MechUnit::create;
         } else if(type.equals("legs")) {
             return LegsUnit::create;
-        } else if(type..equals("naval")) {
+        } else if(type.equals("naval")) {
             return UnitWaterMove::create;
-        } else if(type..equals("payload")) {
+        } else if(type.equals("payload")) {
             return PayloadUnit::create;
         } else if(ClassMap.classes.containsKey(type)) {
             Class<Unit> ucls = resolve(type);
