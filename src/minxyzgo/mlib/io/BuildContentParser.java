@@ -87,7 +87,7 @@ public class BuildContentParser{
             if(data.isString()){
                 return field(Bullets.class, data);
             }
-            var bc = resolve(data.getString("type", ""), BasicBulletType.class);
+            Class<?> bc = resolve(data.getString("type", ""), BasicBulletType.class);
             data.remove("type");
             BulletType result = make(bc);
             readFields(result, data);
@@ -98,9 +98,9 @@ public class BuildContentParser{
                 //try to instantiate
                 return make(resolve(data.asString()));
             }
-            var bc = resolve(data.getString("type", ""), DrawBlock.class);
+            Class<DrawBlock> bc = resolve(data.getString("type", ""), DrawBlock.class);
             data.remove("type");
-            var result = make(bc);
+            DrawBlock result = make(bc);
             readFields(result, data);
             return result;
         });
@@ -112,14 +112,14 @@ public class BuildContentParser{
             String path = Vars.tree.get(name + ".ogg").exists() ? name + ".ogg" : name + ".mp3";
 
             if(sounds.containsKey(path)) return ((SoundParameter)sounds.get(path).params).sound;
-            var sound = new Sound();
+            Sound sound = new Sound();
             AssetDescriptor<?> desc = Core.assets.load(path, Sound.class, new SoundParameter(sound));
             desc.errored = Throwable::printStackTrace;
             sounds.put(path, desc);
             return sound;
         });
         put(Objectives.Objective.class, (type, data) -> {
-            var oc = resolve(data.getString("type", ""), SectorComplete.class);
+            Class<?> oc = resolve(data.getString("type", ""), SectorComplete.class);
             data.remove("type");
             Objectives.Objective obj = make(oc);
             readFields(obj, data);
@@ -248,7 +248,7 @@ public class BuildContentParser{
                     value.remove("unitType");
                 }
                 
-                var typeVal = value.get("type");
+                JsonValue typeVal = value.get("type");
 
                 if(typeVal != null && !typeVal.isString()){
                     throw new RuntimeException("Unit '" + name + "' has an incorrect type. Types must be strings.");
@@ -268,7 +268,8 @@ public class BuildContentParser{
 
                     UnitReq req = parser.readValue(UnitReq.class, rec);
 
-                    if(req.block instanceof Reconstructor r){
+                    if(req.block instanceof Reconstructor){
+                        Reconstructor r = (Reconstructor)req.block;
                         if(req.previous != null){
                             r.upgrades.add(new UnitType[]{req.previous, unit});
                         }
@@ -349,19 +350,23 @@ public class BuildContentParser{
     private Prov<Unit> unitType(JsonValue value){
         if(value == null) return UnitEntity::create;
         String type = value.asString();
-        return switch(type) {
-            case "flying" -> UnitEntity::create;
-            case "mech" -> MechUnit::create;
-            case "legs" -> LegsUnit::create;
-            case "naval" -> UnitWaterMove::create;
-            case "payload" -> PayloadUnit::create;
-            default -> {
-                if(!ClassMap.classes.containsKey(type) throw new RuntimeException("Invalid unit type: '" + value + "'.");
-                Class<Unit> ucls = resolve(type);
-                Method met = ucls.getDeclaredMethod("create");
-                return () -> (Unit)met.invoke(null);
-            }
-        };
+        if(type.equals("flying")) {
+            return UnitEntity::create;
+        } else if(type.equals("mech")) {
+            return MechUnit::create;
+        } else if(type.equals("legs")) {
+            return LegsUnit::create;
+        } else if(type..equals("naval")) {
+            return UnitWaterMove::create;
+        } else if(type..equals("payload")) {
+            return PayloadUnit::create;
+        } else if(ClassMap.classes.containsKey(type)) {
+            Class<Unit> ucls = resolve(type);
+            Method met = ucls.getDeclaredMethod("create");
+            return () -> (Unit)met.invoke(null);
+        } else {
+            throw new RuntimeException("Invalid unit type: '" + value + "'.");
+        }
     }
 
     private String getString(JsonValue value, String key){
@@ -637,8 +642,8 @@ public class BuildContentParser{
         JsonValue research = jsonMap.remove("research");
 
         toBeParsed.remove(object);
-        var type = object.getClass();
-        var fields = parser.getFields(type);
+        Class<?> type = object.getClass();
+        OrderedMap<String, FieldMetadata> fields = parser.getFields(type);
         for(JsonValue child = jsonMap.child; child != null; child = child.next){
             FieldMetadata metadata = fields.get(child.name().replace(" ", "_"));
             if(metadata == null){
@@ -729,7 +734,7 @@ public class BuildContentParser{
         if(base.isEmpty() && def != null) return def;
 
         //return mapped class if found in the global map
-        var out = ClassMap.classes.get(!base.isEmpty() && Character.isLowerCase(base.charAt(0)) ? Strings.capitalize(base) : base);
+        Class<?> out = ClassMap.classes.get(!base.isEmpty() && Character.isLowerCase(base.charAt(0)) ? Strings.capitalize(base) : base);
         if(out != null) return (Class<T>)out;
 
         //try to resolve it as a raw class name if it's allowed
