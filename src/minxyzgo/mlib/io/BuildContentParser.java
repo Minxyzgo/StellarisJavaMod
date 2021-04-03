@@ -364,21 +364,8 @@ public class BuildContentParser{
             return UnitWaterMove::create;
         } else if(type.equals("payload")) {
             return PayloadUnit::create;
-        } else if(ClassMap.classes.containsKey(type)) {
-            try {
-                Class<Unit> ucls = resolve(type);
-                Method met = ucls.getDeclaredMethod("create");
-                return () -> { 
-                    try {
-                        return (Unit)met.invoke(null);
-                    } catch(Exception e) {
-                        Log.err(e);
-                    }
-                };
-            } catch(Exception e) {
-                Log.err(e);
-                return UnitEntity::create;
-            }
+        } else if(EntityMapping.nameMap.containsKey(type)) {
+            return (Prov<Unit>)EntityMapping.map(type);
         } else {
             throw new RuntimeException("Invalid unit type: '" + value + "'.");
         }
