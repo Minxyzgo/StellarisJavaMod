@@ -370,11 +370,11 @@ public class BuildContentParser{
                 Method met = ucls.getDeclaredMethod("create");
                 return () -> { 
                     try {
-                        (Unit)met.invoke(null);
+                        return (Unit)met.invoke(null);
                     } catch(Exception e) {
                         Log.err(e);
                     }
-                }
+                };
             } catch(Exception e) {
                 Log.err(e);
                 return UnitEntity::create;
