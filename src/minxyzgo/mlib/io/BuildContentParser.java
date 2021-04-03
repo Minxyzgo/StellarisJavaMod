@@ -50,6 +50,15 @@ public class BuildContentParser{
 
     public ObjectMap<Class<?>, FieldParser> classParsers = new ObjectMap<>();
     
+    /** Stores things that need to be parsed fully, e.g. reading fields of content.
+     * This is done to accommodate binding of content names first.*/
+    private Seq<Runnable> reads = new Seq<>();
+    private Seq<Runnable> postreads = new Seq<>();
+    private ObjectSet<Object> toBeParsed = new ObjectSet<>();
+
+    LoadedMod currentMod;
+    Content currentContent;
+    
     {
         classParsers.put(Effect.class, (type, data) -> {
             if(data.isString()){
@@ -141,14 +150,6 @@ public class BuildContentParser{
             return weapon;
         });
     }
-    /** Stores things that need to be parsed fully, e.g. reading fields of content.
-     * This is done to accommodate binding of content names first.*/
-    private Seq<Runnable> reads = new Seq<>();
-    private Seq<Runnable> postreads = new Seq<>();
-    private ObjectSet<Object> toBeParsed = new ObjectSet<>();
-
-    LoadedMod currentMod;
-    Content currentContent;
 
     public Json parser = new Json(){
         @Override

@@ -121,7 +121,11 @@ public class Tool extends Mod {
 	            String fileName = childFile.name();
 	            if (fileName.endsWith(".class") && !fileName.contains("$")) {
 	                String className = fileName.split(".")[0];
-	                ClassMap.classes.put(className, Class.forName(packageName + "." + className, true, mod.loader));
+	                try {
+	                    ClassMap.classes.put(className, Class.forName(packageName + "." + className, true, mod.loader));
+	                } catch(ClassNotFoundException e) {
+	                    Log.err(e);
+	                }
 	            }
 	        }
 	    } 
