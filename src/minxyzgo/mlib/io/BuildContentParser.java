@@ -673,8 +673,8 @@ public class BuildContentParser{
             }
         }
 
-        if(object instanceof UnlockableContent unlock && research != null){
-
+        if(object instanceof UnlockableContent && research != null){
+            UnlockableContent unlock = (UnlockableContent)object;
             //add research tech node
             String researchName;
             ItemStack[] customRequirements;
