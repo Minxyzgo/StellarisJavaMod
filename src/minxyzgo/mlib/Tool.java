@@ -2,6 +2,7 @@ package minxyzgo.mlib;
 
 import arc.*;
 import arc.func.*;
+import arc.files.*;
 import arc.struct.*;
 import arc.util.*;
 import arc.util.serialization.*;
@@ -113,7 +114,7 @@ public class Tool extends Mod {
 	public static void addClassMapByPackage(String modName, String packageName) {
 	    Mods.LoadedMod mod = mods.getMod(modName);
 	    Fi modRoot = mod.root;
-	    Fi packfile = modRoot.child(packageName.replace(modName, "").replace(".", "/"));
+	    Fi packfile = modRoot.child(packageName.replace(".", "/"));
 	    Fi[] files = packfile.list();
 	    for (Fi childFile : files) {
 	        if (!childFile.isDirectory()) {
@@ -124,6 +125,12 @@ public class Tool extends Mod {
 	            }
 	        }
 	    } 
+	}
+	
+	public static void addAllClassMapByPackage(String modName, String... packageName) {
+	    for(String packName : packageName) {
+	        addClassMapByPackage(modName, packName);
+	    }
 	}
 
 	public static synchronized <T extends Enum<T>> T andType(Class<T> clazz, String name) {

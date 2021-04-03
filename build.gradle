@@ -11,7 +11,7 @@ buildscript{
     ext{
         kotlinVersion = "1.4.21"
         //the build number that this mod is made for
-        mindustryVersion = 'v123'
+        mindustryVersion = 'v126.1'
         //version of SDK you will be using
         sdkVersion = '30'
         sdkRoot = System.getenv("ANDROID_HOME")
@@ -91,6 +91,17 @@ jar{
 }
 
 task deploy(type: Jar){
+    def fi = new File("$rootDir/mod.hjson")
+    fi.withReader { reader ->
+        def lines = reader.readLines()
+        fi.withWriter { writer ->
+            lines.each { line ->
+                def check = line.split(":")[0].equals("minGameVersion")
+                if(!check) writer.append("$line\r\n")
+            }
+            writer.append("minGameVersion: ${mindustryVersion.split("v")[1]}\r\n")
+        }
+    }
     dependsOn jarAndroid
     dependsOn jar
     archiveFileName = "${project.archivesBaseName}.jar"

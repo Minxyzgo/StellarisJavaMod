@@ -87,7 +87,7 @@ public class BuildContentParser{
             if(data.isString()){
                 return field(Bullets.class, data);
             }
-            Class<?> bc = resolve(data.getString("type", ""), BasicBulletType.class);
+            Class<? extends BulletType> bc = resolve(data.getString("type", ""), BasicBulletType.class);
             data.remove("type");
             BulletType result = make(bc);
             readFields(result, data);
@@ -119,7 +119,7 @@ public class BuildContentParser{
             return sound;
         });
         put(Objectives.Objective.class, (type, data) -> {
-            Class<?> oc = resolve(data.getString("type", ""), SectorComplete.class);
+            Class<? extends Objectives.Objective> oc = resolve(data.getString("type", ""), SectorComplete.class);
             data.remove("type");
             Objectives.Objective obj = make(oc);
             readFields(obj, data);
@@ -634,7 +634,7 @@ public class BuildContentParser{
         });
     }
 
-    private void readFields(Object object, JsonValue jsonMap, boolean stripType){
+    public void readFields(Object object, JsonValue jsonMap, boolean stripType){
         if(stripType) jsonMap.remove("type");
         readFields(object, jsonMap);
     }
@@ -744,7 +744,7 @@ public class BuildContentParser{
                 return (Class<T>)Class.forName(base);
             }catch(Exception ignored){
                 //try to load from a mod's class loader
-                for(LoadedMod mod : mods.mods){
+                for(LoadedMod mod : mods.list()){
                     if(mod.loader != null){
                         try{
                             return (Class<T>)Class.forName(base, true, mod.loader);
@@ -761,16 +761,16 @@ public class BuildContentParser{
         throw new IllegalArgumentException("Type not found: " + base);
     }
 
-    private interface FieldParser{
+    public interface FieldParser{
         Object parse(Class<?> type, JsonValue value) throws Exception;
     }
 
-    private interface TypeParser<T extends Content>{
+    public interface TypeParser<T extends Content>{
         T parse(String mod, String name, JsonValue value) throws Exception;
     }
 
     //intermediate class for parsing
-    static class UnitReq{
+    public static class UnitReq{
         public Block block;
         public ItemStack[] requirements = {};
         @Nullable
