@@ -105,6 +105,7 @@ public class AsUnits implements ContentList {
 				accel = 0.05f;
 				drag = 0.015f;
 				lowAltitude = false;
+				circleTarget = true;
 				flying = true;
 				engineOffset = 4f;
 				rotateShooting = false;

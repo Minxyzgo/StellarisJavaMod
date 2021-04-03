@@ -4,6 +4,7 @@ import arc.*;
 import arc.func.*;
 import arc.struct.*;
 import arc.util.*;
+import arc.util.serialization.*;
 import mindustry.core.*;
 import mindustry.ctype.*;
 import mindustry.game.*;
@@ -21,45 +22,28 @@ import static mindustry.Vars.*;
 @SuppressWarnings("unchecked")
 public class Tool extends Mod {
     private static int nextClassId = 28;
-	public static JsonLoad jsonLoad = new JsonLoad();
 	public static Skills skills = new Skills();
 	public final static boolean loadExample = true, showTerminal = true;
 	public static BuildContentParser parser;
 	public static ContentType crecipe;
 	public static float JAVA_VERSION;
-	//private static ObjectSet<Cons<MappableContent>> initialization = new ObjectSet<>();
-	//public static ObjectSet<MappableContent> customContentMap = new ObjectSet<>();
 
 	private static final float JAVA_E = 1.8f, JAVA_S = 1.7f;
-	//private static final int baseTypeLength = 15;
 
 	static {
 	    JAVA_VERSION = Float.valueOf(System.getProperty("java.specification.version"));
-	    /*
-		onLoad(() -> {
-			crecipe = andType(ContentType.class, "Recipe");
-			entAddContent();
-		});
-		*/
-		//test
-		//andType(Category.class, "Air");
-		//useful
 	}
 
 	@Override
 	public void loadContent() {
 		Events.fire(new ToolLoadEvent());
 //		showAllAtlas();
-		onLoad(jsonLoad::init);
 		if (showTerminal) showTerminal();
 		parser = new BuildContentParser();
 		try {
 			Field parserField = Mods.class.getDeclaredField("parser");
 			parserField.setAccessible(true);
 			parserField.set(mods, parser);
-
-			parser.contentParsers.addAll("minxyzgo.mlib.type",
-										 "minxyzgo.mlib.type.block");
 			parserType();
 
 			Log.info("TOOL");
@@ -123,6 +107,23 @@ public class Tool extends Mod {
 		onLoad(() -> {
 			loadLogger();
 		});
+	}
+	
+	// if this is necessary
+	public static void addClassMapByPackage(String modName, String packageName) {
+	    Mods.LoadedMod mod = mods.getMod(modName);
+	    Fi modRoot = mod.root;
+	    Fi packfile = modRoot.child(packageName.replace(modName, "").replace(".", "/"));
+	    Fi[] files = packfile.list();
+	    for (Fi childFile : files) {
+	        if (!childFile.isDirectory()) {
+	            String fileName = childFile.name();
+	            if (fileName.endsWith(".class") && !fileName.contains("$")) {
+	                String className = fileName.split(".")[0];
+	                ClassMap.classes.put(className, Class.forName(packageName + "." + className, true, mod.loader));
+	            }
+	        }
+	    } 
 	}
 
 	public static synchronized <T extends Enum<T>> T andType(Class<T> clazz, String name) {
@@ -235,23 +236,6 @@ public class Tool extends Mod {
 			nameMapField.set(content, nameMap);
 			idMapField.set(content, contentMap);
 			
-			Events.fire(new ToolTypeLoadEvent());
-			/*
-			Log.info("rerun");
-			for(ContentType type : ContentType.all){
-			    for(MappableContent content : nameMap[type.ordinal()].values()) {
-			        Log.info(content.toString());
-			    }
-			}
-*/
-/*
-            for(MappableContent c : customContentMap) {
-                content.handleMappableContent(c);
-            }
-            
-			Core.assets.loadRun("contentinit2", Tool.class, () -> initialize(Content::init, customContentMap), () -> initialize(Content::load, customContentMap));
-			*/
-			
 		} catch (Exception e) {
 			Log.err(e);
 		}
@@ -263,34 +247,6 @@ public class Tool extends Mod {
 	            Log.info(name);
 	    });
 	}
-/*
-	private static void initialize(Cons<MappableContent> callable, ObjectSet<MappableContent> contentMap) {
-		if (initialization.contains(callable)) return;
 
-		for (ContentType type : ContentType.all) {
-			if (type.ordinal() <= baseTypeLength) continue;
-			for (MappableContent content : contentMap) {
-				try {
-					callable.get(content);
-				} catch (Throwable e) {
-					if (content.minfo.mod != null) {
-						Log.err(e);
-						mods.handleContentError(content, e);
-					} else {
-						throw new RuntimeException(e);
-					}
-				}
-			}
-		}
-
-		initialization.add(callable);
-	}
-	
-	public static void handleMappableContent(MappableContent content) {
-	    if (customContentMap.contains(content)) return;
-	    customContentMap.add(content);
-	}
-*/
 	public static class ToolLoadEvent {}
-	public static class ToolTypeLoadEvent {}
 }

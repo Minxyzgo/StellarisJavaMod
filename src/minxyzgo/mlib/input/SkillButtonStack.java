@@ -41,7 +41,7 @@ public class SkillButtonStack {
 		public void update() {
 			super.update();
 			ent.reload = Math.min(ent.reload + Time.delta, Tool.skills.dataCooldown);
-			setDisabled(ent.reload < Tool.skills.dataCooldown || disabledBoolp.get());
+			setDisabled(ent.reload < (Tool.skills.dataCooldown == 0f ? cooldown : Tool.skills.dataCooldown) || disabledBoolp.get());
 		}
 
 

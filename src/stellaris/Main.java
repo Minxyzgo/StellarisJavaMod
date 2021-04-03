@@ -15,14 +15,10 @@ public class Main extends Mod{
 	public static boolean test = false;
 	public static Tool tool = new Tool();
 	public static Archeology archeology;
-    public Main(){
 
-    }
-    
     public static String transform(String name) {
         return modName + "-" + name;
     }
-    
 
     @Override
     public void loadContent(){

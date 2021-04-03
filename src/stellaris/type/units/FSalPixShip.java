@@ -73,15 +73,12 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 		Lines.stroke(e.fout() * 5.125f);
 		Lines.circle(e.x, e.y, e.fin() * 15);
 	});
-	public static TextureRegion skillRegion = null;
-
-
 
 	{
 
 		Tool.onLoad(() -> {
 			
-			owner = new SkillButtonStack(skillRegion, 50f) {{
+			owner = new SkillButtonStack(Core.atlas.find("stellaris-jumpSkill"), 50f) {{
 			    button = new InductionAbility.InductionSkill(this, region, new SkillButtonStack.SkillStyle());
 			}};
 
@@ -203,12 +200,6 @@ public class FSalPixShip extends PowerUnit implements Skillc {
 			return false;
 		});
 
-	}
-	
-	@Override
-	public void load() {
-	    super.load();
-	    skillRegion = Core.atlas.find(content.transformName("jumpSkill"));
 	}
 
 	@Override

@@ -23,9 +23,21 @@ public class AsBullets implements ContentList {
 			{
 				sprite = "large-bomb";
 				width = height = 120 / 4f;
+				maxRange = 30f;
 
 //Draw.color(Color.valueOf("#7b68ee"),Color.valueOf("#e4ebff"),e.fin());
 				lightColor = Color.valueOf("#7b68ee");
+				lightningColor = Color.valueOf("#7b68ee");
+				keepVelocity = false;
+				spin = 2f;
+
+				shrinkX = shrinkY = 0.7f;
+
+				speed = 0.001f;
+				collides = false;
+
+				splashDamage = 1000;
+				splashDamageRadius = 135f;
 				lightning = 12;
 				lightningCone = 360f;
 				lightningLength = 7;
@@ -45,7 +57,7 @@ public class AsBullets implements ContentList {
 				lifetime = 70f;
 				despawnEffect = new Effect(25, e -> {
 					Draw.color(Color.valueOf("#e4ebff"), e.fin());
-					Lines.stroke(e.fout() * 2.5f);
+					Lines.stroke(e.fout() * 3.5f);
 					Lines.circle(e.x, e.y, 4f + e.finpow() * 65f);
 					Draw.color(Color.valueOf("#e4ebff"), e.fin());
 					for (int i = 0; i < 5; i++) {
@@ -78,16 +90,6 @@ public class AsBullets implements ContentList {
 						Lines.lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), 1f + e.fout() * 4f);
 					}
 										 );
-					keepVelocity = false;
-					spin = 2f;
-
-					shrinkX = shrinkY = 0.7f;
-
-					speed = 0.001f;
-					collides = false;
-
-					splashDamage = 1000;
-					splashDamageRadius = 135f;
 				});
 			};
 		};

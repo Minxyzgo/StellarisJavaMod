@@ -584,7 +584,7 @@ public class FSAircraftCarrier extends PowerUnit implements Skillc {
 	}
 
 	public class PowerUnitSeq {
-		public @Nullable PowerUnit type;
+		public PowerUnit type;
 		public int maxSpawn = 5;
 		public float spawnTime = 25f;
 		public String skillRegion = "";

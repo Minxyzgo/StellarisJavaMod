@@ -70,7 +70,7 @@ public class Skills implements ApplicationListener {
             if(skill.getType().equals(type)) return skill;
         }
         
-        throw new IllegalArgumentException("there is no type like " + type);
+        return null;
     }
     
     @Override
@@ -120,7 +120,7 @@ public class Skills implements ApplicationListener {
         }
         String pack = joiner.toString();
         Call.clientPacketReliable(TYPE_SKILL, pack);
-        if(net.client()) Call.serverPacketReliable(TYPE_SKILL, pack);
+        Call.serverPacketReliable(TYPE_SKILL, pack);
     }
     
     public void reset() {
