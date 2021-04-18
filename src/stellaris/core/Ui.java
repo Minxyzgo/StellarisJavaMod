@@ -87,6 +87,10 @@ public class Ui {
 		}).colspan(2);
 		*/
 		// t.reset();
+		ui.hudGroup.fill(full -> {
+            full.center().right().marginBottom(40f).visibility = () -> state.isGame() && ui.hudfrag.shown && Main.test;
+            full.button(Icon.admin, this::unitSpawnDialog).width(40).height(40);
+        });
 
 		ui.menuGroup.fill(t -> {
 			t.clear();

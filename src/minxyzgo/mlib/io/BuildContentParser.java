@@ -42,7 +42,7 @@ import java.lang.reflect.*;
 import static mindustry.Vars.*;
 
 @SuppressWarnings("unchecked")
-public class BuildContentParser{
+public class BuildContentParser extends ContentParser{
     private static final boolean ignoreUnknownFields = true;
     public ObjectMap<Class<?>, ContentType> contentTypes = new ObjectMap<>();
     public ObjectSet<Class<?>> implicitNullable = ObjectSet.with(TextureRegion.class, TextureRegion[].class, TextureRegion[][].class);

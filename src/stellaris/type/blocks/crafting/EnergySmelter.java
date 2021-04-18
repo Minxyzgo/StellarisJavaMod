@@ -40,9 +40,9 @@ public class EnergySmelter extends GenericSmelter {
                     ilist.each(i -> i.item.unlockedNow(), stack -> {
                         image.add(new ReqImage(new ItemImage(stack), 
                         () -> tile != null && !(tile.items.empty()) && ((EnergyBuild)tile).getItem() == stack.item));
-                    
-                        table.add(image).size(8f * 4f);
                     });
+                    table.defaults().left();
+                    table.add(image).size(8f * 4f);
                 }
             };
             consumes.add(cu);
